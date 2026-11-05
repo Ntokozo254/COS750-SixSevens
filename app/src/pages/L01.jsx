@@ -14,12 +14,17 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+// these are all our visuals seperated so we can update them individually
+
 import ArrayDragVisual from "@/components/visuals/ArrayDragVisual"
 import ArrayInsertVisual from "@/components/visuals/ArrayInsertVisual"
 import ArraySearchDeleteVisual from "@/components/visuals/ArraySearchDeleteVisual"
 import HashingExampleVisual from "@/components/visuals/HashingExampleVisual"
 import HashSearchVisual from "@/components/visuals/HashSearchVisual"
-
+import CollisionVisual from "@/components/visuals/CollisonVisual"
+import ChainingPointersVisual from "@/components/visuals/ChainingPointersVisual"
+import TerminologyVisual from "@/components/visuals/TerminologyVisual"
+import TimeComplexityVisual from "@/components/visuals/TimeComplexityVisual"
 // Temporary stand-in until the real animation components exist.
 function Placeholder({ label = "Simple hash function: h(k) mod N where N is the size of the hash table" }) {
   return (
@@ -59,7 +64,7 @@ const cards = [
     {
     id: 5,
     title: "The Hash Function  ",
-    description: "To bridge this gap, the hash table uses a mathematical formula called a hash function. The hash function takes the custom key and performs two quick steps.",
+    description: "To bridge this gap, the hash table uses a mathematical formula called a hash function. The hash function takes the custom key and performs two quick steps. Because they map keys to specific array indices using a hash function, they achieve an average time complexity of O(1) (constant time) for searches, insertions, and deletions.",
     Visual: Placeholder,
   },
   {
@@ -76,7 +81,35 @@ const cards = [
 
     Visual: HashSearchVisual,
   },
-  // ...add the rest the same way
+  {
+    id: 8,
+    title: "Hash Collisions  ",
+    description: "When two keys hash to the same bucket - a collision happens. 2 simple collison techniques exist: Separate chaining: = each bucket holds a small list, and colliding keys are appended to it. As long as the table isn't too full (a low load factor) and the hash spreads keys well, chains stay short and insert, lookup, and delete are O(1) on average. Linear Probing:=linear probing resolves the conflict by searching for the next sequentially available slot (index + 1, index + 2, index + 3, and so on) until an empty one is found.",
+
+    Visual: CollisionVisual,
+  },
+   {
+    id: 9,
+    title: "Linked Lists AS Inspo",
+    description: "Linear probing is simple. Seperate chaining uses the same idea from linked lists, Instead of storing a single key-value pair directly in a bucket, each bucket stores a pointer to the head of a linked list (or chain). If a bucket is empty, its pointer is NULL ",
+
+    Visual: ChainingPointersVisual,
+  },
+    {
+    id: 10,
+    title: "Some Important Hash Terminology  ",
+    description: "When working with Hash Tables, it is important to understand what each term means.",
+
+    Visual: TerminologyVisual,
+  },
+     {
+    id: 11,
+    title: "Time complexity of Hash Tables  ",
+    description: "Time complexity describes how the time taken for an operation changes as the amount of data grows. For hash tables, we’re usually interested in how long it takes to add a new item (insert), remove an item (delete), or find an item (search). The good news is that the general time complexity applies similarly to all these key operations.",
+
+    Visual: TimeComplexityVisual,
+  },
+  // ...add the rest the same way as above bruh
 ]
 
 export default function L01() {
