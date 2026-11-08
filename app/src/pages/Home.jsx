@@ -9,9 +9,12 @@ export default function Home() {
         <CardHeader>
           <CardTitle>Fundamentals</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex gap-2">
           <Button asChild>
             <Link to="/l01">L01</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/l02">L02: Searching</Link>
           </Button>
         </CardContent>
       </Card>

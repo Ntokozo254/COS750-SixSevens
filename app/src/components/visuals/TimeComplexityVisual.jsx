@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
+import StepControls from "@/components/shared/StepControls"
+import { useAutoAdvance } from "@/components/shared/useAutoAdvance"
 
 const SIZE = 8
 const N = 6
@@ -26,8 +28,8 @@ const ROWS = [
 ]
 
 const IDLE = {
-  average: `Average case: ${N} keys spread across ${SIZE} buckets. Press Play to look up ${TARGET}.`,
-  worst: `Worst case: all ${N} keys collided into a single bucket. Press Play to look up ${TARGET}.`,
+  average: `Average case: ${N} keys spread across ${SIZE} buckets.`,
+  worst: `Worst case: all ${N} keys collided into a single bucket.`,
 }
 
 const nodeStyles = {
@@ -38,86 +40,79 @@ const nodeStyles = {
 }
 
 const spring = { type: "spring", stiffness: 260, damping: 24 }
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export default function TimeComplexityVisual() {
-  const [mode, setMode] = useState("average")
-  const [phase, setPhase] = useState("idle") // idle | hash | walk | done
-  const [cursor, setCursor] = useState(-1) // which node in the chain is being compared
-  const [comparisons, setComparisons] = useState(0)
-  const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState(IDLE.average)
-
-  // Each play gets an id. If it changes (mode switch or unmount), the old run stops.
-  const runRef = useRef(0)
-  useEffect(() => () => { runRef.current = -1 }, [])
-
+// Every step of one lookup. `pause` is how long autoplay waits before the next step.
+function buildSteps(mode) {
   const buckets = LAYOUTS[mode]
   const targetBucket = buckets.findIndex((c) => c.includes(TARGET))
-  const targetPos = buckets[targetBucket].indexOf(TARGET)
+  const chain = buckets[targetBucket]
+  const targetPos = chain.indexOf(TARGET)
 
-  const clear = (m) => {
-    setPhase("idle")
-    setCursor(-1)
-    setComparisons(0)
-    setMessage(IDLE[m])
+  // Step 0 is the untouched table. Its pause is the short gap before a replay starts.
+  const steps = [{ phase: "idle", cursor: -1, comparisons: 0, pause: 450, message: null }]
+
+  // Hash the key and jump to its bucket
+  steps.push({
+    phase: "hash", cursor: -1, comparisons: 0, pause: 1600,
+    message:
+      `Lookup ${TARGET}: hash(${TARGET}) % ${SIZE} = ${targetBucket}.` +
+      (mode === "average"
+        ? ` Jump straight to bucket ${targetBucket}.`
+        : ` Every key collided here, so bucket ${targetBucket} holds one long chain.`),
+  })
+
+  // Walk the chain, comparing one node at a time
+  for (let i = 0; i <= targetPos; i++) {
+    steps.push({
+      phase: "walk", cursor: i, comparisons: i + 1, pause: i === targetPos ? 900 : 700,
+      message: i === targetPos ? `${chain[i]} is ${TARGET}: found!` : `${chain[i]} is not ${TARGET}. Move to the next node.`,
+    })
   }
+
+  // The verdict
+  const c = targetPos + 1
+  steps.push({
+    phase: "done", cursor: targetPos, comparisons: c, pause: 0,
+    message:
+      mode === "average"
+        ? `Found after ${c} comparison. The work does not depend on how many keys are stored: O(1).`
+        : `Found after ${c} comparisons. We walked the whole chain, so the work grows with n: O(n).`,
+  })
+  return { steps, targetBucket, targetPos }
+}
+
+const RUNS = { average: buildSteps("average"), worst: buildSteps("worst") }
+
+// stepped: students press Prev / Next instead of watching it autoplay
+export default function TimeComplexityVisual({ stepped = false }) {
+  const [mode, setMode] = useState("average")
+  const [step, setStep] = useState(0)
+  const [playing, setPlaying] = useState(false)
+
+  const { steps, targetBucket, targetPos } = RUNS[mode]
+  const last = steps.length - 1
+  const auto = !stepped && playing
+  useAutoAdvance(auto, step, last, steps[step].pause, setStep)
+
+  const busy = auto && step < last
+  const { phase, cursor, comparisons } = steps[step]
+  const message =
+    steps[step].message ??
+    `${IDLE[mode]} Press ${stepped ? "Next" : "Play"} to look up ${TARGET}.`
+  const buckets = LAYOUTS[mode]
 
   const chooseMode = (m) => {
     if (busy) return
-    runRef.current += 1
     setMode(m)
-    clear(m)
+    setStep(0)
+    setPlaying(false)
   }
 
-  const play = async () => {
+  const play = () => {
     if (busy) return
-    const id = ++runRef.current
-    const stale = () => runRef.current !== id
-
-    setBusy(true)
-    if (phase !== "idle") {
-      // Replay: clear the previous run first
-      clear(mode)
-      await sleep(450)
-      if (stale()) return
-    }
-
-    // Beat 1: hash the key and jump to its bucket
-    setPhase("hash")
-    setMessage(
-      `Lookup ${TARGET}: hash(${TARGET}) % ${SIZE} = ${targetBucket}.` +
-        (mode === "average"
-          ? ` Jump straight to bucket ${targetBucket}.`
-          : ` Every key collided here, so bucket ${targetBucket} holds one long chain.`)
-    )
-    await sleep(1600)
-    if (stale()) return
-
-    // Beat 2: walk the chain, comparing one node at a time
-    setPhase("walk")
-    const chain = buckets[targetBucket]
-    for (let i = 0; i <= targetPos; i++) {
-      setCursor(i)
-      setComparisons(i + 1)
-      setMessage(
-        i === targetPos
-          ? `${chain[i]} is ${TARGET}: found!`
-          : `${chain[i]} is not ${TARGET}. Move to the next node.`
-      )
-      await sleep(i === targetPos ? 900 : 700)
-      if (stale()) return
-    }
-
-    // Beat 3: the verdict
-    const c = targetPos + 1
-    setPhase("done")
-    setMessage(
-      mode === "average"
-        ? `Found after ${c} comparison. The work does not depend on how many keys are stored: O(1).`
-        : `Found after ${c} comparisons. We walked the whole chain, so the work grows with n: O(n).`
-    )
-    setBusy(false)
+    // From the idle table start straight away. On a replay, show the clean table first.
+    setStep(phase === "idle" ? 1 : 0)
+    setPlaying(true)
   }
 
   const nodeStatus = (isTarget, idx) => {
@@ -261,14 +256,23 @@ export default function TimeComplexityVisual() {
             </Button>
           ))}
         </div>
-        <Button
-          size="sm"
-          disabled={busy}
-          onClick={play}
-          className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
-        >
-          {phase === "idle" ? "Play" : busy ? "Playing..." : "Replay"}
-        </Button>
+        {stepped ? (
+          <StepControls
+            step={step}
+            total={steps.length}
+            onPrev={() => setStep(step - 1)}
+            onNext={() => setStep(step + 1)}
+          />
+        ) : (
+          <Button
+            size="sm"
+            disabled={busy}
+            onClick={play}
+            className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
+          >
+            {phase === "idle" ? "Play" : busy ? "Playing..." : "Replay"}
+          </Button>
+        )}
       </div>
     </div>
   )

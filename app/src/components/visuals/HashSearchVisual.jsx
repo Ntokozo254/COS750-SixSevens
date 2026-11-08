@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
+import StepControls from "@/components/shared/StepControls"
+import { useAutoAdvance } from "@/components/shared/useAutoAdvance"
 
 const KEY = "john_doe"
 const HASH_CODE = 4829103
@@ -11,7 +13,6 @@ const SLOT = HASH_CODE % SIZE // 3
 const ENTRIES = { 1: "mary_k", 3: KEY, 5: "sam_li", 6: "zara_m", 8: "tom_b" }
 
 const spring = { type: "spring", stiffness: 300, damping: 24 }
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const IDLE = "Pick a search. Either way, we can jump straight to the answer."
 
 const FOUND = `Jump straight to slot [${SLOT}]: found ${KEY}. One step, no scanning.`
@@ -80,38 +81,29 @@ function Chip({ className, children }) {
   )
 }
 
-export default function HashSearchVisual() {
+// stepped: students press Prev / Next instead of watching it autoplay
+export default function HashSearchVisual({ stepped = false }) {
   const [mode, setMode] = useState(null) // null | "key" | "index"
-  const [stage, setStage] = useState(0)
-  const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState(IDLE)
+  const [step, setStep] = useState(0)
 
-  // Each search gets an id. If it changes (Reset or unmount), the old run stops.
-  const runRef = useRef(0)
-  useEffect(() => () => { runRef.current = -1 }, [])
+  const beats = mode === "key" ? KEY_BEATS : mode === "index" ? INDEX_BEATS : []
+  const last = beats.length - 1
+  const auto = !stepped && mode !== null
+  useAutoAdvance(auto, step, last, beats[step]?.[2] ?? 0, setStep)
+
+  const busy = auto && step < last
+  const stage = mode ? beats[step][0] : 0
+  const message = mode ? beats[step][1] : IDLE
 
   const reset = () => {
-    runRef.current += 1
     setMode(null)
-    setStage(0)
-    setBusy(false)
-    setMessage(IDLE)
+    setStep(0)
   }
 
-  const search = async (m) => {
+  const search = (m) => {
     if (busy) return
-    const id = ++runRef.current
-    const stale = () => runRef.current !== id
-
     setMode(m)
-    setBusy(true)
-    for (const [s, text, pause] of m === "key" ? KEY_BEATS : INDEX_BEATS) {
-      setStage(s)
-      setMessage(text)
-      await sleep(pause)
-      if (stale()) return
-    }
-    setBusy(false)
+    setStep(0)
   }
 
   const keyMode = mode === "key"
@@ -218,6 +210,16 @@ export default function HashSearchVisual() {
           Reset
         </Button>
       </div>
+
+      {stepped && (
+        <StepControls
+          step={step}
+          total={beats.length}
+          disabled={!mode}
+          onPrev={() => setStep(step - 1)}
+          onNext={() => setStep(step + 1)}
+        />
+      )}
     </div>
   )
 }
