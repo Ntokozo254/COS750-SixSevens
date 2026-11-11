@@ -1,0 +1,81 @@
+
+[
+  {
+    "id": 1,
+    "title": "Introduction to Hashing",
+    "objective": "Understand why hash tables provide efficient data retrieval.",
+    "sections": [
+      {
+        "title": "What is a hash table?",
+        "content": "A hash table is a data structure that stores keys in positions determined by a hash function."
+      },
+      {
+        "title": "Why use hash tables?",
+        "content": "Hash tables can provide efficient average-case lookup by using a hash function to calculate where a key should be stored."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Hash Functions",
+    "objective": "Calculate the home slot using key mod table size.",
+    "sections": [
+      {
+        "title": "The modulo hash function",
+        "content": "The home slot can be calculated by dividing the key by the table size and using the remainder."
+      },
+      {
+        "title": "Example",
+        "content": "For key 23 and table size 10, the home slot is 23 mod 10 = 3."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Understanding Collisions",
+    "objective": "Identify when two keys map to the same table position.",
+    "sections": [
+      {
+        "title": "What is a collision?",
+        "content": "A collision occurs when two different keys map to the same home slot."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Linear Probing",
+    "objective": "Insert keys using linear probing, including wrap-around.",
+    "sections": [
+      {
+        "title": "Resolving collisions",
+        "content": "Linear probing checks the next slot until an empty position is found. When the end of the table is reached, the search wraps around to the beginning."
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Searching in Hash Tables",
+    "objective": "Trace a search and determine when an unsuccessful search stops.",
+    "sections": [
+      {
+        "title": "Searching",
+        "content": "A search begins at the key's home slot and follows the linear probing sequence until the key is found or an empty slot is reached."
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Clustering and Load Factor",
+    "objective": "Analyse how clustering and load factor affect performance.",
+    "sections": [
+      {
+        "title": "Clustering",
+        "content": "Clustering occurs when occupied slots form groups, potentially increasing the number of positions examined."
+      },
+      {
+        "title": "Load factor",
+        "content": "Load factor is the proportion of table slots that are occupied."
+      }
+    ]
+  }
+]
