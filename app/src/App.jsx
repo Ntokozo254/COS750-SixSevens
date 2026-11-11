@@ -1,14 +1,120 @@
-import { Routes, Route, Navigate } from "react-router"
-import Home from "@/pages/Home"
-import L01 from "@/pages/L01"
+
+import { useMemo, useState } from "react";
+import Layout from "./components/layout/Layout";
+import { modules } from "./data/modules";
+import useProgress from "./hooks/useProgress";
+
+import Dashboard from "./pages/Dashboard";
+import Modules from "./pages/Modules";
+import ModuleDetail from "./pages/ModuleDetail";
+import Visualiser from "./pages/Visualiser";
+import PracticeLab from "./pages/PracticeLab";
+import Assessment from "./pages/Assessment";
+import Progress from "./pages/Progress";
+import Settings from "./pages/Settings";
+
+function App() {
+  const [page, setPage] = useState("Dashboard");
+  const [activeModule, setActiveModule] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const { completed, progress, completeModule } = useProgress();
+
+  const filteredModules = useMemo(
+    () =>
+      modules.filter((module) =>
+        `${module.title} ${module.objective}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
+  );
+
+  function openModule(module) {
+    setActiveModule(module);
+    setPage("Module");
+    setMobileOpen(false);
+  }
+
+  function navigate(label) {
+    setPage(label);
+    setActiveModule(null);
+    setMobileOpen(false);
+  }
+
+  function renderPage() {
+    switch (page) {
+      case "Dashboard":
+        return (
+          <Dashboard
+            progress={progress}
+            completed={completed}
+            onOpenModule={openModule}
+            onNavigate={navigate}
+          />
+        );
+
+      case "Learning modules":
+        return (
+          <Modules
+            completed={completed}
+            onOpenModule={openModule}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filteredModules={filteredModules}
+          />
+        );
+
+      case "Module":
+        return activeModule ? (
+          <ModuleDetail
+            module={activeModule}
+            completed={completed}
+            onBack={() => navigate("Learning modules")}
+            onComplete={completeModule}
+          />
+        ) : null;
+
+      case "Visualiser":
+        return <Visualiser />;
+
+      case "Practice lab":
+        return <PracticeLab />;
+
+      case "Assessment":
+        return <Assessment />;
+
+      case "My progress":
+        return (
+          <Progress
+            completed={completed}
+            progress={progress}
+            onOpenModule={openModule}
+          />
+        );
+
+      case "Settings":
+        return <Settings />;
+
+      default:
+        return <Dashboard progress={progress} completed={completed} />;
+    }
+  }
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/l01" element={<L01 />} />
-      {/* Unknown URLs go back to the landing page */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  )
+    <Layout
+      page={page}
+      activeModule={activeModule}
+      mobileOpen={mobileOpen}
+      onNavigate={navigate}
+      onMenuOpen={() => setMobileOpen(true)}
+      onMenuClose={() => setMobileOpen(false)}
+    >
+      {renderPage()}
+    </Layout>
+  );
 }
+
+export default App;
