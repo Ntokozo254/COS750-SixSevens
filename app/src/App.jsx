@@ -102,7 +102,6 @@ function App() {
     }
   }
 
-export default function App() {
   return (
     <Layout
       page={page}

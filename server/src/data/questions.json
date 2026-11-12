@@ -1,0 +1,25 @@
+[
+  {
+    "id": "q-insert-1",
+    "module": "insert",
+    "objective": "LO4",
+    "prompt": "Table size 10 holds 23 in slot 3. Where does 43 go?",
+    "options": [
+      { "id": "a", "text": "Slot 4", "correct": true },
+      { "id": "b", "text": "Slot 3", "misconception": "takenSlot" },
+      { "id": "c", "text": "Slot 0", "misconception": "wrongMod" },
+      { "id": "d", "text": "It cannot be inserted", "misconception": "noProbing" }
+    ]
+  },
+  {
+    "id": "q-delete-1",
+    "module": "delete",
+    "objective": "LO8",
+    "prompt": "Slots 3, 4 and 5 hold 23, 43 and 13. You delete 43, then search for 13. What happens?",
+    "options": [
+      { "id": "a", "text": "Found in slot 5, the search skips the tombstone in slot 4", "correct": true },
+      { "id": "b", "text": "Not found, the search stops at slot 4", "misconception": "emptyInsteadOfTombstone" },
+      { "id": "c", "text": "Found in slot 3", "misconception": "wrongMod" }
+    ]
+  }
+]
