@@ -10,12 +10,16 @@ const questions = JSON.parse(
 export default function quizRouter(db) {
   const router = Router();
 
-  // GET /api/quiz/questions?module=insert  (answers are not sent to the client)
+  // GET /api/quiz/questions?module=linear-probing
+  // Answers and explanations are not sent until the student answers.
   router.get('/questions', (req, res) => {
     const { module } = req.query;
     const list = questions
       .filter((q) => !module || q.module === module)
-      .map(({ options, ...q }) => ({ ...q, options: options.map(({ id, text }) => ({ id, text })) }));
+      .map(({ options, explanation, ...q }) => ({
+        ...q,
+        options: options.map(({ id, text }) => ({ id, text })),
+      }));
     res.json(list);
   });
 
@@ -36,7 +40,7 @@ export default function quizRouter(db) {
           data: { studentId, questionId, optionId, correct, misconception, module: question.module },
         });
       }
-      res.json({ correct, misconception });
+      res.json({ correct, misconception, explanation: question.explanation ?? null });
     } catch (e) {
       next(e);
     }

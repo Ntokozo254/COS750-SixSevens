@@ -7,7 +7,7 @@ const fakeDb = () => ({
   quizAttempt: { create: vi.fn(async ({ data }) => data) },
   student: { upsert: vi.fn(async ({ create }) => ({ id: 'student-1', ...create })) },
   progress: {
-    findMany: vi.fn(async () => [{ module: 'insert', completed: true, score: 3 }]),
+    findMany: vi.fn(async () => [{ module: 'hash-functions', completed: true, score: 3 }]),
     upsert: vi.fn(async ({ create }) => create),
   },
 });
@@ -51,14 +51,18 @@ describe('quiz API', () => {
     const db = fakeDb();
     const app = createApp({ db });
     const res = await request(app).post('/api/quiz/answer')
-      .send({ studentId: 'student-1', questionId: 'q-delete-1', optionId: 'b' });
-    expect(res.body).toEqual({ correct: false, misconception: 'emptyInsteadOfTombstone' });
+      .send({ studentId: 'student-1', questionId: 'q-searching-1', optionId: 'a' });
+    expect(res.body.correct).toBe(false);
+    expect(res.body.misconception).toBe('stopAtOccupied');
+    expect(res.body.explanation).toContain('empty slot');
     expect(db.quizAttempt.create).toHaveBeenCalledOnce();
   });
 
-  it('does not send the answers with the questions', async () => {
-    const res = await request(createApp({ db: fakeDb() })).get('/api/quiz/questions?module=insert');
+  it('does not send the answers or explanations with the questions', async () => {
+    const res = await request(createApp({ db: fakeDb() })).get('/api/quiz/questions?module=linear-probing');
+    expect(res.body).toHaveLength(1);
     expect(res.body[0].options[0]).not.toHaveProperty('correct');
+    expect(res.body[0]).not.toHaveProperty('explanation');
   });
 });
 
@@ -71,7 +75,7 @@ describe('students API', () => {
 
   it('returns progress for every module', async () => {
     const res = await request(createApp({ db: fakeDb() })).get('/api/students/student-1/progress');
-    expect(res.body).toHaveLength(5);
-    expect(res.body[1]).toEqual({ module: 'insert', completed: true, score: 3 });
+    expect(res.body).toHaveLength(6);
+    expect(res.body[1]).toEqual({ module: 'hash-functions', completed: true, score: 3 });
   });
 });
