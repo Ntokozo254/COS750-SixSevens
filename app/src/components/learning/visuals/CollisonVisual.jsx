@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const SIZE = 10
 const STORED_KEY = "john_doe"
@@ -20,14 +20,14 @@ const COLLIDE = `Collision! Slot ${SLOT} is already taken by ${STORED_KEY}.`
 // Each beat is [stage, message, pause in ms]
 const BEATS = {
   chaining: [
-    [0, ARRIVE, 1500],
-    [1, COLLIDE, 1500],
+    [0, ARRIVE, 1800],
+    [1, COLLIDE, 1800],
     [2, `Separate chaining: bucket ${SLOT} holds a small list, so ${NEW_KEY} is appended to it.`, 0],
   ],
   probing: [
-    [0, ARRIVE, 1500],
-    [1, COLLIDE, 1500],
-    [2, `Linear probing: try the next slot, (${SLOT} + 1) % ${SIZE} = ${NEXT}. It is empty.`, 1700],
+    [0, ARRIVE, 1800],
+    [1, COLLIDE, 1800],
+    [2, `Linear probing: try the next slot, (${SLOT} + 1) % ${SIZE} = ${NEXT}. It is empty.`, 1800],
     [3, `${NEW_KEY} is stored in slot ${NEXT}. A lookup repeats the same formula to find it.`, 0],
   ],
 }

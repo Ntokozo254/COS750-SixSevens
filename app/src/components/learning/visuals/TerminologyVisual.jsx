@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const DWELL = 4500 // ms each term stays on screen while Play is running
 const spring = { type: "spring", stiffness: 300, damping: 24 }

@@ -16,15 +16,15 @@ import {
 } from "@/components/ui/carousel"
 // these are all our visuals seperated so we can update them individually
 
-import ArrayDragVisual from "@/components/visuals/ArrayDragVisual"
-import ArrayInsertVisual from "@/components/visuals/ArrayInsertVisual"
-import ArraySearchDeleteVisual from "@/components/visuals/ArraySearchDeleteVisual"
-import HashingExampleVisual from "@/components/visuals/HashingExampleVisual"
-import HashSearchVisual from "@/components/visuals/HashSearchVisual"
-import CollisionVisual from "@/components/visuals/CollisonVisual"
-import ChainingPointersVisual from "@/components/visuals/ChainingPointersVisual"
-import TerminologyVisual from "@/components/visuals/TerminologyVisual"
-import TimeComplexityVisual from "@/components/visuals/TimeComplexityVisual"
+import ArrayDragVisual from "@/components/learning/visuals/ArrayDragVisual"
+import ArrayInsertVisual from "@/components/learning/visuals/ArrayInsertVisual"
+import ArraySearchDeleteVisual from "@/components/learning/visuals/ArraySearchDeleteVisual"
+import HashingExampleVisual from "@/components/learning/visuals/HashingExampleVisual"
+import HashSearchVisual from "@/components/learning/visuals/HashSearchVisual"
+import CollisionVisual from "@/components/learning/visuals/CollisonVisual"
+import ChainingPointersVisual from "@/components/learning/visuals/ChainingPointersVisual"
+import TerminologyVisual from "@/components/learning/visuals/TerminologyVisual"
+import TimeComplexityVisual from "@/components/learning/visuals/TimeComplexityVisual"
 // Temporary stand-in until the real animation components exist.
 function Placeholder({ label = "Simple hash function: h(k) mod N where N is the size of the hash table" }) {
   return (

@@ -7,6 +7,9 @@ import {
   Lightbulb,
   BookOpen
 } from "lucide-react";
+//l02 additions
+import LessonCarousel from "@/components/learning/LessonCarousel";
+import { lessonCards } from "@/data/LessonCards";
 
 export default function ModuleDetail({
   module,
@@ -16,6 +19,9 @@ export default function ModuleDetail({
 }) {
   const Icon = module.icon;
   const isCompleted = completed.includes(module.id);
+
+  //l01
+  const cards = lessonCards[module.id] ;
 
   return (
     <div className="content-wrap">
@@ -67,28 +73,32 @@ export default function ModuleDetail({
             {module.objective}
           </p>
 
-          <div className="learning-placeholder">
-            <div className="placeholder-symbol">
-              <Lightbulb size={35} />
+          {cards ? (
+            <LessonCarousel cards={cards} />
+          ) : (
+            <div className="learning-placeholder">
+              <div className="placeholder-symbol">
+                <Lightbulb size={35} />
+              </div>
+
+              <div className="placeholder-label">
+                LEARNING CONTENT
+              </div>
+
+              <h3>Your lesson starts here.</h3>
+
+              <p>
+                This space is reserved for explanations, worked
+                examples, animations and interactive activities
+                for this learning objective.
+              </p>
+
+              <button className="secondary-button">
+                <BookOpen size={15} />
+                View lesson outline
+              </button>
             </div>
-
-            <div className="placeholder-label">
-              LEARNING CONTENT
-            </div>
-
-            <h3>Your lesson starts here.</h3>
-
-            <p>
-              This space is reserved for explanations, worked
-              examples, animations and interactive activities
-              for this learning objective.
-            </p>
-
-            <button className="secondary-button">
-              <BookOpen size={15} />
-              View lesson outline
-            </button>
-          </div>
+          )}
 
           <div className="lesson-actions">
             <button

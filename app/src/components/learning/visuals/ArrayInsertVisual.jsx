@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const MAX = 7
 const spring = { type: "spring", stiffness: 380, damping: 30 }

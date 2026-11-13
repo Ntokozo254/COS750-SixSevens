@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const KEY = "john_doe"
 const HASH_CODE = 4829103

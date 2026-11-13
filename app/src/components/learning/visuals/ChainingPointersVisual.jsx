@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const SIZE = 5
 
@@ -56,7 +56,7 @@ export default function ChainingPointersVisual() {
       setMessage(
         occupied ? `Collision! Bucket ${b} already has a chain.` : `Bucket ${b} is empty (NULL).`
       )
-      await sleep(1400)
+      await sleep(1600)
       if (stale()) return
 
       // Beat 2: add the node
@@ -67,7 +67,7 @@ export default function ChainingPointersVisual() {
           : `${key} becomes the head of a new chain. Bucket ${b}'s pointer now points to it.`
       )
       sizes[b] += 1
-      await sleep(1600)
+      await sleep(1800)
       if (stale()) return
     }
 
