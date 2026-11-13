@@ -9,7 +9,9 @@ datasource db {
 
 model Student {
   id            String        @id @default(uuid())
-  studentNumber String        @unique
+  studentNumber String?       @unique
+  email         String?       @unique
+  passwordHash  String?
   name          String?
   createdAt     DateTime      @default(now())
   progress      Progress[]

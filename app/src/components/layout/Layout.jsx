@@ -10,6 +10,8 @@ export default function Layout({
   onNavigate,
   onMenuOpen,
   onMenuClose,
+  user,
+  onLogout,
   children
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -40,6 +42,8 @@ export default function Layout({
           page={page}
           activeModule={activeModule}
           onMenuOpen={onMenuOpen}
+          user={user}
+          onLogout={onLogout}
         />
 
         <div className="page-content">
