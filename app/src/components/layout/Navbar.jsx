@@ -1,5 +1,5 @@
 
-import { Menu, ChevronRight, Home } from "lucide-react";
+import { Menu, ChevronRight, Home , LogOut } from "lucide-react";
 
 export default function Navbar({
   page,
@@ -12,7 +12,16 @@ export default function Navbar({
     page === "Module" && activeModule
       ? activeModule.title
       : page;
-
+  // "John" + "Doe" -> "JD". Falls back to the email's first letter, then "S".
+  const profileName = displayName.trim() || [user?.name, user?.surname].filter(Boolean).join(" ");
+  const initials =
+    profileName.trim().split(/\s+/).filter(Boolean)
+      .slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase() ||
+    [user?.name, user?.surname]
+      .map((part) => part?.trim().charAt(0) ?? "")
+      .join("")
+      .toUpperCase() ||
+    (user?.email || "S").charAt(0).toUpperCase();
   return (
     <header className="topbar">
       <div className="breadcrumb">

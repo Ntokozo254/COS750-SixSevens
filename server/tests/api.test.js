@@ -79,3 +79,70 @@ describe('students API', () => {
     expect(res.body[1]).toEqual({ module: 'hash-functions', completed: true, score: 3 });
   });
 });
+describe('auth API', () => {
+  const person = { name: 'Test', surname: 'User' };
+  // A tiny in-memory student table.
+  const memoryDb = () => {
+    const rows = [];
+    return {
+      student: {
+        findUnique: vi.fn(async ({ where }) => rows.find((r) => r.email === where.email) ?? null),
+        create: vi.fn(async ({ data }) => {
+          const row = { id: `student-${rows.length + 1}`, studentNumber: null, ...data };
+          rows.push(row);
+          return row;
+        }),
+      },
+    };
+  };
+
+  it('registers, then logs in with the same password', async () => {
+    const app = createApp({ db: memoryDb() });
+    const reg = await request(app).post('/api/auth/register')
+      .send({ name: 'Kea', surname: 'Mokoena', email: 'Kea@Example.com', password: 'hunter2hunter2' });
+    expect(reg.status).toBe(201);
+    expect(reg.body).toMatchObject({ email: 'kea@example.com', name: 'Kea', surname: 'Mokoena' });
+    expect(reg.body).not.toHaveProperty('passwordHash');
+
+    const login = await request(app).post('/api/auth/login')
+      .send({ email: 'kea@example.com', password: 'hunter2hunter2' });
+    expect(login.status).toBe(200);
+    expect(login.body.id).toBe(reg.body.id);
+  });
+
+  it('rejects a wrong password and an unknown email the same way', async () => {
+    const app = createApp({ db: memoryDb() });
+    await request(app).post('/api/auth/register').send({ ...person, email: 'a@b.co', password: 'correct-horse' });
+    const wrong = await request(app).post('/api/auth/login').send({ email: 'a@b.co', password: 'nope-nope' });
+    const unknown = await request(app).post('/api/auth/login').send({ email: 'x@y.co', password: 'whatever1' });
+    expect(wrong.status).toBe(401);
+    expect(unknown.status).toBe(401);
+    expect(wrong.body).toEqual(unknown.body);
+  });
+
+  it('refuses duplicate emails and weak input', async () => {
+    const app = createApp({ db: memoryDb() });
+    await request(app).post('/api/auth/register').send({ ...person, email: 'a@b.co', password: 'correct-horse' });
+    const dup = await request(app).post('/api/auth/register').send({ ...person, email: 'A@b.co', password: 'another-one' });
+    expect(dup.status).toBe(409);
+    expect((await request(app).post('/api/auth/register').send({ ...person, email: 'bad', password: 'longenough' })).status).toBe(400);
+    expect((await request(app).post('/api/auth/register').send({ ...person, email: 'c@d.co', password: 'short' })).status).toBe(400);
+  });
+
+  it('requires a name and surname', async () => {
+    const app = createApp({ db: memoryDb() });
+    const noName = await request(app).post('/api/auth/register').send({ surname: 'Doe', email: 'a@b.co', password: 'longenough' });
+    const noSurname = await request(app).post('/api/auth/register').send({ name: 'Jo', surname: '   ', email: 'a@b.co', password: 'longenough' });
+    expect(noName.status).toBe(400);
+    expect(noSurname.status).toBe(400);
+    expect(noSurname.body.error).toMatch(/surname/i);
+  });
+
+  it('never stores the plain password', async () => {
+    const db = memoryDb();
+    await request(createApp({ db })).post('/api/auth/register').send({ ...person, email: 'a@b.co', password: 'correct-horse' });
+    const { data } = db.student.create.mock.calls[0][0];
+    expect(data.passwordHash).toMatch(/^scrypt\$/);
+    expect(data.passwordHash).not.toContain('correct-horse');
+  });
+});

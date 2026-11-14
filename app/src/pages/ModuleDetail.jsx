@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -7,6 +8,12 @@ import {
   Lightbulb,
   BookOpen
 } from "lucide-react";
+//l02 additions
+import LessonCarousel from "../components/learning/LessonCarousel";
+import LessonOutline from "../components/learning/LessonOutline";
+import { lessonCards } from "../data/LessonCards";
+
+
 import SearchLesson from "../features/search/SearchLesson";
 
 export default function ModuleDetail({
@@ -17,6 +24,10 @@ export default function ModuleDetail({
 }) {
   const Icon = module.icon;
   const isCompleted = completed.includes(module.id);
+
+  //l01
+  const cards = lessonCards[module.id] ;
+  const [cardIndex , setCardIndex] = useState(0);
 
   return (
     <div className="content-wrap">
@@ -74,28 +85,32 @@ export default function ModuleDetail({
             {module.objective}
           </p>
 
-          <div className="learning-placeholder">
-            <div className="placeholder-symbol">
-              <Lightbulb size={35} />
+          {cards ? (
+            <LessonCarousel cards={cards} index={cardIndex} onIndexChange={setCardIndex} />
+          ) : (
+            <div className="learning-placeholder">
+              <div className="placeholder-symbol">
+                <Lightbulb size={35} />
+              </div>
+
+              <div className="placeholder-label">
+                LEARNING CONTENT
+              </div>
+
+              <h3>Your lesson starts here.</h3>
+
+              <p>
+                This space is reserved for explanations, worked
+                examples, animations and interactive activities
+                for this learning objective.
+              </p>
+
+              <button className="secondary-button">
+                <BookOpen size={15} />
+                View lesson outline
+              </button>
             </div>
-
-            <div className="placeholder-label">
-              LEARNING CONTENT
-            </div>
-
-            <h3>Your lesson starts here.</h3>
-
-            <p>
-              This space is reserved for explanations, worked
-              examples, animations and interactive activities
-              for this learning objective.
-            </p>
-
-            <button className="secondary-button">
-              <BookOpen size={15} />
-              View lesson outline
-            </button>
-          </div>
+          )}
 
           <div className="lesson-actions">
             <button
@@ -119,6 +134,7 @@ export default function ModuleDetail({
         </section>
 
         <aside className="lesson-aside">
+          {cards && <LessonOutline cards={cards} index={cardIndex} onSelect={setCardIndex} />}
           <div className="side-card">
             <div className="side-card-heading">
               <span className="mini-icon">

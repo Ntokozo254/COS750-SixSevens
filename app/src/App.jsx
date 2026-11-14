@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import Layout from "./components/layout/Layout";
 import { modules } from "./data/modules";
 import useProgress from "./hooks/useProgress";
+import usePreferences from "./hooks/usePreferences";
 
 import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
@@ -12,14 +13,18 @@ import PracticeLab from "./pages/PracticeLab";
 import Assessment from "./pages/Assessment";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import { loadUser, saveUser } from "./api/auth";
 
 function App() {
   const [page, setPage] = useState("Dashboard");
   const [activeModule, setActiveModule] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [user, setUser] = useState(loadUser);
 
   const { completed, progress, completeModule } = useProgress();
+  const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
 
   const filteredModules = useMemo(
     () =>
@@ -43,11 +48,23 @@ function App() {
     setMobileOpen(false);
   }
 
+  function handleLogin(loggedIn) {
+    saveUser(loggedIn);
+    setUser(loggedIn);
+    setPage("Dashboard");
+  }
+
+  function handleLogout() {
+    saveUser(null);
+    setUser(null);
+  }
+
   function renderPage() {
     switch (page) {
       case "Dashboard":
         return (
           <Dashboard
+            preferences={preferences}
             progress={progress}
             completed={completed}
             onOpenModule={openModule}
@@ -95,16 +112,28 @@ function App() {
         );
 
       case "Settings":
-        return <Settings />;
+        return (
+          <Settings
+            preferences={preferences}
+            onPreferenceChange={updatePreference}
+            onResetPreferences={resetPreferences}
+            storageAvailable={storageAvailable}
+          />
+        );
 
       default:
-        return <Dashboard progress={progress} completed={completed} />;
+        return <Dashboard preferences={preferences} progress={progress} completed={completed} />;
     }
   }
 
+  if (!user) return <Login onLogin={handleLogin} />;
+
   return (
     <Layout
+      preferences={preferences}
       page={page}
+      user={user}
+      onLogout={handleLogout}
       activeModule={activeModule}
       mobileOpen={mobileOpen}
       onNavigate={navigate}
