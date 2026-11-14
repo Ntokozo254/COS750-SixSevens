@@ -20,7 +20,8 @@ async function post(path, body) {
 }
 
 export const login = (email, password) => post("/api/auth/login", { email, password });
-export const register = (email, password, name) => post("/api/auth/register", { email, password, name });
+export const register = ({ name, surname, email, password }) =>
+  post("/api/auth/register", { name, surname, email, password });
 
 export function loadUser() {
   try {

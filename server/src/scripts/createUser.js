@@ -1,12 +1,12 @@
 // Creates (or resets the password of) a login account.
-// Usage: node src/scripts/createUser.js <email> <password> [name]
+// Usage: node src/scripts/createUser.js <email> <password> [name] [surname]
 import 'dotenv/config';
 import { prisma } from '../db.js';
 import { hashPassword } from '../routes/auth.js';
 
-const [email, password, name] = process.argv.slice(2);
+const [email, password, name, surname] = process.argv.slice(2);
 if (!email || !password) {
-  console.error('Usage: node src/scripts/createUser.js <email> <password> [name]');
+  console.error('Usage: node src/scripts/createUser.js <email> <password> [name] [surname]');
   process.exit(1);
 }
 
@@ -15,8 +15,8 @@ try {
   const passwordHash = await hashPassword(password);
   const student = await prisma.student.upsert({
     where: { email: normalised },
-    update: { passwordHash, ...(name ? { name } : {}) },
-    create: { email: normalised, passwordHash, name: name ?? null },
+    update: { passwordHash, ...(name ? { name } : {}), ...(surname ? { surname } : {}) },
+    create: { email: normalised, passwordHash, name: name ?? null, surname: surname ?? null },
   });
   console.log(`Saved user ${student.email} (id ${student.id})`);
 } finally {

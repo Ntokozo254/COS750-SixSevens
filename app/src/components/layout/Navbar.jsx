@@ -13,7 +13,14 @@ export default function Navbar({
       ? activeModule.title
       : page;
 
-  const initial = (user?.name || user?.email || "S").charAt(0).toUpperCase();
+  // "John" + "Doe" -> "JD". Falls back to the email's first letter, then "S".
+  const initials =
+    [user?.name, user?.surname]
+      .map((part) => part?.trim().charAt(0) ?? "")
+      .join("")
+      .toUpperCase() ||
+    (user?.email || "S").charAt(0).toUpperCase();
+  const fullName = [user?.name, user?.surname].filter(Boolean).join(" ");
 
   return (
     <header className="topbar">
@@ -29,7 +36,7 @@ export default function Navbar({
           COS212 · DATA STRUCTURES
         </div>
 
-        <div className="avatar" title={user?.email}>{initial}</div>
+        <div className="avatar" title={fullName || user?.email}>{initials}</div>
 
         {onLogout && (
           <button className="logout-button" onClick={onLogout} title="Log out">

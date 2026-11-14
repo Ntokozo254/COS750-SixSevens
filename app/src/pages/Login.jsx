@@ -5,6 +5,7 @@ import { login, register } from "../api/auth";
 export default function Login({ onLogin }) {
   const [mode, setMode] = useState("login"); // "login" | "register"
   const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +19,7 @@ export default function Login({ onLogin }) {
     setBusy(true);
     try {
       const user = isRegister
-        ? await register(email, password, name)
+        ? await register({ name, surname, email, password })
         : await login(email, password);
       onLogin(user);
     } catch (err) {
@@ -52,15 +53,31 @@ export default function Login({ onLogin }) {
         </p>
 
         {isRegister && (
-          <label className="login-field">
-            <span>Name (optional)</span>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
-            />
-          </label>
+          <div className="login-row">
+            <label className="login-field">
+              <span>Name</span>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="given-name"
+                maxLength={100}
+                required
+              />
+            </label>
+
+            <label className="login-field">
+              <span>Surname</span>
+              <input
+                type="text"
+                value={surname}
+                onChange={(e) => setSurname(e.target.value)}
+                autoComplete="family-name"
+                maxLength={100}
+                required
+              />
+            </label>
+          </div>
         )}
 
         <label className="login-field">
