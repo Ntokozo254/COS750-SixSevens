@@ -1,9 +1,13 @@
 
+import { Menu, ChevronRight, LogOut } from "lucide-react";
 import { Menu, ChevronRight, Home } from "lucide-react";
 
 export default function Navbar({
   page,
   activeModule,
+  onMenuOpen,
+  user,
+  onLogout
   onNavigate,
   onMenuOpen
 }) {
@@ -11,6 +15,15 @@ export default function Navbar({
     page === "Module" && activeModule
       ? activeModule.title
       : page;
+
+  // "John" + "Doe" -> "JD". Falls back to the email's first letter, then "S".
+  const initials =
+    [user?.name, user?.surname]
+      .map((part) => part?.trim().charAt(0) ?? "")
+      .join("")
+      .toUpperCase() ||
+    (user?.email || "S").charAt(0).toUpperCase();
+  const fullName = [user?.name, user?.surname].filter(Boolean).join(" ");
 
   return (
     <header className="topbar">
@@ -32,7 +45,14 @@ export default function Navbar({
           <span>COS212 · DATA STRUCTURES</span>
         </button>
 
-        <div className="avatar">S</div>
+        <div className="avatar" title={fullName || user?.email}>{initials}</div>
+
+        {onLogout && (
+          <button className="logout-button" onClick={onLogout} title="Log out">
+            <LogOut size={15} />
+            <span>Log out</span>
+          </button>
+        )}
       </div>
 
       <button

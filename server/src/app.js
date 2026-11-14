@@ -5,6 +5,7 @@ import cors from 'cors';
 import tableRouter from './routes/table.js';
 import quizRouter from './routes/quiz.js';
 import studentsRouter from './routes/students.js';
+import authRouter from './routes/auth.js';
 
 export function createApp({ db, corsOrigin = '*' } = {}) {
   const app = express();
@@ -15,6 +16,7 @@ export function createApp({ db, corsOrigin = '*' } = {}) {
   app.use('/api/table', tableRouter);
   app.use('/api/quiz', quizRouter(db));
   app.use('/api/students', studentsRouter(db));
+  app.use('/api/auth', authRouter(db));
 
   app.use((req, res) => res.status(404).json({ error: 'not found' }));
   // eslint-disable-next-line no-unused-vars

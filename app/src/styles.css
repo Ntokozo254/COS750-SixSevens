@@ -721,6 +721,28 @@
     padding: 14px 9px;
   }
 }
+
+/* ---------- Login ---------- */
+.login-page { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: linear-gradient(135deg, #f5f7fb 0%, #eaf1ff 100%); }
+.login-card { width: min(400px, 100%); background: #fff; border: 1px solid var(--line); border-radius: 17px; padding: 32px 30px; box-shadow: 0 18px 45px #1c3d7a14; display: grid; gap: 14px; }
+.login-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 8px; }
+.login-brand-name { font: 800 18px Manrope, sans-serif; color: #142b4e; letter-spacing: -.5px; }
+.login-brand-sub { font-size: 9px; font-weight: 800; letter-spacing: .7px; color: #8492a6; }
+.login-card h1 { font: 800 26px Manrope, sans-serif; letter-spacing: -1px; color: #142b4e; margin: 0; }
+.login-subtitle { font-size: 12px; color: #7c8ba1; margin: -8px 0 4px; }
+.login-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 420px) { .login-row { grid-template-columns: 1fr; } }
+.login-field { display: grid; gap: 6px; font-size: 11px; font-weight: 700; color: #42618d; }
+.login-field input { width: 100%; min-width: 0; height: 42px; border: 1px solid #dfe7f3; border-radius: 9px; padding: 0 12px; font-size: 13px; color: #172b4d; background: #fff; outline: 0; transition: .2s; }
+.login-field input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #2563eb22; }
+.login-error { background: #fff1f2; border: 1px solid #fecdd3; color: #be123c; border-radius: 8px; padding: 10px 12px; font-size: 11px; font-weight: 600; }
+.login-submit { justify-content: center; height: 42px; font-size: 12px; margin-top: 4px; }
+.login-submit:disabled { opacity: .6; cursor: default; transform: none; }
+.login-switch { display: flex; justify-content: center; align-items: center; gap: 4px; font-size: 11px; color: #7c8ba1; margin: 2px 0 0; }
+.login-switch .text-button { font-size: 11px; }
+.logout-button { border: 1px solid #dfe7f3; border-radius: 8px; background: #fff; color: #42618d; padding: 7px 10px; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+.logout-button:hover { border-color: #9bb8e9; background: #f8faff; }
+@media (max-width: 640px) { .logout-button span { display: none; } }
 /*l01 additions */
 @media (max-width: 560px) {
   .lesson-card { padding: 14px; }
