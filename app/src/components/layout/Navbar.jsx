@@ -8,22 +8,18 @@ export default function Navbar({
   mobileOpen,
   onMenuOpen,
   displayName = "",
-  user = null,
+  user,
   onLogout
 }) {
   const title =
     page === "Module" && activeModule
       ? activeModule.title
       : page;
-  // "John" + "Doe" -> "JD". Falls back to the email's first letter, then "S".
-  const profileName = displayName.trim() || [user?.name, user?.surname].filter(Boolean).join(" ");
+  // Settings display name first, else "John" + "Doe" -> "JD", else the email's first letter, else "S".
+  const profileName = (displayName ?? "").trim() || [user?.name, user?.surname].filter(Boolean).join(" ");
   const initials =
-    profileName.trim().split(/\s+/).filter(Boolean)
+    profileName.split(/\s+/).filter(Boolean)
       .slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase() ||
-    [user?.name, user?.surname]
-      .map((part) => part?.trim().charAt(0) ?? "")
-      .join("")
-      .toUpperCase() ||
     (user?.email || "S").charAt(0).toUpperCase();
   return (
     <header className="topbar">
