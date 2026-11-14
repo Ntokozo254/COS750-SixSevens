@@ -13,11 +13,11 @@ const CAPACITY = INITIAL.length
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const styles = {
-  idle: "bg-white text-blue-700",
-  checking: "bg-yellow text-blue-900",
-  visited: "bg-white/35 text-blue-100",
-  found: "bg-emerald-400 text-white",
-  deleting: "bg-red-400 text-white",
+  idle: "lesson-visual-slot--occupied",
+  checking: "lesson-visual-slot--current",
+  visited: "lesson-visual-slot--visited",
+  found: "lesson-visual-slot--found",
+  deleting: "lesson-visual-slot--collision",
 }
 const scales = { checking: 1.12, found: 1.12, deleting: 0.92 }
 
@@ -141,12 +141,12 @@ export default function ArraySearchDeleteVisual() {
 
   return (
     // data-no-swipe stops the carousel from swiping when you use these controls
-    <div data-no-swipe className="select-none">
+    <div data-no-swipe className="lesson-visual select-none">
       <div className="relative h-[116px] overflow-x-auto overflow-y-hidden">
         {/* Empty slots (the array's fixed capacity) */}
         <div className="absolute left-1 top-10 flex gap-2">
           {Array.from({ length: CAPACITY }, (_, i) => (
-            <div key={i} className="h-12 w-12 flex-none rounded-lg bg-blue-700/40" />
+            <div key={i} className="lesson-visual-surface h-12 w-12 flex-none rounded-lg" />
           ))}
         </div>
 
@@ -164,16 +164,16 @@ export default function ArraySearchDeleteVisual() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 className="flex flex-col items-center"
               >
-                <span className="whitespace-nowrap rounded-md bg-white px-2.5 py-1 text-xs font-bold text-blue-700 shadow-lg">
+                <span className="lesson-visual-slot lesson-visual-slot--current whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-bold">
                   Delete {TARGET}?
                 </span>
-                <span className="leading-none text-white">▼</span>
+                <span className="lesson-visual-pointer leading-none">▼</span>
               </motion.div>
             </div>
           ) : (
             <>
-              <span className="text-[11px] font-semibold text-blue-100">i = {current ?? 0}</span>
-              <span className="leading-none text-white">▼</span>
+              <span className="lesson-visual-index font-semibold">i = {current ?? 0}</span>
+              <span className="lesson-visual-pointer leading-none">▼</span>
             </>
           )}
         </motion.div>
@@ -194,11 +194,11 @@ export default function ArraySearchDeleteVisual() {
                   <motion.div
                     animate={{ scale: scales[status] ?? 1 }}
                     transition={spring}
-                    className={`flex h-12 w-12 items-center justify-center rounded-lg text-base font-bold shadow-lg shadow-blue-950/40 transition-colors duration-300 ${styles[status]}`}
+                    className={`lesson-visual-slot flex h-12 w-12 items-center justify-center rounded-lg text-base font-bold transition-colors duration-300 ${styles[status]}`}
                   >
                     {item.value}
                   </motion.div>
-                  <span className="text-xs text-blue-100">[{i}]</span>
+                  <span className="lesson-visual-index">[{i}]</span>
                 </motion.div>
               )
             })}
@@ -206,21 +206,18 @@ export default function ArraySearchDeleteVisual() {
         </div>
       </div>
 
-      <p aria-live="polite" className="mt-3 min-h-10 text-sm text-blue-100">
+      <p aria-live="polite" className="lesson-visual-caption mt-3 min-h-10">
         {message}
       </p>
 
       <div className="mt-2 flex flex-wrap gap-2">
-        <Button size="sm" disabled={busy} onClick={() => run("search")}
-          className="bg-white text-blue-700 hover:bg-blue-50 disabled:opacity-50">
+        <Button size="sm" disabled={busy} onClick={() => run("search")}>
           Search for {TARGET}
         </Button>
-        <Button size="sm" disabled={busy} onClick={() => run("delete")}
-          className="bg-red-500 text-white hover:bg-red-600 disabled:opacity-50">
+        <Button size="sm" variant="danger" disabled={busy} onClick={() => run("delete")}>
           Delete {TARGET}
         </Button>
-        <Button size="sm" onClick={reset}
-          className="bg-blue-700 text-white hover:bg-blue-800">
+        <Button size="sm" variant="primary" onClick={reset}>
           Reset
         </Button>
       </div>

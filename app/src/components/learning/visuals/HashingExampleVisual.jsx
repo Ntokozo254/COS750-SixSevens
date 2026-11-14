@@ -26,7 +26,7 @@ function Arrow({ show }) {
     <motion.span
       initial={false}
       animate={{ opacity: show ? 1 : 0 }}
-      className="flex h-9 items-center text-lg text-white/80"
+      className="lesson-visual-pointer flex h-9 items-center text-lg"
     >
       →
     </motion.span>
@@ -42,7 +42,7 @@ function Step({ show, label, children }) {
       className="flex flex-col items-center gap-1"
     >
       {children}
-      <span className="text-[10px] uppercase tracking-wide text-blue-100">{label}</span>
+      <span className="lesson-visual-index text-[10px] uppercase tracking-wide">{label}</span>
     </motion.div>
   )
 }
@@ -52,10 +52,10 @@ function FnBox({ active, children }) {
     <motion.div
       animate={{ scale: active ? 1.1 : 1 }}
       transition={spring}
-      className={`flex h-9 items-center rounded-lg border-2 px-3 font-mono text-xs font-bold transition-colors duration-300 ${
+      className={`lesson-visual-slot flex h-9 items-center rounded-lg px-3 font-mono text-xs font-bold transition-colors duration-300 ${
         active
-          ? "border-white bg-white text-blue-700 shadow-lg shadow-blue-950/40"
-          : "border-white/50 bg-blue-700/50 text-white"
+          ? "lesson-visual-slot--occupied"
+          : ""
       }`}
     >
       {children}
@@ -66,7 +66,7 @@ function FnBox({ active, children }) {
 function Chip({ className, children }) {
   return (
     <div
-      className={`flex h-9 items-center rounded-full px-3 font-mono text-xs font-bold shadow-lg shadow-blue-950/40 ${className}`}
+      className={`lesson-visual-tag flex h-9 items-center rounded-full px-3 font-mono text-xs font-bold ${className}`}
     >
       {children}
     </div>
@@ -94,14 +94,14 @@ const goPrev = () => {
 
   return (
     <div
-      className="select-none"
+      className="lesson-visual select-none"
       role="img"
       aria-label={`${KEY} is hashed to ${HASH_CODE}, then ${HASH_CODE} mod ${SIZE} gives slot ${SLOT}`}
     >
       {/* The pipeline: key -> hash() -> hash code -> % 10 -> index */}
       <div className="flex flex-wrap items-start justify-center gap-x-1.5 gap-y-3">
         <Step show label="key">
-          <Chip className="bg-white text-blue-700">{KEY}</Chip>
+          <Chip className="lesson-visual-slot--occupied">{KEY}</Chip>
         </Step>
         <Arrow show={stage >= 1} />
         <Step show={stage >= 1} label="step 1">
@@ -109,7 +109,7 @@ const goPrev = () => {
         </Step>
         <Arrow show={stage >= 1} />
         <Step show={stage >= 1} label="hash code">
-          <Chip className="bg-yellowtext-blue-900">{HASH_CODE}</Chip>
+          <Chip className="lesson-visual-slot--current">{HASH_CODE}</Chip>
         </Step>
         <Arrow show={stage >= 2} />
         <Step show={stage >= 2} label="step 2">
@@ -117,7 +117,7 @@ const goPrev = () => {
         </Step>
         <Arrow show={stage >= 2} />
         <Step show={stage >= 2} label="index">
-          <Chip className="bg-emerald-400 text-white">{SLOT}</Chip>
+          <Chip className="lesson-visual-slot--found">{SLOT}</Chip>
         </Step>
       </div>
 
@@ -129,8 +129,8 @@ const goPrev = () => {
           return (
             <div key={i} className="flex flex-col items-center gap-1">
               <div
-                className={`relative aspect-square w-full rounded-md transition-all duration-300 ${
-                  lit ? "bg-emerald-400/30 ring-2 ring-emerald-400" : "bg-blue-700/40"
+                className={`lesson-visual-slot relative aspect-square w-full rounded-md transition-all duration-300 ${
+                  lit ? "lesson-visual-slot--found" : ""
                 }`}
               >
                 <AnimatePresence>
@@ -140,7 +140,7 @@ const goPrev = () => {
                       animate={{ y: 0, opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.6 }}
                       transition={spring}
-                      className="absolute inset-0.5 z-10 flex items-center justify-center rounded bg-white text-center text-[9px] font-bold leading-[1.1] text-blue-700 shadow-lg shadow-blue-950/40"
+                      className="lesson-visual-slot lesson-visual-slot--occupied absolute inset-0.5 z-10 flex items-center justify-center rounded text-center text-[9px] font-bold leading-[1.1]"
                     >
                       {first}_<br />
                       {last}
@@ -148,7 +148,7 @@ const goPrev = () => {
                   )}
                 </AnimatePresence>
               </div>
-              <span className={`text-[10px] ${lit ? "font-bold text-white" : "text-blue-100"}`}>
+              <span className={`lesson-visual-index text-[10px] ${lit ? "font-bold" : ""}`}>
                 [{i}]
               </span>
             </div>
@@ -157,7 +157,7 @@ const goPrev = () => {
       </div>
 
       {/* One-line caption that changes with each stage */}
-      <div className="mt-4 min-h-10 text-center text-sm text-blue-100">
+      <div className="lesson-visual-caption mt-4 min-h-10 text-center text-sm">
         <AnimatePresence mode="wait">
           <motion.p
             key={stage}
@@ -172,20 +172,21 @@ const goPrev = () => {
       </div>
       {/* data-no-swipe stops the carousel from swiping when you press these */}
 <div data-no-swipe className="mt-3 flex items-center justify-center gap-2">
-  <Button size="sm" onClick={goPrev} className="bg-blue-700 text-white hover:bg-blue-800">
+  <Button size="sm" onClick={goPrev}>
     Previous
   </Button>
   <Button
     size="sm"
     onClick={() => setPlaying((p) => !p)}
-    className="min-w-20 bg-white text-blue-700 hover:bg-blue-50"
+    variant="primary"
+    className="min-w-20"
   >
     {playing ? "Pause" : "Play"}
   </Button>
-  <Button size="sm" onClick={goNext} className="bg-blue-700 text-white hover:bg-blue-800">
+  <Button size="sm" onClick={goNext}>
     Step
   </Button>
-  <span className="ml-1 text-xs text-blue-100">
+  <span className="lesson-visual-index ml-1 text-xs">
     {stage + 1} / {DURATIONS.length}
   </span>
 </div>

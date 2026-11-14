@@ -63,12 +63,12 @@ export default function ArrayInsertVisual() {
 
   return (
     // data-no-swipe stops the carousel from swiping when you use these controls
-    <div data-no-swipe className="select-none">
+    <div data-no-swipe className="lesson-visual select-none">
       {/* Fixed-capacity array: empty slots in the back, blocks on top */}
       <div className="relative h-[76px] overflow-x-auto overflow-y-hidden">
         <div className="absolute left-0 top-0 flex gap-2">
           {Array.from({ length: MAX }, (_, i) => (
-            <div key={i} className="h-12 w-12 flex-none rounded-lg bg-blue-700/40" />
+            <div key={i} className="lesson-visual-surface h-12 w-12 flex-none rounded-lg" />
           ))}
         </div>
 
@@ -83,37 +83,33 @@ export default function ArrayInsertVisual() {
               className="flex w-12 flex-none flex-col items-center gap-1.5"
             >
               {item.gap ? (
-                <div className="h-12 w-12 rounded-lg border-2 border-dashed border-white/70" />
+                <div className="lesson-visual-gap h-12 w-12 rounded-lg" />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white text-base font-bold text-blue-700 shadow-lg shadow-blue-950/40">
+                <div className="lesson-visual-slot lesson-visual-slot--occupied flex h-12 w-12 items-center justify-center rounded-lg text-base font-bold">
                   {item.value}
                 </div>
               )}
-              <span className="text-xs text-blue-100">[{i}]</span>
+              <span className="lesson-visual-index">[{i}]</span>
             </motion.div>
           ))}
         </div>
       </div>
 
-      <p className="mt-3 min-h-10 text-sm text-blue-100">
+      <p aria-live="polite" className="lesson-visual-caption mt-3 min-h-10">
         {full ? `Array is full (${MAX}/${MAX} slots). Make a new array to keep going.` : message}
       </p>
 
       <div className="mt-2 flex flex-wrap gap-2">
-        <Button size="sm" disabled={busy || full} onClick={() => insertAt(0)}
-          className="bg-white text-blue-700 hover:bg-blue-50 disabled:opacity-50">
+        <Button size="sm" disabled={busy || full} onClick={() => insertAt(0)}>
           Insert at beginning
         </Button>
-        <Button size="sm" disabled={busy || full} onClick={() => insertAt(Math.floor(items.length / 2))}
-          className="bg-white text-blue-700 hover:bg-blue-50 disabled:opacity-50">
+        <Button size="sm" disabled={busy || full} onClick={() => insertAt(Math.floor(items.length / 2))}>
           Insert in middle
         </Button>
-        <Button size="sm" disabled={busy || full} onClick={() => insertAt(items.length)}
-          className="bg-white text-blue-700 hover:bg-blue-50 disabled:opacity-50">
+        <Button size="sm" disabled={busy || full} onClick={() => insertAt(items.length)}>
           Insert at end
         </Button>
-        <Button size="sm" onClick={newArray}
-          className="bg-blue-700 text-white hover:bg-blue-800">
+        <Button size="sm" variant="primary" onClick={newArray}>
           New array
         </Button>
       </div>

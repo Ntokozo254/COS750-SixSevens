@@ -77,50 +77,50 @@ export default function HashFunctionVisual() {
     phase === "done" ? KEYS : phase === "run" ? KEYS.slice(0, stage === 3 ? count + 1 : count) : []
 
   const slotStyle = (i) => {
-    if (i === slot && stage === 2) return "bg-yellow/20 ring-2 ring-yellow"
-    if (i === slot && stage === 3) return "bg-emerald-400/30 ring-2 ring-emerald-400"
-    return "bg-blue-700/40"
+    if (i === slot && stage === 2) return "lesson-visual-slot--current"
+    if (i === slot && stage === 3) return "lesson-visual-slot--found"
+    return ""
   }
 
   return (
-    <div className="select-none">
+    <div className="lesson-visual select-none">
       {/* The rule, with a colour for each part */}
-      <div className="rounded-xl bg-blue-700/40 px-4 py-3 text-center">
-        <p className="font-mono text-lg font-bold text-white">
-          h(<span className="text-yellow">k</span>) = <span className="text-yellow">k</span> mod{" "}
-          <span className="text-blue-200">N</span>
+      <div className="lesson-visual-rule rounded-xl px-4 py-3 text-center">
+        <p className="lesson-visual-formula font-mono text-lg font-bold">
+          h(<span className="text-[#98651d]">k</span>) = <span className="text-[#98651d]">k</span> mod{" "}
+          <span className="text-[#2563eb]">N</span>
         </p>
-        <p className="mt-1 text-xs text-blue-100">
-          <span className="text-yellow">k</span> is the key,{" "}
-          <span className="text-blue-200">N</span> is the table size ({N})
+        <p className="lesson-visual-caption mt-1 text-xs">
+          <span className="text-[#98651d]">k</span> is the key,{" "}
+          <span className="text-[#2563eb]">N</span> is the table size ({N})
         </p>
       </div>
 
       {/* The worked example builds up one piece at a time */}
-      <div className="mt-4 flex min-h-12 flex-wrap items-center justify-center gap-x-2 font-mono text-lg font-bold text-white">
+      <div className="lesson-visual-formula mt-4 flex min-h-12 flex-wrap items-center justify-center gap-x-2 font-mono text-lg font-bold">
         {current !== null ? (
           <>
             <motion.span key={count} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-              h(<span className="text-yellow">{current}</span>)
+              h(<span className="text-[#98651d]">{current}</span>)
             </motion.span>
             {stage >= 1 && (
               <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-                = <span className="text-yellow">{current}</span> mod{" "}
-                <span className="text-blue-200">{N}</span>
+                = <span className="text-[#98651d]">{current}</span> mod{" "}
+                <span className="text-[#2563eb]">{N}</span>
               </motion.span>
             )}
             {stage >= 2 && (
               <motion.span
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-emerald-300"
+                className="text-[#21674e]"
               >
                 = {slot}
               </motion.span>
             )}
           </>
         ) : (
-          <span className="text-sm font-normal text-blue-200">
+          <span className="lesson-visual-caption text-sm font-normal">
             {phase === "done" ? "h(k) = k mod N" : "h(k) = ?"}
           </span>
         )}
@@ -133,20 +133,20 @@ export default function HashFunctionVisual() {
           return (
             <div key={i} className="flex flex-col items-center gap-1">
               <div
-                className={`relative aspect-square w-full rounded-md transition-all duration-300 ${slotStyle(i)}`}
+                className={`lesson-visual-slot relative aspect-square w-full rounded-md transition-all duration-300 ${slotStyle(i)}`}
               >
                 {key !== undefined && (
                   <motion.div
                     initial={{ y: -70, opacity: 0, scale: 0.7 }}
                     animate={{ y: 0, opacity: 1, scale: 1 }}
                     transition={spring}
-                    className="absolute inset-0.5 z-10 flex items-center justify-center rounded bg-white text-sm font-bold text-blue-700 shadow-lg shadow-blue-950/40"
+                    className="lesson-visual-slot lesson-visual-slot--occupied absolute inset-0.5 z-10 flex items-center justify-center rounded text-sm font-bold"
                   >
                     {key}
                   </motion.div>
                 )}
               </div>
-              <span className={`text-[10px] ${i === slot ? "font-bold text-white" : "text-blue-100"}`}>
+              <span className={`lesson-visual-index text-[10px] ${i === slot ? "font-bold" : ""}`}>
                 [{i}]
               </span>
             </div>
@@ -154,7 +154,7 @@ export default function HashFunctionVisual() {
         })}
       </div>
 
-      <p aria-live="polite" className="mt-3 min-h-10 text-center text-sm text-blue-100">
+      <p aria-live="polite" className="lesson-visual-caption mt-3 min-h-10 text-center text-sm">
         {message}
       </p>
 
@@ -164,7 +164,8 @@ export default function HashFunctionVisual() {
           size="sm"
           disabled={busy}
           onClick={play}
-          className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
+          variant="primary"
+          className="min-w-28"
         >
           {phase === "idle" ? "Play" : busy ? "Playing..." : "Replay"}
         </Button>
