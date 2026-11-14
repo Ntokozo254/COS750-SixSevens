@@ -6,21 +6,20 @@ export default function Navbar({
   activeModule,
   onNavigate,
   mobileOpen,
-  onMenuOpen
+  onMenuOpen,
+  displayName = "",
+  user,
+  onLogout
 }) {
   const title =
     page === "Module" && activeModule
       ? activeModule.title
       : page;
-  // "John" + "Doe" -> "JD". Falls back to the email's first letter, then "S".
-  const profileName = displayName.trim() || [user?.name, user?.surname].filter(Boolean).join(" ");
+  // Settings display name first, else "John" + "Doe" -> "JD", else the email's first letter, else "S".
+  const profileName = (displayName ?? "").trim() || [user?.name, user?.surname].filter(Boolean).join(" ");
   const initials =
-    profileName.trim().split(/\s+/).filter(Boolean)
+    profileName.split(/\s+/).filter(Boolean)
       .slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase() ||
-    [user?.name, user?.surname]
-      .map((part) => part?.trim().charAt(0) ?? "")
-      .join("")
-      .toUpperCase() ||
     (user?.email || "S").charAt(0).toUpperCase();
   return (
     <header className="topbar">
@@ -42,7 +41,14 @@ export default function Navbar({
       </button>
 
       <div className="topbar-right">
-        <div className="avatar">S</div>
+        <div className="avatar" title={profileName || user?.email}>{initials}</div>
+
+        {onLogout && (
+          <button type="button" className="logout-button" onClick={onLogout} title="Log out">
+            <LogOut size={15} aria-hidden="true" />
+            <span>Log out</span>
+          </button>
+        )}
 
         <button
           type="button"
