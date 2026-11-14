@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -8,8 +9,11 @@ import {
   BookOpen
 } from "lucide-react";
 //l02 additions
-import LessonCarousel from "@/components/learning/LessonCarousel";
-import { lessonCards } from "@/data/LessonCards";
+import LessonCarousel from "../components/learning/LessonCarousel";
+import LessonOutline from "../components/learning/LessonOutline";
+import { lessonCards } from "../data/LessonCards";
+
+
 
 export default function ModuleDetail({
   module,
@@ -22,6 +26,7 @@ export default function ModuleDetail({
 
   //l01
   const cards = lessonCards[module.id] ;
+  const [cardIndex , setCardIndex] = useState(0);
 
   return (
     <div className="content-wrap">
@@ -74,7 +79,7 @@ export default function ModuleDetail({
           </p>
 
           {cards ? (
-            <LessonCarousel cards={cards} />
+            <LessonCarousel cards={cards} index={cardIndex} onIndexChange={setCardIndex} />
           ) : (
             <div className="learning-placeholder">
               <div className="placeholder-symbol">
@@ -122,6 +127,7 @@ export default function ModuleDetail({
         </section>
 
         <aside className="lesson-aside">
+          {cards && <LessonOutline cards={cards} index={cardIndex} onSelect={setCardIndex} />}
           <div className="side-card">
             <div className="side-card-heading">
               <span className="mini-icon">

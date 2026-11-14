@@ -5,6 +5,7 @@
 
 @theme {
   --font-heading: "Manrope", sans-serif;
+    --color-ink: #172b4d;
 }
 
 /* No reset means browsers add default margins. Zero them inside lessons only. */
