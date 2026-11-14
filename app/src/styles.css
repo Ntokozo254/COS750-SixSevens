@@ -153,6 +153,30 @@
 }
 
 /* Navbar */
+.course-home {
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  transition: background 0.2s, color 0.2s;
+}
+
+.course-home svg {
+  flex-shrink: 0;
+}
+
+.course-home:hover {
+  background: #edf3ff;
+  color: var(--blue);
+}
+
+.course-home:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
 .topbar-left {
   display: flex;
   align-items: center;
@@ -164,6 +188,25 @@
   font-weight: 800;
   color: #75839a;
   text-transform: uppercase;
+}
+
+/* Learning module search */
+.search-box {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box svg {
+  flex-shrink: 0;
+}
+
+.search-box input {
+  width: 100%;
+  height: 100%;
+}
+
+.search-box:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px #2563eb20;
 }
 
 /* =========================================
@@ -449,6 +492,20 @@
 }
 
 @media (max-width: 560px) {
+  .course-home {
+    display: flex;
+    min-width: 36px;
+    justify-content: center;
+  }
+
+  .course-home span {
+    display: none;
+  }
+
+  .topbar-right {
+    gap: 10px;
+  }
+
   .module-card {
     align-items: flex-start;
   }

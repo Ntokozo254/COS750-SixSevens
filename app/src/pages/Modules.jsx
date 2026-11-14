@@ -20,15 +20,18 @@ export default function Modules({
         </p>
       </div>
 
-      <div className="module-search">
-        <Search size={19} />
+      <div className="module-toolbar">
+        <label className="search-box">
+          <Search size={19} aria-hidden="true" />
 
-        <input
-          type="text"
-          placeholder="Search learning modules..."
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
+          <input
+            type="search"
+            aria-label="Search learning modules"
+            placeholder="Search learning modules..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+        </label>
       </div>
 
       <div className="module-list">
