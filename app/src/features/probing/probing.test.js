@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { SEARCH_EXAMPLES } from '../search/searchExamples.js'
-import { buildInsertTrace, placeKey, PRACTICE, TRACE_EXAMPLES } from './probingLogic.js'
+import { buildInsertTrace, CODE_LINES, placeKey, PRACTICE, TRACE_EXAMPLES } from './probingLogic.js'
 import { markProbingAttempt, PROBING_CONCEPTS, PROBING_QUESTION_SETS } from './probingQuestions.js'
 
 const tableFrom = (size, entries) => {
@@ -37,12 +37,33 @@ test('a full table produces a full frame and leaves the table unchanged', () => 
 })
 
 test('every frame highlights a real pseudocode line or none', () => {
-  const lines = new Set(['hash', 'empty', 'store', 'next', 'full', null])
+  const lines = new Set([...CODE_LINES.map((line) => line.id), null])
   for (const example of TRACE_EXAMPLES) {
     for (const frame of buildInsertTrace(example.keys, example.size)) {
       assert.ok(lines.has(frame.line), `${example.id}: unexpected line ${frame.line}`)
     }
   }
+})
+
+test('a duplicate request preserves the entry and does not report full', () => {
+  for (const [keys, size] of [[[12, 22, 12], 10], [[0, 1, 0], 2]]) {
+    const frames = buildInsertTrace(keys, size)
+    const duplicate = frames.find((frame) => frame.phase === 'duplicate')
+    assert.ok(duplicate)
+    assert.equal(duplicate.key, keys[0])
+    assert.equal(duplicate.line, 'duplicate')
+    assert.equal(duplicate.checks, 1)
+    assert.equal(frames.some((frame) => frame.phase === 'full'), false)
+    assert.equal(frames.at(-1).table.filter((value) => value !== null).length, 2)
+  }
+})
+
+test('an empty slot on the final inspection still permits insertion', () => {
+  const frames = buildInsertTrace([0, 3, 6], 3)
+  const finalInsert = frames.find((frame) => frame.phase === 'insert' && frame.key === 6)
+  assert.equal(finalInsert.checks, 3)
+  assert.equal(finalInsert.slot, 2)
+  assert.equal(frames.some((frame) => frame.phase === 'full'), false)
 })
 
 test('placeKey reports the probe path and does not change the table it is given', () => {

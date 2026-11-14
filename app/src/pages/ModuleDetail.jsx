@@ -16,6 +16,9 @@ import { lessonCards } from "../data/LessonCards";
 
 import SearchLesson from "../features/search/SearchLesson";
 import ProbingLesson from "../features/probing/ProbingLesson";
+import HashFunctionsLesson from "../features/hash-functions/HashFunctionsLesson";
+import CollisionsLesson from "../features/collisions/CollisionsLesson";
+import LoadFactorLesson from "../features/load-factor/LoadFactorLesson";
 
 export default function ModuleDetail({
   module,
@@ -64,11 +67,29 @@ export default function ModuleDetail({
         </div>
       </section>
 
-      {module.id === 4 ? (
-        <ProbingLesson
-          objective={module.objective}
+      {module.id === 2 ? (
+        <HashFunctionsLesson
+          preferences={preferences}
           completed={isCompleted}
-          onComplete={() => onComplete(module.id)}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 3 ? (
+        <CollisionsLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 6 ? (
+        <LoadFactorLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 4 ? (
+        <ProbingLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
         />
       ) : module.id === 5 ? (
         <SearchLesson

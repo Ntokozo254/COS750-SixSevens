@@ -105,7 +105,21 @@ Each step has a `type` and a `text` caption; most also have `slot`.
 | deleted | slot marked as a tombstone |
 
 ## Sign-in
-Sign-in is by student number only, which is fine for the prototype. Whoever
-builds the login page should store the returned `id` (e.g. in localStorage) and
-send it with progress and quiz requests. Real passwords or tokens are not
-implemented.
+
+The current frontend uses email/password accounts:
+
+| Method | Path | Body |
+| --- | --- | --- |
+| POST | `/api/auth/register` | `{ name, surname, email, password }` |
+| POST | `/api/auth/login` | `{ email, password }` |
+
+Registration requires a name, surname, valid email, and password of at least eight
+characters. It returns status 201; login returns status 200. Both return the public
+profile `{ id, email, name, surname, studentNumber }`. Passwords are stored as salted
+scrypt hashes and are not returned. Invalid credentials return status 401.
+
+The frontend saves the returned profile locally. The prototype does not issue a
+session token or cookie. The separate `/api/students/signin` student-number route
+remains available. Progress/quiz API requests can use the returned student `id`;
+the current lesson completion and settings interfaces save their state in the
+browser's local storage.

@@ -1,7 +1,7 @@
 import { useId, useMemo, useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import ProbeTable from './ProbeTable'
-import { Callout, InkButton, KeyQueue, Stage } from './ProbingUi'
+import { Callout, KeyQueue, Stage } from './ProbingUi'
 import { placeKey, PRACTICE } from './probingLogic'
 
 const { size, keys } = PRACTICE
@@ -14,8 +14,8 @@ function hintFor({ attempts, slot, table, key, placement }) {
     if (slot === home && table[slot] !== null)
       return `Slot ${slot} is the home slot for ${key}, but it already holds ${table[slot]}. That is a collision. Where does linear probing look next?`
     if (table[slot] !== null)
-      return `Slot ${slot} already holds ${table[slot]}, and a slot holds one key. Start from the home slot: ${key} mod ${size} = ${home}.`
-    return `Not slot ${slot}. Start from the home slot: ${key} mod ${size} = ${home}.`
+      return `Slot ${slot} already holds ${table[slot]}, and a slot holds one key. Begin with ${key} mod ${size} = ${home}, then follow consecutive slots.`
+    return `Begin with the home-slot calculation. ${key} mod ${size} = ${home}. Then inspect consecutive slots until the first empty position.`
   }
   const taken = path.slice(0, -1)
   if (taken.length === 0)
@@ -28,14 +28,13 @@ function hintFor({ attempts, slot, table, key, placement }) {
   }. Which empty slot do you reach first?`
 }
 
-export default function ProbingPractice({ onContinue }) {
+export default function ProbingPractice({ preferences = {} }) {
   const titleId = useId()
   const [table, setTable] = useState(emptyTable)
   const [keyIndex, setKeyIndex] = useState(0)
   const [attempts, setAttempts] = useState(0)
   const [wrongSlot, setWrongSlot] = useState(null)
   const [status, setStatus] = useState('placing') // placing | placed | revealed | finished
-  const [firstTry, setFirstTry] = useState(0)
   const [feedback, setFeedback] = useState(null)
   const [shown, setShown] = useState(null) // the placement to draw after a key is stored
 
@@ -50,7 +49,6 @@ export default function ProbingPractice({ onContinue }) {
       setTable(placement.table)
       setStatus('placed')
       setWrongSlot(null)
-      if (attempts === 0) setFirstTry((count) => count + 1)
       setFeedback({
         tone: 'good',
         text: moved
@@ -70,7 +68,7 @@ export default function ProbingPractice({ onContinue }) {
       setWrongSlot(null)
       setFeedback({
         tone: 'warn',
-        text: `Here is the answer: ${key} follows ${placement.path.join(' → ')} and is stored in slot ${placement.slot}. The dashed slots show the path.`,
+        text: `Worked placement. Key ${key} follows ${placement.path.join(' → ')} and is stored in slot ${placement.slot}. The highlighted slots show the path. Follow each move before continuing with the next key.`,
       })
       return
     }
@@ -96,7 +94,6 @@ export default function ProbingPractice({ onContinue }) {
     setAttempts(0)
     setWrongSlot(null)
     setStatus('placing')
-    setFirstTry(0)
     setFeedback(null)
     setShown(null)
   }
@@ -113,60 +110,63 @@ export default function ProbingPractice({ onContinue }) {
   const finished = status === 'finished'
 
   return (
-    <Stage eyebrow="Step 3 of 4 · Your turn" title="Place each key yourself." titleId={titleId}>
-      <p className="text-sm leading-relaxed text-blue-100">
-        The table has {size} slots and uses <strong className="text-white">key mod {size}</strong>. For each key, click
-        the slot where linear probing stores it. A wrong click gives you a hint, and after three tries the answer is
-        shown.
-      </p>
-
-      <KeyQueue keys={keys} currentIndex={finished ? keys.length : keyIndex} label="To place" />
-
-      {!finished && (
-        <p className="text-base font-bold text-white" aria-live="polite">
-          Where does <span className="rounded bg-yellow px-1.5 text-blue-900">{key}</span> go?
+    <Stage eyebrow="GUIDED PRACTICE" title="Place each key yourself." titleId={titleId}>
+      <div className="hash-probing-practice">
+        <p className="hash-probing-practice-intro">
+          The table has {size} slots and uses <strong>key mod {size}</strong>. For each key,
+          choose the slot where linear probing stores it. Hints become more specific when you
+          need support, followed by a worked placement you can inspect.
         </p>
-      )}
 
-      <ProbeTable
-        table={table}
-        marks={marks}
-        onSelect={choose}
-        disabled={status !== 'placing'}
-        selectLabel={`Place ${key} in slot`}
-        layoutGroup="practice"
-        lane={false}
-      />
+        <KeyQueue keys={keys} currentIndex={finished ? keys.length : keyIndex} label="Insertion order" />
 
-      <div aria-live="polite">
-        {feedback && <Callout tone={feedback.tone}>{feedback.text}</Callout>}
-      </div>
-
-      {finished ? (
-        <Callout tone="good" title={`You placed ${firstTry} of ${keys.length} keys on your first try.`}>
-          {firstTry === keys.length
-            ? 'Every placement was right first time, including the wrap-around. You are ready for the knowledge check.'
-            : 'Look back at the keys that needed a hint. Each one followed the same rule: start at key mod m and move one slot at a time.'}
-        </Callout>
-      ) : null}
-
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <InkButton variant="ghost" onClick={restart}>
-          <RotateCcw size={14} /> Start again
-        </InkButton>
-        {status === 'placed' || status === 'revealed' ? (
-          <InkButton variant="go" onClick={nextKey}>
-            {keyIndex === keys.length - 1 ? 'See my result' : 'Next key →'}
-          </InkButton>
-        ) : finished ? (
-          <InkButton variant="go" onClick={onContinue}>
-            Go to the knowledge check →
-          </InkButton>
-        ) : (
-          <span className="text-[11px] text-blue-200">
-            Key {keyIndex + 1} of {keys.length} · Attempt {attempts + 1} of 3
-          </span>
+        {!finished && (
+          <p className="hash-probing-practice-question" aria-live="polite">
+            {status === 'placing' ? (
+              <>Where should <strong className="hash-probing-practice-key">{key}</strong> be stored?</>
+            ) : (
+              <>Key <strong className="hash-probing-practice-key">{key}</strong> is stored in slot {shown.slot}.</>
+            )}
+          </p>
         )}
+
+        <ProbeTable
+          table={table}
+          marks={marks}
+          onSelect={choose}
+          disabled={status !== 'placing'}
+          selectLabel={`Place ${key} in slot`}
+          layoutGroup="practice"
+          lane={false}
+          reduceMotion={preferences.reduceMotion}
+        />
+
+        <div className="hash-probing-feedback" role="status" aria-live="polite" aria-atomic="true">
+          {feedback && <Callout tone={feedback.tone}>{feedback.text}</Callout>}
+        </div>
+
+        {finished && (
+          <div className="hash-probing-practice-complete" role="status">
+            <Callout tone="good" title="Practice sequence complete.">
+              All {keys.length} keys are stored. Each placement followed the same rule. Begin at
+              key mod m, preserve occupied entries, and move one slot at a time. Revisit the
+              placements that needed hints, then use the knowledge check when you are ready.
+            </Callout>
+          </div>
+        )}
+
+        <div className="hash-probing-actions">
+          <button type="button" className="secondary-button" onClick={restart}>
+            <RotateCcw size={14} aria-hidden="true" /> Start again
+          </button>
+          {status === 'placed' || status === 'revealed' ? (
+            <button type="button" className="primary-button" onClick={nextKey}>
+              {keyIndex === keys.length - 1 ? 'Review practice' : 'Next key →'}
+            </button>
+          ) : !finished && (
+            <span className="hash-probing-practice-progress">Key {keyIndex + 1} of {keys.length}</span>
+          )}
+        </div>
       </div>
     </Stage>
   )

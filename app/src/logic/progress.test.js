@@ -27,25 +27,25 @@ test('migrates legacy arrays while removing unverified module5 and preserving ot
   })
   assert.deepEqual(
     sanitizeProgress([1, 1, 2, 5, 6, 99, '3', 2.5], new Set(allowedIds)).completed,
-    [1, 2, 6],
+    [1],
   )
 })
 
 test('restores module5 only when its completion flag and a passing current receipt both exist', () => {
   const receipt = evidence()
-  const saved = { version: 2, completed: [1, 5, 6], searchAssessment: receipt }
+  const saved = { version: 2, completed: [1, 5], searchAssessment: receipt }
   assert.deepEqual(sanitizeProgress(saved, allowedIds), saved)
   assert.deepEqual(sanitizeProgress({ ...saved, searchAssessment: null }, allowedIds), {
     version: 2,
-    completed: [1, 6],
+    completed: [1],
     searchAssessment: null,
   })
-  assert.deepEqual(sanitizeProgress({ ...saved, completed: [1, 6] }, allowedIds), {
+  assert.deepEqual(sanitizeProgress({ ...saved, completed: [1] }, allowedIds), {
     version: 2,
-    completed: [1, 6],
+    completed: [1],
     searchAssessment: null,
   })
-  assert.deepEqual(sanitizeProgress(saved, [1, 6]).completed, [1, 6])
+  assert.deepEqual(sanitizeProgress(saved, [1]).completed, [1])
 })
 
 test('invalid or stale receipt metadata drops module5 and retains other completed IDs', () => {
@@ -68,10 +68,10 @@ test('invalid or stale receipt metadata drops module5 and retains other complete
   ]
   for (const searchAssessment of invalid) {
     assert.deepEqual(
-      sanitizeProgress({ version: 2, completed: [2, 5, 3], searchAssessment }, allowedIds),
+      sanitizeProgress({ version: 2, completed: [1, 5], searchAssessment }, allowedIds),
       {
         version: 2,
-        completed: [2, 3],
+        completed: [1],
         searchAssessment: null,
       },
     )
@@ -124,13 +124,13 @@ test('falls back to migrated legacy progress when v2 is missing or malformed', (
   ]) {
     const storage = storageWith({
       [PROGRESS_STORAGE_KEY]: current,
-      [LEGACY_PROGRESS_STORAGE_KEY]: JSON.stringify([1, 5, 6]),
+      [LEGACY_PROGRESS_STORAGE_KEY]: JSON.stringify([1, 5]),
     })
     assert.deepEqual(
       readProgress(allowedIds, () => storage),
       {
         version: 2,
-        completed: [1, 6],
+        completed: [1],
         searchAssessment: null,
       },
     )

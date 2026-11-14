@@ -70,7 +70,7 @@ export const PROBING_QUESTION_SETS = [
     {
       id: 'lo4-full-a',
       concept: 'full',
-      question: 'A 5-slot table already holds 5 keys. What happens when you insert a sixth key?',
+      question: 'A 5-slot table already holds 5 distinct keys. What happens when you insert a sixth distinct key?',
       options: [
         'It overwrites the key in its home slot',
         'It checks all 5 slots, finds none empty, and cannot be stored until the table is resized',
@@ -121,7 +121,7 @@ export const PROBING_QUESTION_SETS = [
     {
       id: 'lo4-full-b',
       concept: 'full',
-      question: 'Why does linear probing stop after checking m slots in a table of m slots?',
+      question: 'A new distinct key has checked all m slots and every one is occupied. Why does linear probing stop?',
       options: [
         'Because the hash function changes after m checks',
         'Because every slot has now been tried, so the table is full',
@@ -129,7 +129,7 @@ export const PROBING_QUESTION_SETS = [
         'Because m is always an even number',
       ],
       correctAnswer: 1,
-      explanation: 'The probe visits each slot once. After m checks there is nowhere left to try, so the insert fails until the table is resized.',
+      explanation: 'The probe has visited each slot once without finding a free position. It reports full after m checks. An empty slot found on the mth check would still allow insertion.',
     },
   ],
 ]
