@@ -5,12 +5,15 @@ export default function Navbar({
   page,
   activeModule,
   onNavigate,
+  displayName = "",
   onMenuOpen
 }) {
   const title =
     page === "Module" && activeModule
       ? activeModule.title
       : page;
+  const initials = displayName.trim().split(/\s+/).filter(Boolean)
+    .slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase() || "S";
 
   return (
     <header className="topbar">
@@ -32,7 +35,15 @@ export default function Navbar({
           <span>COS212 · DATA STRUCTURES</span>
         </button>
 
-        <div className="avatar">S</div>
+        <button
+          type="button"
+          className="avatar"
+          onClick={() => onNavigate("Settings")}
+          aria-label={displayName ? `Open profile settings for ${displayName}` : "Open profile settings"}
+          title="Profile settings"
+        >
+          {initials}
+        </button>
       </div>
 
       <button
