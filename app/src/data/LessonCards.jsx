@@ -8,6 +8,9 @@ import ChainingPointersVisual from "../components/learning/visuals/ChainingPoint
 import TerminologyVisual from "../components/learning/visuals/TerminologyVisual"
 import TimeComplexityVisual from "../components/learning/visuals/TimeComplexityVisual"
 import HashFunctionVisual from "../components/learning/visuals/HashFunctionVisual"
+import HashCalculatorVisual from "../components/learning/visuals/HashCalculatorVisual"
+import GoodHashVisual from "../components/learning/visuals/GoodHashVisual"
+import HashQuizVisual from "../components/learning/visuals/HashQuizVisual"
 
 // ...one import per visual
 
@@ -85,5 +88,35 @@ Visual: HashFunctionVisual,
         
             Visual: TimeComplexityVisual,
           },
+  ],
+  2: [
+    {
+      id: 1,
+      title: "The rule: key mod m",
+      description:
+        "A hash function turns a key into a slot number. The simplest one is h(k) = k mod m: divide the key by the table size m and keep the remainder. The remainder is always between 0 and m − 1, so it is always a valid slot. Press Play to watch three keys being hashed.",
+      Visual: HashFunctionVisual,
+    },
+    {
+      id: 2,
+      title: "Try it yourself",
+      description:
+        "Before you type, predict where the key will land. Then check. Change the table size and see how the same key moves to a different slot.",
+      Visual: HashCalculatorVisual,
+    },
+    {
+      id: 3,
+      title: "What makes a good hash function?",
+      description:
+        "A good hash function is deterministic (the same key always gives the same slot), fast to compute, and spreads keys evenly across the table. The table size matters: if keys share a pattern, a size like 10 can send them all to the same slot. A prime size is a common fix. Switch between m = 10 and m = 7.",
+      Visual: GoodHashVisual,
+    },
+    {
+      id: 4,
+      title: "Quick check",
+      description:
+        "Four short questions. Every answer explains why, so a wrong answer is still useful. Get 3 out of 4 and you're ready for Module 3: collisions.",
+      Visual: HashQuizVisual,
+    },
   ],
 }

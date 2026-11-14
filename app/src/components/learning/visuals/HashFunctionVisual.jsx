@@ -1,80 +1,91 @@
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "motion/react"
-import Button from "./Button"
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react"
+import { InkButton } from "../../../features/probing/ProbingUi"
 
 const N = 10 // table size
 const KEYS = [47, 83, 21] // they land in slots 7, 3 and 1
 
-const spring = { type: "spring", stiffness: 260, damping: 24 }
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const SPEEDS = [
+  { id: "slow", label: "Slow", ms: 1800 },
+  { id: "normal", label: "Normal", ms: 1100 },
+  { id: "fast", label: "Fast", ms: 600 },
+]
 
-const IDLE = `Press Play to hash three keys into a table of ${N} slots.`
-const DONE = "Each key went straight to its slot. The same rule always gives the same answer."
+const spring = { type: "spring", stiffness: 260, damping: 24 }
+
+// Every step of the animation as data, so it can be played, paused or stepped.
+// stage: 0 key, 1 plug in, 2 result, 3 placed
+function buildFrames() {
+  const frames = [{ count: 0, stage: -1, phase: "idle", message: `Press Play to hash three keys into a table of ${N} slots.` }]
+  KEYS.forEach((k, i) => {
+    const slot = k % N
+    const messages = [
+      `Take the key ${k}.`,
+      `Plug it into the rule: h(${k}) = ${k} mod ${N}.`,
+      `${k} divided by ${N} leaves a remainder of ${slot}, so the slot is ${slot}.`,
+      `${k} goes into slot ${slot}.`,
+    ]
+    messages.forEach((message, stage) => frames.push({ count: i, stage, phase: "run", message }))
+  })
+  frames.push({
+    count: KEYS.length,
+    stage: -1,
+    phase: "done",
+    message: "Each key went straight to its slot. The same rule always gives the same answer.",
+  })
+  return frames
+}
+
+const FRAMES = buildFrames()
+const LAST = FRAMES.length - 1
 
 export default function HashFunctionVisual() {
-  const [count, setCount] = useState(0) // keys fully placed before the current one
-  const [stage, setStage] = useState(0) // 0 key, 1 plug in, 2 result, 3 placed
-  const [phase, setPhase] = useState("idle") // idle | run | done
-  const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState(IDLE)
+  const [frameIndex, setFrameIndex] = useState(0)
+  const [playing, setPlaying] = useState(false)
+  const [speed, setSpeed] = useState("normal")
 
-  // Each play gets an id. If it changes (or on unmount), the old run stops.
-  const runRef = useRef(0)
-  useEffect(() => () => { runRef.current = -1 }, [])
+  const { count, stage, phase, message } = FRAMES[frameIndex]
+  const atEnd = frameIndex === LAST
+  const delay = SPEEDS.find((item) => item.id === speed).ms
 
-  const play = async () => {
-    if (busy) return
-    const id = ++runRef.current
-    const stale = () => runRef.current !== id
+  // Auto-advance while playing. The state update happens in the timer, not in the effect body.
+  useEffect(() => {
+    if (!playing) return undefined
+    const timer = setTimeout(() => {
+      const next = Math.min(frameIndex + 1, LAST)
+      setFrameIndex(next)
+      if (next === LAST) setPlaying(false)
+    }, delay)
+    return () => clearTimeout(timer)
+  }, [playing, frameIndex, delay])
 
-    setBusy(true)
-    if (phase !== "idle") {
-      // Replay: clear the previous run first
-      setCount(0)
-      setStage(0)
-      setPhase("idle")
-      setMessage(IDLE)
-      await sleep(450)
-      if (stale()) return
+  function step(delta) {
+    setPlaying(false)
+    setFrameIndex((i) => Math.max(0, Math.min(LAST, i + delta)))
+  }
+
+  function togglePlay() {
+    if (atEnd) setFrameIndex(0)
+    setPlaying((value) => !value)
+  }
+
+  function restart() {
+    setPlaying(false)
+    setFrameIndex(0)
+  }
+
+  function onKeyDown(event) {
+    if (event.target.closest("button")) return
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+      event.stopPropagation() // keep the lesson carousel from also changing card
+      step(event.key === "ArrowRight" ? 1 : -1)
     }
-
-    setPhase("run")
-    for (let i = 0; i < KEYS.length; i++) {
-      const k = KEYS[i]
-      const slot = k % N
-
-      setCount(i)
-      setStage(0)
-      setMessage(`Take the key ${k}.`)
-      await sleep(800)
-      if (stale()) return
-
-      setStage(1)
-      setMessage(`Plug it into the rule: h(${k}) = ${k} mod ${N}.`)
-      await sleep(1000)
-      if (stale()) return
-
-      setStage(2)
-      setMessage(`${k} divided by ${N} leaves a remainder of ${slot}, so the slot is ${slot}.`)
-      await sleep(1000)
-      if (stale()) return
-
-      setStage(3)
-      setMessage(`${k} goes into slot ${slot}.`)
-      await sleep(900)
-      if (stale()) return
-    }
-
-    setCount(KEYS.length)
-    setPhase("done")
-    setMessage(DONE)
-    setBusy(false)
   }
 
   const current = phase === "run" ? KEYS[count] : null
   const slot = current === null ? -1 : current % N
-  const placed =
-    phase === "done" ? KEYS : phase === "run" ? KEYS.slice(0, stage === 3 ? count + 1 : count) : []
+  const placed = phase === "done" ? KEYS : KEYS.slice(0, stage === 3 ? count + 1 : count)
 
   const slotStyle = (i) => {
     if (i === slot && stage === 2) return "bg-yellow/20 ring-2 ring-yellow"
@@ -83,7 +94,13 @@ export default function HashFunctionVisual() {
   }
 
   return (
-    <div className="select-none">
+    <div
+      data-no-swipe
+      className="select-none rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-yellow"
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      aria-label="Hash function animation. Use the left and right arrow keys to step."
+    >
       {/* The rule, with a colour for each part */}
       <div className="rounded-xl bg-blue-700/40 px-4 py-3 text-center">
         <p className="font-mono text-lg font-bold text-white">
@@ -110,11 +127,7 @@ export default function HashFunctionVisual() {
               </motion.span>
             )}
             {stage >= 2 && (
-              <motion.span
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-emerald-300"
-              >
+              <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-emerald-300">
                 = {slot}
               </motion.span>
             )}
@@ -132,9 +145,7 @@ export default function HashFunctionVisual() {
           const key = placed.find((k) => k % N === i)
           return (
             <div key={i} className="flex flex-col items-center gap-1">
-              <div
-                className={`relative aspect-square w-full rounded-md transition-all duration-300 ${slotStyle(i)}`}
-              >
+              <div className={`relative aspect-square w-full rounded-md transition-all duration-300 ${slotStyle(i)}`}>
                 {key !== undefined && (
                   <motion.div
                     initial={{ y: -70, opacity: 0, scale: 0.7 }}
@@ -146,9 +157,7 @@ export default function HashFunctionVisual() {
                   </motion.div>
                 )}
               </div>
-              <span className={`text-[10px] ${i === slot ? "font-bold text-white" : "text-blue-100"}`}>
-                [{i}]
-              </span>
+              <span className={`text-[10px] ${i === slot ? "font-bold text-white" : "text-blue-100"}`}>[{i}]</span>
             </div>
           )
         })}
@@ -158,16 +167,48 @@ export default function HashFunctionVisual() {
         {message}
       </p>
 
-      {/* data-no-swipe stops the carousel from swiping when you press the button */}
-      <div data-no-swipe className="mt-2 flex justify-center">
-        <Button
-          size="sm"
-          disabled={busy}
-          onClick={play}
-          className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
-        >
-          {phase === "idle" ? "Play" : busy ? "Playing..." : "Replay"}
-        </Button>
+      <div className="mt-1 flex items-center gap-2 text-[11px] text-blue-100">
+        <span className="whitespace-nowrap">
+          Step {frameIndex + 1} of {FRAMES.length}
+        </span>
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+          <span
+            className="block h-full rounded-full bg-emerald-400 transition-all duration-300"
+            style={{ width: `${((frameIndex + 1) / FRAMES.length) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Controls: restart, step back, play/pause, step forward, speed */}
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <div className="flex items-center gap-2">
+          <InkButton variant="ghost" aria-label="Restart" onClick={restart}>
+            <RotateCcw size={15} />
+          </InkButton>
+          <InkButton variant="ghost" aria-label="Previous step" disabled={frameIndex === 0} onClick={() => step(-1)}>
+            <ChevronLeft size={16} />
+          </InkButton>
+          <InkButton variant="go" className="min-w-24" onClick={togglePlay}>
+            {playing ? <Pause size={15} /> : <Play size={15} />}
+            {playing ? "Pause" : atEnd ? "Replay" : "Play"}
+          </InkButton>
+          <InkButton variant="ghost" aria-label="Next step" disabled={atEnd} onClick={() => step(1)}>
+            <ChevronRight size={16} />
+          </InkButton>
+        </div>
+        <div className="flex items-center gap-1.5" role="group" aria-label="Playback speed">
+          {SPEEDS.map((item) => (
+            <InkButton
+              key={item.id}
+              variant={item.id === speed ? "on" : "off"}
+              aria-pressed={item.id === speed}
+              className="h-7 px-2 text-xs"
+              onClick={() => setSpeed(item.id)}
+            >
+              {item.label}
+            </InkButton>
+          ))}
+        </div>
       </div>
     </div>
   )
