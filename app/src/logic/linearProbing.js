@@ -1,5 +1,5 @@
 
-import { hashFunction } from "./hashing";
+import { hashFunction } from "./hashing.js";
 
 export function insertLinearProbing(table, key) {
   const tableSize = table.length;
