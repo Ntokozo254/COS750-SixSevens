@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const KEY = "john_doe"
 const HASH_CODE = 4829103
@@ -8,7 +8,7 @@ const SIZE = 10
 const SLOT = HASH_CODE % SIZE // 3
 
 // How long each stage lasts (ms). After the last one, it loops back to the start.
-const DURATIONS = [1100, 1500, 1500, 2800]
+const DURATIONS = [1700, 1700, 1700, 2800]
 
 const spring = { type: "spring", stiffness: 300, damping: 24 }
 
@@ -109,7 +109,7 @@ const goPrev = () => {
         </Step>
         <Arrow show={stage >= 1} />
         <Step show={stage >= 1} label="hash code">
-          <Chip className="bg-amber-300 text-blue-900">{HASH_CODE}</Chip>
+          <Chip className="bg-yellowtext-blue-900">{HASH_CODE}</Chip>
         </Step>
         <Arrow show={stage >= 2} />
         <Step show={stage >= 2} label="step 2">

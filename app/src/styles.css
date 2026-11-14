@@ -721,3 +721,7 @@
     padding: 14px 9px;
   }
 }
+/*l01 additions */
+@media (max-width: 560px) {
+  .lesson-card { padding: 14px; }
+}

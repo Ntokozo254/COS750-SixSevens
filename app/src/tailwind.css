@@ -1,0 +1,18 @@
+/* Tailwind without Preflight, so the existing styles.css is untouched */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --font-heading: "Manrope", sans-serif;
+    --color-ink: #172b4d;
+    --color-yellow: #f0dfb8;
+    --color-tan: #dce5f3;
+}
+
+/* No reset means browsers add default margins. Zero them inside lessons only. */
+@layer base {
+  .lesson-scope :where(p, h2, h3, h4) {
+    margin: 0;
+  }
+}
