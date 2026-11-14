@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id            String        @id @default(uuid())
+  studentNumber String?       @unique
+  email         String?       @unique
+  passwordHash  String?
+  name          String?
+  surname       String?
+  createdAt     DateTime      @default(now())
+  progress      Progress[]
+  attempts      QuizAttempt[]
+}
+
+// One row per student per module (basics, insert, search, update, delete).
+model Progress {
+  id        String   @id @default(uuid())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String
+  module    String
+  completed Boolean  @default(false)
+  score     Int?
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, module])
+}
+
+// One row per answer. `misconception` drives the scaffolding and lets you
+// count the most common mistakes before the lecture.
+model QuizAttempt {
+  id            String   @id @default(uuid())
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId     String
+  module        String
+  questionId    String
+  optionId      String
+  correct       Boolean
+  misconception String?
+  createdAt     DateTime @default(now())
+
+  @@index([module, misconception])
+}

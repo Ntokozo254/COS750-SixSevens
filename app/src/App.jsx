@@ -1,122 +1,148 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+
+import { useMemo, useState } from "react";
+import Layout from "./components/layout/Layout";
+import { modules } from "./data/modules";
+import useProgress from "./hooks/useProgress";
+import usePreferences from "./hooks/usePreferences";
+
+import Dashboard from "./pages/Dashboard";
+import Modules from "./pages/Modules";
+import ModuleDetail from "./pages/ModuleDetail";
+import Visualiser from "./pages/Visualiser";
+import PracticeLab from "./pages/PracticeLab";
+import Assessment from "./pages/Assessment";
+import Progress from "./pages/Progress";
+import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import { loadUser, saveUser } from "./api/auth";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [page, setPage] = useState("Dashboard");
+  const [activeModule, setActiveModule] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [user, setUser] = useState(loadUser);
+
+  const { completed, progress, completeModule } = useProgress();
+  const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
+
+  const filteredModules = useMemo(
+    () =>
+      modules.filter((module) =>
+        `${module.title} ${module.objective}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
+  );
+
+  function openModule(module) {
+    setActiveModule(module);
+    setPage("Module");
+    setMobileOpen(false);
+  }
+
+  function navigate(label) {
+    setPage(label);
+    setActiveModule(null);
+    setMobileOpen(false);
+  }
+
+  function handleLogin(loggedIn) {
+    saveUser(loggedIn);
+    setUser(loggedIn);
+    setPage("Dashboard");
+  }
+
+  function handleLogout() {
+    saveUser(null);
+    setUser(null);
+  }
+
+  function renderPage() {
+    switch (page) {
+      case "Dashboard":
+        return (
+          <Dashboard
+            preferences={preferences}
+            progress={progress}
+            completed={completed}
+            onOpenModule={openModule}
+            onNavigate={navigate}
+          />
+        );
+
+      case "Learning modules":
+        return (
+          <Modules
+            completed={completed}
+            onOpenModule={openModule}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filteredModules={filteredModules}
+          />
+        );
+
+      case "Module":
+        return activeModule ? (
+          <ModuleDetail
+            module={activeModule}
+            completed={completed}
+            onBack={() => navigate("Learning modules")}
+            onComplete={completeModule}
+          />
+        ) : null;
+
+      case "Visualiser":
+        return <Visualiser />;
+
+      case "Practice lab":
+        return <PracticeLab />;
+
+      case "Assessment":
+        return <Assessment />;
+
+      case "My progress":
+        return (
+          <Progress
+            completed={completed}
+            progress={progress}
+            onOpenModule={openModule}
+          />
+        );
+
+      case "Settings":
+        return (
+          <Settings
+            preferences={preferences}
+            onPreferenceChange={updatePreference}
+            onResetPreferences={resetPreferences}
+            storageAvailable={storageAvailable}
+          />
+        );
+
+      default:
+        return <Dashboard preferences={preferences} progress={progress} completed={completed} />;
+    }
+  }
+
+  if (!user) return <Login onLogin={handleLogin} />;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <Layout
+      preferences={preferences}
+      page={page}
+      user={user}
+      onLogout={handleLogout}
+      activeModule={activeModule}
+      mobileOpen={mobileOpen}
+      onNavigate={navigate}
+      onMenuOpen={() => setMobileOpen(true)}
+      onMenuClose={() => setMobileOpen(false)}
+    >
+      {renderPage()}
+    </Layout>
+  );
 }
 
-export default App
+export default App;

@@ -1,0 +1,82 @@
+
+[
+  {
+    "id": 1,
+    "objective": "LO1",
+    "topic": "Introduction to Hashing",
+    "question": "Why are hash tables generally efficient for searching?",
+    "options": [
+      "They always sort the stored keys",
+      "They use a hash function to calculate a key's position",
+      "They check every element in the table",
+      "They store every key in a linked list"
+    ],
+    "correctAnswer": 1,
+    "explanation": "A hash function calculates the position where a key should be stored, allowing efficient average-case access."
+  },
+  {
+    "id": 2,
+    "objective": "LO2",
+    "topic": "Hash Functions",
+    "question": "A key is 23 and the table size is 10. What is its home slot?",
+    "options": ["2", "3", "10", "13"],
+    "correctAnswer": 1,
+    "explanation": "23 mod 10 = 3. The home slot is index 3."
+  },
+  {
+    "id": 3,
+    "objective": "LO3",
+    "topic": "Collisions",
+    "question": "When does a collision occur?",
+    "options": [
+      "When a table is empty",
+      "When a key is deleted",
+      "When two different keys map to the same home slot",
+      "When a key is found"
+    ],
+    "correctAnswer": 2,
+    "explanation": "A collision occurs when two different keys map to the same position in the hash table."
+  },
+  {
+    "id": 4,
+    "objective": "LO4",
+    "topic": "Linear Probing",
+    "question": "What does linear probing do when a home slot is occupied?",
+    "options": [
+      "Checks the next slot",
+      "Deletes the existing key",
+      "Restarts the hash function",
+      "Stops the insertion"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Linear probing checks consecutive slots until an available position is found."
+  },
+  {
+    "id": 5,
+    "objective": "LO5",
+    "topic": "Searching",
+    "question": "When can an unsuccessful search stop during linear probing?",
+    "options": [
+      "When the first occupied slot is reached",
+      "When an empty slot is reached",
+      "Only after checking every slot",
+      "When the home slot is reached again"
+    ],
+    "correctAnswer": 1,
+    "explanation": "If the search reaches an empty slot, the key could not have been inserted further along that probing sequence."
+  },
+  {
+    "id": 6,
+    "objective": "LO6",
+    "topic": "Clustering and Load Factor",
+    "question": "What can happen when the load factor of a hash table becomes high?",
+    "options": [
+      "Collisions become impossible",
+      "The table automatically becomes larger",
+      "More probing may be required",
+      "All keys move to the first slot"
+    ],
+    "correctAnswer": 2,
+    "explanation": "A higher load factor means more occupied slots, which can increase collisions and probing."
+  }
+]
