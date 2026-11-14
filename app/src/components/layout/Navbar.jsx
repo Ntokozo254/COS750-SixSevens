@@ -5,10 +5,8 @@ export default function Navbar({
   page,
   activeModule,
   onNavigate,
-  displayName = "",
-  onMenuOpen,
-  user,
-  onLogout
+  mobileOpen,
+  onMenuOpen
 }) {
   const title =
     page === "Module" && activeModule
@@ -32,43 +30,32 @@ export default function Navbar({
         <strong>{title}</strong>
       </div>
 
-      <div className="topbar-right">
-        <button
-          type="button"
-          className="course-tag course-home"
-          onClick={() => onNavigate("Dashboard")}
-          aria-label="Go to the COS212 home dashboard"
-          title="Go to home dashboard"
-        >
-          <Home size={15} aria-hidden="true" />
-          <span>COS212 · DATA STRUCTURES</span>
-        </button>
-
-        <button
-          type="button"
-          className="avatar"
-          onClick={() => onNavigate("Settings")}
-          aria-label={profileName ? `Open profile settings for ${profileName}` : "Open profile settings"}
-          title="Profile settings"
-        >
-          {initials}
-        </button>
-
-        {onLogout && (
-          <button className="logout-button" onClick={onLogout} title="Log out">
-            <LogOut size={15} />
-            <span>Log out</span>
-          </button>
-        )}
-      </div>
-
       <button
-        className="mobile-menu"
-        onClick={onMenuOpen}
-        aria-label="Open navigation"
+        type="button"
+        className="course-tag course-home"
+        onClick={() => onNavigate("Dashboard")}
+        aria-label="Go to the COS212 home dashboard"
+        title="Go to home dashboard"
       >
-        <Menu size={22} />
+        <Home size={15} aria-hidden="true" />
+        <span>COS212 · DATA STRUCTURES</span>
       </button>
+
+      <div className="topbar-right">
+        <div className="avatar">S</div>
+
+        <button
+          type="button"
+          className="mobile-menu"
+          onClick={onMenuOpen}
+          aria-label="Open navigation"
+          aria-controls="main-navigation"
+          aria-expanded={mobileOpen}
+          title="Open navigation"
+        >
+          <Menu size={20} aria-hidden="true" />
+        </button>
+      </div>
     </header>
   );
 }
