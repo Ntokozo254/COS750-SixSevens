@@ -109,7 +109,7 @@ const goPrev = () => {
         </Step>
         <Arrow show={stage >= 1} />
         <Step show={stage >= 1} label="hash code">
-          <Chip className="bg-amber-300 text-blue-900">{HASH_CODE}</Chip>
+          <Chip className="bg-yellowtext-blue-900">{HASH_CODE}</Chip>
         </Step>
         <Arrow show={stage >= 2} />
         <Step show={stage >= 2} label="step 2">

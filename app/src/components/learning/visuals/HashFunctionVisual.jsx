@@ -77,7 +77,7 @@ export default function HashFunctionVisual() {
     phase === "done" ? KEYS : phase === "run" ? KEYS.slice(0, stage === 3 ? count + 1 : count) : []
 
   const slotStyle = (i) => {
-    if (i === slot && stage === 2) return "bg-amber-300/20 ring-2 ring-amber-300"
+    if (i === slot && stage === 2) return "bg-yellow/20 ring-2 ring-yellow"
     if (i === slot && stage === 3) return "bg-emerald-400/30 ring-2 ring-emerald-400"
     return "bg-blue-700/40"
   }
@@ -87,11 +87,11 @@ export default function HashFunctionVisual() {
       {/* The rule, with a colour for each part */}
       <div className="rounded-xl bg-blue-700/40 px-4 py-3 text-center">
         <p className="font-mono text-lg font-bold text-white">
-          h(<span className="text-amber-300">k</span>) = <span className="text-amber-300">k</span> mod{" "}
+          h(<span className="text-yellow">k</span>) = <span className="text-yellow">k</span> mod{" "}
           <span className="text-blue-200">N</span>
         </p>
         <p className="mt-1 text-xs text-blue-100">
-          <span className="text-amber-300">k</span> is the key,{" "}
+          <span className="text-yellow">k</span> is the key,{" "}
           <span className="text-blue-200">N</span> is the table size ({N})
         </p>
       </div>
@@ -101,11 +101,11 @@ export default function HashFunctionVisual() {
         {current !== null ? (
           <>
             <motion.span key={count} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-              h(<span className="text-amber-300">{current}</span>)
+              h(<span className="text-yellow">{current}</span>)
             </motion.span>
             {stage >= 1 && (
               <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-                = <span className="text-amber-300">{current}</span> mod{" "}
+                = <span className="text-yellow">{current}</span> mod{" "}
                 <span className="text-blue-200">{N}</span>
               </motion.span>
             )}

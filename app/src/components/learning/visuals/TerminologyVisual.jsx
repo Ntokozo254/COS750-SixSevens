@@ -53,7 +53,7 @@ function CollisionDiagram() {
     <div className="flex items-center justify-center gap-2">
       <div className="flex flex-col gap-2">
         <Pop delay={0}><Chip className="rounded-full bg-white text-blue-700">john_doe</Chip></Pop>
-        <Pop delay={0.6}><Chip className="rounded-full bg-amber-300 text-blue-900">jane_roe</Chip></Pop>
+        <Pop delay={0.6}><Chip className="rounded-full bg-yellow text-blue-900">jane_roe</Chip></Pop>
       </div>
       <Pop delay={0.9}><Arrow /></Pop>
       <motion.div
@@ -80,7 +80,7 @@ function ChainingDiagram() {
       <Pop delay={0.4}><Arrow /></Pop>
       <Pop delay={0.5}><Chip className="rounded-lg bg-white text-blue-700">john_doe</Chip></Pop>
       <Pop delay={0.9}><Arrow /></Pop>
-      <Pop delay={1}><Chip className="rounded-lg bg-amber-300 text-blue-900">jane_roe</Chip></Pop>
+      <Pop delay={1}><Chip className="rounded-lg bg-yellow text-blue-900">jane_roe</Chip></Pop>
       <Pop delay={1.4}><span className="font-mono text-[10px] text-blue-200/70">→ NULL</span></Pop>
     </div>
   )
@@ -114,7 +114,7 @@ function ProbingDiagram() {
                     initial={{ opacity: 0, x: -56, y: -36 }}
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     transition={{ ...spring, delay: 1 }}
-                    className="absolute inset-0.5 z-10 flex items-center justify-center rounded bg-amber-300 text-center text-[9px] font-bold leading-[1.1] text-blue-900"
+                    className="absolute inset-0.5 z-10 flex items-center justify-center rounded bg-yellow text-center text-[9px] font-bold leading-[1.1] text-blue-900"
                   >
                     jane_<br />roe
                   </motion.div>
@@ -157,7 +157,7 @@ function LoadDiagram() {
         <span className="font-mono text-xs text-white">8 entries / 10 buckets = 0.8</span>
       </Pop>
       <Pop delay={2.1}>
-        <span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-bold text-blue-900">
+        <span className="rounded-full bg-yellow px-3 py-1 text-xs font-bold text-blue-900">
           Too full: time to resize
         </span>
       </Pop>

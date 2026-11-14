@@ -102,7 +102,7 @@ export default function ChainingPointersVisual() {
       <div className="flex min-h-9 flex-wrap items-center justify-center gap-2 text-xs text-blue-100">
         {current ? (
           <>
-            <span className="rounded-full bg-amber-300 px-2.5 py-1 font-mono font-bold text-blue-900">
+            <span className="rounded-full bg-yellow px-2.5 py-1 font-mono font-bold text-blue-900">
               {current.key}
             </span>
             <span className="font-mono">
@@ -153,7 +153,7 @@ export default function ChainingPointersVisual() {
                   <span className="text-white/80">→</span>
                   <span
                     className={`rounded-lg px-2.5 py-1.5 font-mono text-[11px] font-bold shadow-md shadow-blue-950/30 transition-colors duration-300 ${
-                      isNew ? "bg-amber-300 text-blue-900" : "bg-white text-blue-700"
+                      isNew ? "bg-yellow text-blue-900" : "bg-white text-blue-700"
                     }`}
                   >
                     {node.key}

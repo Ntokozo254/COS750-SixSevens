@@ -33,7 +33,7 @@ const IDLE = {
 const nodeStyles = {
   idle: "bg-white text-blue-700",
   visited: "bg-white/35 text-blue-100",
-  checking: "bg-amber-300 text-blue-900",
+  checking: "bg-yelllow text-blue-900",
   found: "bg-emerald-400 text-white",
 }
 
@@ -136,7 +136,7 @@ export default function TimeComplexityVisual() {
       <div className="flex items-center justify-between text-xs text-blue-100">
         <span className="flex items-center gap-2">
           Lookup
-          <span className="rounded-full bg-amber-300 px-2.5 py-1 font-mono font-bold text-blue-900">
+          <span className="rounded-full bg-yelllow px-2.5 py-1 font-mono font-bold text-blue-900">
             {TARGET}
           </span>
         </span>

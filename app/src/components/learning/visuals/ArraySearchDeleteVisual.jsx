@@ -14,7 +14,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const styles = {
   idle: "bg-white text-blue-700",
-  checking: "bg-amber-300 text-blue-900",
+  checking: "bg-yellow text-blue-900",
   visited: "bg-white/35 text-blue-100",
   found: "bg-emerald-400 text-white",
   deleting: "bg-red-400 text-white",
