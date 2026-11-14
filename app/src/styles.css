@@ -131,6 +131,61 @@
 }
 
 /* Mobile navigation buttons */
+.mobile-menu {
+  display: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid #dfe7f3;
+  border-radius: 10px;
+  background: #edf3ff;
+  color: var(--blue);
+  box-shadow: 0 2px 6px #102a5608;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.mobile-menu:hover,
+.mobile-menu[aria-expanded="true"] {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+  box-shadow: 0 4px 10px #2563eb28;
+}
+
+.mobile-menu:active {
+  background: var(--blue-dark);
+  border-color: var(--blue-dark);
+}
+
+.mobile-menu:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.topbar .breadcrumb {
+  min-width: 0;
+  max-width: 30vw;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.topbar .breadcrumb strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-right {
+  flex-shrink: 0;
+  justify-self: end;
+}
+
 .mobile-close,
 .menu-button {
   border: 0;
@@ -143,7 +198,25 @@
 .mobile-close {
   display: none;
   margin-left: auto;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1px solid #ffffff20;
+  border-radius: 9px;
+  background: #ffffff0b;
   color: #fff;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.mobile-close:hover {
+  background: #ffffff20;
+  border-color: #ffffff40;
+}
+
+.mobile-close:focus-visible {
+  outline: 2px solid #8db6ff;
+  outline-offset: 3px;
 }
 
 .menu-button {
@@ -155,11 +228,15 @@
 /* Navbar */
 .course-home {
   min-height: 36px;
+  min-width: 0;
+  max-width: 100%;
+  justify-self: center;
+  justify-content: center;
   padding: 8px 10px;
   border: 0;
   border-radius: 8px;
   background: transparent;
-  text-align: left;
+  text-align: center;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -478,6 +555,10 @@
 ========================================= */
 
 @media (max-width: 820px) {
+  .mobile-menu {
+    display: grid;
+  }
+
   .mobile-close {
     display: grid;
   }
@@ -492,13 +573,24 @@
 }
 
 @media (max-width: 560px) {
+  .mobile-menu {
+    width: 44px;
+    height: 44px;
+  }
+
   .course-home {
     display: flex;
-    min-width: 36px;
-    justify-content: center;
+    padding: 4px 6px;
+    font-size: 8px;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
   }
 
   .course-home span {
+    display: block;
+  }
+
+  .course-home svg {
     display: none;
   }
 
@@ -605,7 +697,7 @@
 ========================================= */
 
 .sidebar {
-  transition: width 0.25s ease;
+  transition: width 0.25s ease, transform 0.25s ease;
 }
 
 .main-area {

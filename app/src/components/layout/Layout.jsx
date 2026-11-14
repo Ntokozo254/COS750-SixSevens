@@ -40,6 +40,7 @@ export default function Layout({
           page={page}
           activeModule={activeModule}
           onNavigate={onNavigate}
+          mobileOpen={mobileOpen}
           onMenuOpen={onMenuOpen}
         />
 
