@@ -1,5 +1,6 @@
 
 import { Menu, ChevronRight, LogOut } from "lucide-react";
+import { Menu, ChevronRight, Home } from "lucide-react";
 
 export default function Navbar({
   page,
@@ -7,6 +8,8 @@ export default function Navbar({
   onMenuOpen,
   user,
   onLogout
+  onNavigate,
+  onMenuOpen
 }) {
   const title =
     page === "Module" && activeModule
@@ -31,10 +34,16 @@ export default function Navbar({
       </div>
 
       <div className="topbar-right">
-        <div className="course-tag">
-          <span className="status-pulse" />
-          COS212 · DATA STRUCTURES
-        </div>
+        <button
+          type="button"
+          className="course-tag course-home"
+          onClick={() => onNavigate("Dashboard")}
+          aria-label="Go to the COS212 home dashboard"
+          title="Go to home dashboard"
+        >
+          <Home size={15} aria-hidden="true" />
+          <span>COS212 · DATA STRUCTURES</span>
+        </button>
 
         <div className="avatar" title={fullName || user?.email}>{initials}</div>
 

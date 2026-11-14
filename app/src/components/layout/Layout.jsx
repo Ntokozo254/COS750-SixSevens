@@ -41,6 +41,7 @@ export default function Layout({
         <Navbar
           page={page}
           activeModule={activeModule}
+          onNavigate={onNavigate}
           onMenuOpen={onMenuOpen}
           user={user}
           onLogout={onLogout}
