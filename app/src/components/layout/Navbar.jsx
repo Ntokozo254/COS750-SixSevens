@@ -4,25 +4,26 @@ import { Menu, ChevronRight, Home , LogOut } from "lucide-react";
 export default function Navbar({
   page,
   activeModule,
+  onNavigate,
+  displayName = "",
   onMenuOpen,
   user,
-  onLogout,
-  onNavigate
+  onLogout
 }) {
   const title =
     page === "Module" && activeModule
       ? activeModule.title
       : page;
-
   // "John" + "Doe" -> "JD". Falls back to the email's first letter, then "S".
+  const profileName = displayName.trim() || [user?.name, user?.surname].filter(Boolean).join(" ");
   const initials =
+    profileName.trim().split(/\s+/).filter(Boolean)
+      .slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase() ||
     [user?.name, user?.surname]
       .map((part) => part?.trim().charAt(0) ?? "")
       .join("")
       .toUpperCase() ||
     (user?.email || "S").charAt(0).toUpperCase();
-  const fullName = [user?.name, user?.surname].filter(Boolean).join(" ");
-
   return (
     <header className="topbar">
       <div className="breadcrumb">
@@ -43,7 +44,15 @@ export default function Navbar({
           <span>COS212 · DATA STRUCTURES</span>
         </button>
 
-        <div className="avatar" title={fullName || user?.email}>{initials}</div>
+        <button
+          type="button"
+          className="avatar"
+          onClick={() => onNavigate("Settings")}
+          aria-label={profileName ? `Open profile settings for ${profileName}` : "Open profile settings"}
+          title="Profile settings"
+        >
+          {initials}
+        </button>
 
         {onLogout && (
           <button className="logout-button" onClick={onLogout} title="Log out">

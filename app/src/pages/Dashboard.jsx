@@ -6,6 +6,7 @@ import ProgressCards from "../components/dashboard/ProgressCards";
 import ModuleCard from "../components/dashboard/ModuleCard";
 
 export default function Dashboard({
+  preferences,
   progress,
   completed,
   onOpenModule,
@@ -16,6 +17,14 @@ export default function Dashboard({
 
   const nextModuleCompleted =
     nextModule && completed.includes(nextModule.id);
+  const studyTip = {
+    explore: "Combine explanations, diagrams, and practice to find what helps you understand.",
+    visual: "Sketch the hash table and follow each highlighted slot in the search trace.",
+    aural: "Explain each probing step aloud, or enable Read aloud in Audio preferences.",
+    "read-write": "Write a short summary of the search rules and compare it with the lesson.",
+    kinesthetic: "Try a search yourself, predict the next slot, and check your reasoning.",
+    multimodal: "Read the explanation, trace the table, and test yourself with guided practice."
+  }[preferences.preferredMode];
 
   return (
     <div className="content-wrap">
@@ -131,6 +140,18 @@ export default function Dashboard({
         </section>
 
         <aside className="secondary-column">
+          <div className="side-card study-plan-card">
+            <div className="side-card-heading">
+              <span className="mini-icon"><Target size={18} /></span>
+              YOUR STUDY PLAN
+            </div>
+            <h3>A {preferences.studyGoal}-minute study session</h3>
+            <p>{studyTip}</p>
+            <button type="button" className="text-button" onClick={() => onNavigate("Settings")}>
+              Adjust learning preferences <ArrowRight size={14} />
+            </button>
+          </div>
+
           <div className="side-card challenge-card">
             <div className="side-card-heading">
               <span className="mini-icon">

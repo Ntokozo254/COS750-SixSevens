@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import Layout from "./components/layout/Layout";
 import { modules } from "./data/modules";
 import useProgress from "./hooks/useProgress";
+import usePreferences from "./hooks/usePreferences";
 
 import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
@@ -23,6 +24,7 @@ function App() {
   const [user, setUser] = useState(loadUser);
 
   const { completed, progress, completeModule } = useProgress();
+  const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
 
   const filteredModules = useMemo(
     () =>
@@ -62,6 +64,7 @@ function App() {
       case "Dashboard":
         return (
           <Dashboard
+            preferences={preferences}
             progress={progress}
             completed={completed}
             onOpenModule={openModule}
@@ -109,10 +112,17 @@ function App() {
         );
 
       case "Settings":
-        return <Settings />;
+        return (
+          <Settings
+            preferences={preferences}
+            onPreferenceChange={updatePreference}
+            onResetPreferences={resetPreferences}
+            storageAvailable={storageAvailable}
+          />
+        );
 
       default:
-        return <Dashboard progress={progress} completed={completed} />;
+        return <Dashboard preferences={preferences} progress={progress} completed={completed} />;
     }
   }
 
@@ -120,6 +130,7 @@ function App() {
 
   return (
     <Layout
+      preferences={preferences}
       page={page}
       user={user}
       onLogout={handleLogout}

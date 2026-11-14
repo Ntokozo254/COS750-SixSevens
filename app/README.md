@@ -18,6 +18,8 @@ Open the local URL printed by Vite.
 
 ## Included
 
+- [Student profile and settings](../docs/settings.md): browser-saved profile, reading/display preferences, read-aloud controls, and study preferences with the official VARK questionnaire link.
+
 - Responsive application shell and blue visual identity
 - Dashboard with progress overview
 - Six learning-objective module cards
