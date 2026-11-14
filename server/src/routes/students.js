@@ -4,7 +4,7 @@
 // storing anything sensitive.
 import { Router } from 'express';
 
-const MODULES = ['basics', 'insert', 'search', 'update', 'delete'];
+const MODULES = ['intro', 'hash-functions', 'collisions', 'linear-probing', 'searching', 'clustering'];
 const STUDENT_NUMBER = /^u?\d{8}$/i; // e.g. u21234567
 
 export default function studentsRouter(db) {

@@ -1,25 +1,80 @@
 [
   {
-    "id": "q-insert-1",
-    "module": "insert",
-    "objective": "LO4",
-    "prompt": "Table size 10 holds 23 in slot 3. Where does 43 go?",
+    "id": "q-intro-1",
+    "module": "intro",
+    "objective": "LO1",
+    "prompt": "Why are hash tables generally efficient for searching?",
     "options": [
-      { "id": "a", "text": "Slot 4", "correct": true },
-      { "id": "b", "text": "Slot 3", "misconception": "takenSlot" },
-      { "id": "c", "text": "Slot 0", "misconception": "wrongMod" },
-      { "id": "d", "text": "It cannot be inserted", "misconception": "noProbing" }
-    ]
+      { "id": "a", "text": "They always sort the stored keys", "misconception": "sortedLookup" },
+      { "id": "b", "text": "They use a hash function to calculate a key's position", "correct": true },
+      { "id": "c", "text": "They check every element in the table", "misconception": "linearScan" },
+      { "id": "d", "text": "They store every key in a linked list", "misconception": "chainingConfusion" }
+    ],
+    "explanation": "A hash function calculates the position where a key should be stored, allowing efficient average-case access."
   },
   {
-    "id": "q-delete-1",
-    "module": "delete",
-    "objective": "LO8",
-    "prompt": "Slots 3, 4 and 5 hold 23, 43 and 13. You delete 43, then search for 13. What happens?",
+    "id": "q-hash-functions-1",
+    "module": "hash-functions",
+    "objective": "LO2",
+    "prompt": "A key is 23 and the table size is 10. What is its home slot?",
     "options": [
-      { "id": "a", "text": "Found in slot 5, the search skips the tombstone in slot 4", "correct": true },
-      { "id": "b", "text": "Not found, the search stops at slot 4", "misconception": "emptyInsteadOfTombstone" },
-      { "id": "c", "text": "Found in slot 3", "misconception": "wrongMod" }
-    ]
+      { "id": "a", "text": "2", "misconception": "usedQuotient" },
+      { "id": "b", "text": "3", "correct": true },
+      { "id": "c", "text": "10", "misconception": "usedTableSize" },
+      { "id": "d", "text": "13", "misconception": "subtractedSize" }
+    ],
+    "explanation": "23 mod 10 = 3. The home slot is index 3."
+  },
+  {
+    "id": "q-collisions-1",
+    "module": "collisions",
+    "objective": "LO3",
+    "prompt": "When does a collision occur?",
+    "options": [
+      { "id": "a", "text": "When a table is empty", "misconception": "emptyTable" },
+      { "id": "b", "text": "When a key is deleted", "misconception": "deletionConfusion" },
+      { "id": "c", "text": "When two different keys map to the same home slot", "correct": true },
+      { "id": "d", "text": "When a key is found", "misconception": "searchConfusion" }
+    ],
+    "explanation": "A collision occurs when two different keys map to the same position in the hash table."
+  },
+  {
+    "id": "q-linear-probing-1",
+    "module": "linear-probing",
+    "objective": "LO4",
+    "prompt": "What does linear probing do when a home slot is occupied?",
+    "options": [
+      { "id": "a", "text": "Checks the next slot", "correct": true },
+      { "id": "b", "text": "Deletes the existing key", "misconception": "overwrite" },
+      { "id": "c", "text": "Restarts the hash function", "misconception": "rehash" },
+      { "id": "d", "text": "Stops the insertion", "misconception": "noProbing" }
+    ],
+    "explanation": "Linear probing checks consecutive slots until an available position is found."
+  },
+  {
+    "id": "q-searching-1",
+    "module": "searching",
+    "objective": "LO5",
+    "prompt": "When can an unsuccessful search stop during linear probing?",
+    "options": [
+      { "id": "a", "text": "When the first occupied slot is reached", "misconception": "stopAtOccupied" },
+      { "id": "b", "text": "When an empty slot is reached", "correct": true },
+      { "id": "c", "text": "Only after checking every slot", "misconception": "fullScan" },
+      { "id": "d", "text": "When the home slot is reached again", "misconception": "fullCycleOnly" }
+    ],
+    "explanation": "If the search reaches an empty slot, the key could not have been inserted further along that probing sequence."
+  },
+  {
+    "id": "q-clustering-1",
+    "module": "clustering",
+    "objective": "LO6",
+    "prompt": "What can happen when the load factor of a hash table becomes high?",
+    "options": [
+      { "id": "a", "text": "Collisions become impossible", "misconception": "loadNoEffect" },
+      { "id": "b", "text": "The table automatically becomes larger", "misconception": "autoResize" },
+      { "id": "c", "text": "More probing may be required", "correct": true },
+      { "id": "d", "text": "All keys move to the first slot", "misconception": "allToFirstSlot" }
+    ],
+    "explanation": "A higher load factor means more occupied slots, which can increase collisions and probing."
   }
 ]

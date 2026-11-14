@@ -14,6 +14,7 @@ import LessonOutline from "../components/learning/LessonOutline";
 import { lessonCards } from "../data/LessonCards";
 
 
+import SearchLesson from "../features/search/SearchLesson";
 
 export default function ModuleDetail({
   module,
@@ -61,6 +62,12 @@ export default function ModuleDetail({
         </div>
       </section>
 
+      {module.id === 5 ? (
+        <SearchLesson
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : (
       <div className="lesson-layout">
         <section className="lesson-card">
           <div className="lesson-card-header">
@@ -171,6 +178,7 @@ export default function ModuleDetail({
           </div>
         </aside>
       </div>
+      )}
     </div>
   );
 }
