@@ -12,6 +12,8 @@ export default function Layout({
   onNavigate,
   onMenuOpen,
   onMenuClose,
+  user,
+  onLogout,
   children
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -49,6 +51,8 @@ export default function Layout({
           onNavigate={onNavigate}
           onMenuOpen={onMenuOpen}
           displayName={preferences.displayName}
+          user={user}
+          onLogout={onLogout}
         />
 
         <ReadAloud preferences={preferences} page={page} activeModule={activeModule} />

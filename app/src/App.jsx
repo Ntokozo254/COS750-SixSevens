@@ -13,12 +13,15 @@ import PracticeLab from "./pages/PracticeLab";
 import Assessment from "./pages/Assessment";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import { loadUser, saveUser } from "./api/auth";
 
 function App() {
   const [page, setPage] = useState("Dashboard");
   const [activeModule, setActiveModule] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [user, setUser] = useState(loadUser);
 
   const { completed, progress, completeModule } = useProgress();
   const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
@@ -43,6 +46,17 @@ function App() {
     setPage(label);
     setActiveModule(null);
     setMobileOpen(false);
+  }
+
+  function handleLogin(loggedIn) {
+    saveUser(loggedIn);
+    setUser(loggedIn);
+    setPage("Dashboard");
+  }
+
+  function handleLogout() {
+    saveUser(null);
+    setUser(null);
   }
 
   function renderPage() {
@@ -112,10 +126,14 @@ function App() {
     }
   }
 
+  if (!user) return <Login onLogin={handleLogin} />;
+
   return (
     <Layout
       preferences={preferences}
       page={page}
+      user={user}
+      onLogout={handleLogout}
       activeModule={activeModule}
       mobileOpen={mobileOpen}
       onNavigate={navigate}

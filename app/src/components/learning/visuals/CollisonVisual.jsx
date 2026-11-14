@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const SIZE = 10
 const STORED_KEY = "john_doe"
@@ -20,14 +20,14 @@ const COLLIDE = `Collision! Slot ${SLOT} is already taken by ${STORED_KEY}.`
 // Each beat is [stage, message, pause in ms]
 const BEATS = {
   chaining: [
-    [0, ARRIVE, 1500],
-    [1, COLLIDE, 1500],
+    [0, ARRIVE, 1800],
+    [1, COLLIDE, 1800],
     [2, `Separate chaining: bucket ${SLOT} holds a small list, so ${NEW_KEY} is appended to it.`, 0],
   ],
   probing: [
-    [0, ARRIVE, 1500],
-    [1, COLLIDE, 1500],
-    [2, `Linear probing: try the next slot, (${SLOT} + 1) % ${SIZE} = ${NEXT}. It is empty.`, 1700],
+    [0, ARRIVE, 1800],
+    [1, COLLIDE, 1800],
+    [2, `Linear probing: try the next slot, (${SLOT} + 1) % ${SIZE} = ${NEXT}. It is empty.`, 1800],
     [3, `${NEW_KEY} is stored in slot ${NEXT}. A lookup repeats the same formula to find it.`, 0],
   ],
 }
@@ -56,7 +56,7 @@ function NewKey() {
       transition={spring}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex h-full w-full items-center justify-center rounded bg-amber-300 text-center text-[9px] font-bold leading-[1.1] text-blue-900 shadow-lg shadow-blue-950/40"
+      className="flex h-full w-full items-center justify-center rounded bg-yellow text-center text-[9px] font-bold leading-[1.1] text-blue-900 shadow-lg shadow-blue-950/40"
     >
       <TwoLine text={NEW_KEY} />
     </motion.div>
@@ -114,7 +114,7 @@ export default function CollisionVisual() {
   const slotStyle = (i) => {
     if (i === SLOT && stage === 1) return "bg-red-400/40 ring-2 ring-red-400"
     if (i === SLOT && inChain) return "bg-emerald-400/20 ring-2 ring-emerald-400"
-    if (i === NEXT && probing && stage === 2) return "bg-amber-300/20 ring-2 ring-amber-300"
+    if (i === NEXT && probing && stage === 2) return "bg-yellow/20 ring-2 ring-yellow"
     if (i === NEXT && inProbeSlot) return "bg-emerald-400/30 ring-2 ring-emerald-400"
     return "bg-blue-700/40"
   }

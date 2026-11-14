@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
 const KEY = "john_doe"
 const HASH_CODE = 4829103
@@ -134,7 +134,7 @@ export default function HashSearchVisual() {
         </Step>
         <Arrow level={lvl(keyMode && stage >= 2)} />
         <Step level={lvl(keyMode && stage >= 2)} label="hash code">
-          <Chip className="bg-amber-300 text-blue-900">{HASH_CODE}</Chip>
+          <Chip className="bg-yellowtext-blue-900">{HASH_CODE}</Chip>
         </Step>
         <Arrow level={lvl(keyMode && stage >= 3)} />
         <Step level={keyMode && stage >= 3 ? 1 : skippedLvl} label="step 2">

@@ -1,20 +1,20 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./Button"
 
-const TARGET = 75
-const STEP = 800 // ms spent "checking" each element. Raise it to go slower.
+const TARGET = 95
+const STEP = 1000 // ms spent "checking" each element. Raise it to go slower.
 const SLOT = 56 // 48px block + 8px gap
 const spring = { type: "spring", stiffness: 380, damping: 30 }
 
-const INITIAL = [42, 17, 8, 91, 75, 33, 60].map((value, i) => ({ id: `n${i}`, value }))
+const INITIAL = [42, 17, 8, 91, 75, 33, 95].map((value, i) => ({ id: `n${i}`, value }))
 const CAPACITY = INITIAL.length
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const styles = {
   idle: "bg-white text-blue-700",
-  checking: "bg-amber-300 text-blue-900",
+  checking: "bg-yellow text-blue-900",
   visited: "bg-white/35 text-blue-100",
   found: "bg-emerald-400 text-white",
   deleting: "bg-red-400 text-white",
@@ -79,7 +79,7 @@ export default function ArraySearchDeleteVisual() {
       }
       setVisited((v) => [...v, arr[i].id])
       setMessage(`${arr[i].value} is not ${TARGET}. Move to the next element.`)
-      await sleep(350)
+      await sleep(550)
       if (stale()) return
     }
 
@@ -106,17 +106,17 @@ export default function ArraySearchDeleteVisual() {
     }
 
     // Delete: ask, then remove it anyway
-    await sleep(900)
+    await sleep(1000)
     if (stale()) return
     setAsking(true)
     setMessage(`Delete ${TARGET}?`)
-    await sleep(1600)
+    await sleep(1800)
     if (stale()) return
 
     setAsking(false)
     setDeletingId(hit.id)
     setMessage("Deleting...")
-    await sleep(500)
+    await sleep(700)
     if (stale()) return
 
     const shifted = arr.length - 1 - foundIdx
