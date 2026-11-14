@@ -71,6 +71,7 @@ export default function ModuleDetail({
         />
       ) : module.id === 5 ? (
         <SearchLesson
+          objective={module.objective}
           completed={isCompleted}
           onComplete={(evidence) => onComplete(module.id, evidence)}
         />

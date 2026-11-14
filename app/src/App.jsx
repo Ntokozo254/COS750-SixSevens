@@ -9,7 +9,6 @@ import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
 import ModuleDetail from "./pages/ModuleDetail";
 import Visualiser from "./pages/Visualiser";
-import PracticeLab from "./pages/PracticeLab";
 import Assessment from "./pages/Assessment";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
@@ -95,9 +94,6 @@ function App() {
 
       case "Visualiser":
         return <Visualiser />;
-
-      case "Practice lab":
-        return <PracticeLab />;
 
       case "Assessment":
         return <Assessment />;

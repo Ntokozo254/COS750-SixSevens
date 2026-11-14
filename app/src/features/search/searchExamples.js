@@ -1,4 +1,14 @@
-const collisionTable = Object.freeze([19, null, 12, 22, 32, null, null, null, null, 9])
+// A full table of size m: keys 0, m, 2m, ... all hash to slot 0, so linear
+// probing fills the slots in order. The default key m × m also hashes to 0 but
+// is absent, so its search checks every slot once.
+export function buildFullTable(m) {
+  return {
+    table: Object.freeze(Array.from({ length: m }, (_, i) => i * m)),
+    key: m * m,
+  }
+}
+
+const collisionTable =Object.freeze([19, null, 12, 22, 32, null, null, null, null, 9])
 
 export const SEARCH_EXAMPLES = [
   {
@@ -45,7 +55,11 @@ export const SEARCH_EXAMPLES = [
     label: 'Search a full table',
     key: 25,
     table: Object.freeze([0, 5, 10, 15, 20]),
-    purpose: 'When every slot is occupied, a missing-key search ends after one complete circuit.',
+    // The explorer lets learners change m; key and table above are the m = 5 default.
+    sizes: [3, 4, 5, 6, 7, 8, 9, 10],
+    build: buildFullTable,
+    purpose:
+      'When every slot is occupied, a missing-key search ends after one complete circuit. Change m to see that the search always checks exactly m slots.',
   },
   {
     id: 'empty',

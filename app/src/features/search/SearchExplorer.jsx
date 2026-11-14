@@ -55,6 +55,9 @@ export default function SearchExplorer({ onTraced }) {
   const instanceId = useId()
   const [exampleId, setExampleId] = useState('found')
   const example = SEARCH_EXAMPLES.find((item) => item.id === exampleId)
+  // Examples with `sizes` (the full table) let the learner pick m; the rest are fixed.
+  const [size, setSize] = useState(example.table.length)
+  const table = example.build ? example.build(size).table : example.table
   const [keyInput, setKeyInput] = useState(String(example.key))
   const [trace, setTrace] = useState(null)
   const [step, setStep] = useState(0)
@@ -77,7 +80,7 @@ export default function SearchExplorer({ onTraced }) {
         }
       }
     },
-    [trace, onTraced],
+    [trace, onTraced, setStep, setPlaying],
   )
 
   useEffect(() => {
@@ -86,15 +89,26 @@ export default function SearchExplorer({ onTraced }) {
     return () => window.clearTimeout(timer)
   }, [playing, trace, finished, step, delay, moveToStep])
 
-  function changeExample(id) {
-    const next = SEARCH_EXAMPLES.find((item) => item.id === id)
-    setExampleId(id)
-    setKeyInput(String(next.key))
+  function resetTrace() {
     setTrace(null)
     setStep(0)
     setPlaying(false)
     setError('')
     reported.current = false
+  }
+
+  function changeExample(id) {
+    const next = SEARCH_EXAMPLES.find((item) => item.id === id)
+    setExampleId(id)
+    setSize(next.table.length)
+    setKeyInput(String(next.key))
+    resetTrace()
+  }
+
+  function changeSize(m) {
+    setSize(m)
+    setKeyInput(String(example.build(m).key))
+    resetTrace()
   }
 
   function startSearch(event) {
@@ -103,7 +117,7 @@ export default function SearchExplorer({ onTraced }) {
       setError('Enter a whole-number key from 0 to 1,000,000.')
       return
     }
-    setTrace({ ...createSearchTrace(example.table, Number(keyInput)), target: Number(keyInput) })
+    setTrace({ ...createSearchTrace(table, Number(keyInput)), target: Number(keyInput) })
     setStep(0)
     setPlaying(false)
     setError('')
@@ -152,6 +166,24 @@ export default function SearchExplorer({ onTraced }) {
           )}
         </form>
       </div>
+      {example.sizes && (
+        <div className="hash-search-size">
+          <span id={`${instanceId}-size`}>Table size m</span>
+          <div role="group" aria-labelledby={`${instanceId}-size`}>
+            {example.sizes.map((m) => (
+              <button
+                key={m}
+                type="button"
+                className="secondary-button"
+                aria-pressed={m === size}
+                onClick={() => changeSize(m)}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <p className="hash-search-example-purpose">{example.purpose}</p>
       <div className="hash-search-workspace">
         <div className="hash-search-canvas">
@@ -159,13 +191,13 @@ export default function SearchExplorer({ onTraced }) {
             <span>Hash function</span>
             <strong>
               {trace
-                ? `${trace.target} mod ${example.table.length} = ${trace.homeIndex}`
+                ? `${trace.target} mod ${table.length} = ${trace.homeIndex}`
                 : 'h(key) = key mod m'}
             </strong>
-            <span>m = {example.table.length} slots</span>
+            <span>m = {table.length} slots</span>
           </div>
           <SearchTable
-            table={current?.table ?? example.table}
+            table={current?.table ?? table}
             currentIndex={current?.index}
             matchIndex={current?.matchIndex}
             collision={current?.type === 'collision'}

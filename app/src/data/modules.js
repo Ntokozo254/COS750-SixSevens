@@ -4,8 +4,7 @@ import {
   Network,
   Search,
   Workflow,
-  Target,
-  Layers
+  Target
 } from "lucide-react";
 
 export const modules = [
@@ -47,14 +46,6 @@ export const modules = [
     objective: "Trace a search and determine when an unsuccessful search stops.",
     description: "Follow the probing sequence when searching for a key.",
     icon: Search,
-    duration: "12 min"
-  },
-  {
-    id: 6,
-    title: "Clustering and Load Factor",
-    objective: "Analyse how clustering and load factor affect performance.",
-    description: "Understand how table occupancy influences efficiency.",
-    icon: Layers,
     duration: "12 min"
   }
 ];

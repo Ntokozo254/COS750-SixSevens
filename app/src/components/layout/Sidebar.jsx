@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   BookOpen,
   Workflow,
-  Code2,
   ListChecks,
   ChartNoAxesCombined,
   Settings,
@@ -17,7 +16,6 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard },
   { label: "Learning modules", icon: BookOpen },
   { label: "Visualiser", icon: Workflow },
-  { label: "Practice lab", icon: Code2 },
   { label: "Assessment", icon: ListChecks },
   { label: "My progress", icon: ChartNoAxesCombined },
   { label: "Settings", icon: Settings }

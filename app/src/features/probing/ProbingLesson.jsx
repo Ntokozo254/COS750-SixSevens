@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { CheckCircle2, ChevronLeft, ChevronRight, Lightbulb, ListChecks, Target } from 'lucide-react'
+import { CheckCircle2, Lightbulb, Target } from 'lucide-react'
+import { StepNav, StepOutline } from '../../components/learning/LessonSteps'
 import ProbingCheck from './ProbingCheck'
 import ProbingLearn from './ProbingLearn'
 import ProbingPractice from './ProbingPractice'
@@ -26,9 +27,6 @@ export default function ProbingLesson({ objective, completed = false, onComplete
     setVisited((seen) => new Set(seen).add(STEPS[next].id))
   }
   const goToId = (id) => goTo(STEPS.findIndex((item) => item.id === id))
-
-  const navButton =
-    'grid size-11 flex-none place-items-center rounded-full border-0 bg-white text-blue-700 shadow-lg shadow-blue-900/30 transition-colors hover:bg-blue-50 disabled:opacity-40'
 
   return (
     <div className="lesson-layout lesson-scope">
@@ -60,40 +58,7 @@ export default function ProbingLesson({ objective, completed = false, onComplete
           )}
         </div>
 
-        <div className="mt-2 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            aria-label="Previous step"
-            disabled={stepIndex === 0}
-            onClick={() => goTo(stepIndex - 1)}
-            className={navButton}
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="flex items-center gap-1.5">
-            {STEPS.map((item, index) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-label={`Go to step ${index + 1}: ${item.title}`}
-                aria-current={index === stepIndex ? 'step' : undefined}
-                onClick={() => goTo(index)}
-                className={`h-2 rounded-full border-0 p-0 transition-all ${
-                  index === stepIndex ? 'w-6 bg-blue-600' : 'w-2 bg-blue-200 hover:bg-blue-300'
-                }`}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            aria-label="Next step"
-            disabled={stepIndex === STEPS.length - 1}
-            onClick={() => goTo(stepIndex + 1)}
-            className={navButton}
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        <StepNav steps={STEPS} index={stepIndex} onSelect={goTo} />
         {step.id === 'trace' && traced && (
           <p className="mt-3 text-center text-[11px] text-slate-500">
             Walkthrough finished. Try placing the keys yourself in step 3.
@@ -102,48 +67,12 @@ export default function ProbingLesson({ objective, completed = false, onComplete
       </section>
 
       <aside className="lesson-aside">
-        <div className="side-card">
-          <div className="side-card-heading">
-            <span className="mini-icon">
-              <ListChecks size={17} />
-            </span>
-            IN THIS LESSON
-          </div>
-          <h3>
-            Step {stepIndex + 1} of {STEPS.length}
-          </h3>
-          <div className="progress-line">
-            <span style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }} />
-          </div>
-          <ol className="m-0 grid list-none gap-1 p-0">
-            {STEPS.map((item, index) => {
-              const active = index === stepIndex
-              const done = item.id === 'check' ? completed : visited.has(item.id) && !active
-              return (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    onClick={() => goTo(index)}
-                    aria-current={active ? 'step' : undefined}
-                    className={`flex w-full items-center gap-2.5 rounded-xl border border-tan px-2.5 py-2 text-left text-[11px] transition-colors ${
-                      active ? 'bg-blue-50 font-bold text-blue-600' : 'bg-white text-slate-500 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span
-                      className={`grid size-5 flex-none place-items-center rounded-md text-[10px] font-extrabold ${
-                        active ? 'bg-sky-950 text-white' : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
-                      {index + 1}
-                    </span>
-                    <span className="flex-1 truncate">{item.title}</span>
-                    {done && <CheckCircle2 size={14} className="text-emerald-500" aria-label="visited" />}
-                  </button>
-                </li>
-              )
-            })}
-          </ol>
-        </div>
+        <StepOutline
+          steps={STEPS}
+          index={stepIndex}
+          onSelect={goTo}
+          isDone={(item, active) => (item.id === 'check' ? completed : visited.has(item.id) && !active)}
+        />
 
         <div className="side-card">
           <div className="side-card-heading">

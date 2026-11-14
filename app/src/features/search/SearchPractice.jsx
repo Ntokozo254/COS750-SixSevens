@@ -55,7 +55,7 @@ export default function SearchPractice({ onContinue }) {
     <section className="hash-search-practice" aria-label="Guided search practice">
       <div className="hash-search-section-heading">
         <div>
-          <span className="eyebrow">GUIDED PRACTICE</span>
+          <span className="eyebrow">STEP 3 OF 4 · GUIDED PRACTICE</span>
           <h2>You choose the next slot.</h2>
         </div>
         <span className="pill pill-blue">{example.label}</span>

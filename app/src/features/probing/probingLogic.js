@@ -10,7 +10,7 @@ export const CODE_LINES = [
   { id: 'empty', text: '  if slot[index] is empty:' },
   { id: 'store', text: '    store key in slot[index]; stop' },
   { id: 'next', text: '  index = (index + 1) mod m' },
-  { id: 'full', text: 'table is full: resize it (Module 6)' },
+  { id: 'full', text: 'table is full: resize it' },
 ]
 
 // Worked examples for the trace. The first one builds the exact table that

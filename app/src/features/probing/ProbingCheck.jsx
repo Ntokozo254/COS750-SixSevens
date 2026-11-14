@@ -220,7 +220,7 @@ export default function ProbingCheck({ completed = false, onComplete, onReview }
         <p className="font-bold text-white">Take it to the lecture</p>
         <p className="text-sm leading-relaxed text-blue-100">
           Linear probing keeps collided keys next to each other. What do you think happens to insert and search times
-          as the table fills up? Write one question to ask in the lecture. Module 6 explores this.
+          as the table fills up? Write one question to ask in the lecture.
         </p>
         <label htmlFor={`${titleId}-reflection`} className="text-[11px] font-bold uppercase tracking-widest text-blue-200">
           Your question (optional, not graded)

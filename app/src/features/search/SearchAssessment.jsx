@@ -84,7 +84,7 @@ export default function SearchAssessment({
   return (
     <section className="hash-search-assessment" aria-labelledby={`${instanceId}-title`}>
       <div className="hash-search-assessment-intro">
-        <span className="eyebrow">LO5 KNOWLEDGE CHECK</span>
+        <span className="eyebrow">STEP 4 OF 4 · KNOWLEDGE CHECK</span>
         <h2 id={`${instanceId}-title`}>Can you trace the search?</h2>
         <p>
           Five questions about probe order and stopping rules. Check each answer for feedback, then

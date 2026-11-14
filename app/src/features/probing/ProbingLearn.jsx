@@ -117,7 +117,7 @@ export default function ProbingLearn({ onNext }) {
       <Callout tone="warn" title="How much work is an insert?">
         Each check is one step. When the table is mostly empty, a key usually finds space in 1 or 2 checks, so insert is
         expected O(1). As the table fills, collided keys form long runs and an insert can check up to all m slots: O(m) in
-        the worst case. That is why tables are resized before they get too full, the topic of Module 6.
+        the worst case. That is why tables are resized before they get too full, which your COS212 lecture covers.
       </Callout>
 
       <div className="flex justify-end">
