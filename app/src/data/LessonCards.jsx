@@ -11,6 +11,10 @@ import HashFunctionVisual from "../components/learning/visuals/HashFunctionVisua
 import HashCalculatorVisual from "../components/learning/visuals/HashCalculatorVisual"
 import GoodHashVisual from "../components/learning/visuals/GoodHashVisual"
 import HashQuizVisual from "../components/learning/visuals/HashQuizVisual"
+import CollisionTraceVisual from "../components/learning/visuals/CollisionTraceVisual"
+import CollisionSpotVisual from "../components/learning/visuals/CollisionSpotVisual"
+import PigeonholeVisual from "../components/learning/visuals/PigeonholeVisual"
+import CollisionQuizVisual from "../components/learning/visuals/CollisionQuizVisual"
 
 // ...one import per visual
 
@@ -117,6 +121,36 @@ Visual: HashFunctionVisual,
       description:
         "Four short questions. Every answer explains why, so a wrong answer is still useful. Get 3 out of 4 and you're ready for Module 3: collisions.",
       Visual: HashQuizVisual,
+    },
+  ],
+  3: [
+    {
+      id: 1,
+      title: "Two keys, one slot",
+      description:
+        "A collision happens when two different keys hash to the same slot. The slot is already taken, so the new key cannot simply go there. Step through five inserts and watch for the keys that hit a taken slot.",
+      Visual: CollisionTraceVisual,
+    },
+    {
+      id: 2,
+      title: "Spot the collision",
+      description:
+        "The table already holds four keys. For each new key, work out k mod 10 in your head, check that slot, and decide: collision or not? You can always see the table, so look before you answer.",
+      Visual: CollisionSpotVisual,
+    },
+    {
+      id: 3,
+      title: "Why collisions can't be avoided",
+      description:
+        "There are far more possible keys than slots, so some keys must share. If you put 11 keys into 10 slots, at least two share a slot. This is the pigeonhole principle. In practice collisions start much sooner than that. Add keys one at a time and see when the first one happens.",
+      Visual: PigeonholeVisual,
+    },
+    {
+      id: 4,
+      title: "Quick check",
+      description:
+        "Four short questions. Every answer explains why. Get 3 out of 4 and you're ready for Module 4, where you'll learn what to do with a key that collides.",
+      Visual: CollisionQuizVisual,
     },
   ],
 }

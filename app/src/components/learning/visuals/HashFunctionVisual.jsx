@@ -1,16 +1,9 @@
-import { useEffect, useState } from "react"
 import { motion } from "motion/react"
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react"
-import { InkButton } from "../../../features/probing/ProbingUi"
+import PlaybackControls from "./PlaybackControls"
+import { usePlayback } from "./usePlayback"
 
 const N = 10 // table size
 const KEYS = [47, 83, 21] // they land in slots 7, 3 and 1
-
-const SPEEDS = [
-  { id: "slow", label: "Slow", ms: 1800 },
-  { id: "normal", label: "Normal", ms: 1100 },
-  { id: "fast", label: "Fast", ms: 600 },
-]
 
 const spring = { type: "spring", stiffness: 260, damping: 24 }
 
@@ -38,50 +31,10 @@ function buildFrames() {
 }
 
 const FRAMES = buildFrames()
-const LAST = FRAMES.length - 1
 
 export default function HashFunctionVisual() {
-  const [frameIndex, setFrameIndex] = useState(0)
-  const [playing, setPlaying] = useState(false)
-  const [speed, setSpeed] = useState("normal")
-
-  const { count, stage, phase, message } = FRAMES[frameIndex]
-  const atEnd = frameIndex === LAST
-  const delay = SPEEDS.find((item) => item.id === speed).ms
-
-  // Auto-advance while playing. The state update happens in the timer, not in the effect body.
-  useEffect(() => {
-    if (!playing) return undefined
-    const timer = setTimeout(() => {
-      const next = Math.min(frameIndex + 1, LAST)
-      setFrameIndex(next)
-      if (next === LAST) setPlaying(false)
-    }, delay)
-    return () => clearTimeout(timer)
-  }, [playing, frameIndex, delay])
-
-  function step(delta) {
-    setPlaying(false)
-    setFrameIndex((i) => Math.max(0, Math.min(LAST, i + delta)))
-  }
-
-  function togglePlay() {
-    if (atEnd) setFrameIndex(0)
-    setPlaying((value) => !value)
-  }
-
-  function restart() {
-    setPlaying(false)
-    setFrameIndex(0)
-  }
-
-  function onKeyDown(event) {
-    if (event.target.closest("button")) return
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-      event.stopPropagation() // keep the lesson carousel from also changing card
-      step(event.key === "ArrowRight" ? 1 : -1)
-    }
-  }
+  const playback = usePlayback(FRAMES.length)
+  const { count, stage, phase, message } = FRAMES[playback.frameIndex]
 
   const current = phase === "run" ? KEYS[count] : null
   const slot = current === null ? -1 : current % N
@@ -98,7 +51,7 @@ export default function HashFunctionVisual() {
       data-no-swipe
       className="select-none rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-yellow"
       tabIndex={0}
-      onKeyDown={onKeyDown}
+      onKeyDown={playback.onKeyDown}
       aria-label="Hash function animation. Use the left and right arrow keys to step."
     >
       {/* The rule, with a colour for each part */}
@@ -167,49 +120,7 @@ export default function HashFunctionVisual() {
         {message}
       </p>
 
-      <div className="mt-1 flex items-center gap-2 text-[11px] text-blue-100">
-        <span className="whitespace-nowrap">
-          Step {frameIndex + 1} of {FRAMES.length}
-        </span>
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
-          <span
-            className="block h-full rounded-full bg-emerald-400 transition-all duration-300"
-            style={{ width: `${((frameIndex + 1) / FRAMES.length) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Controls: restart, step back, play/pause, step forward, speed */}
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-2">
-          <InkButton variant="ghost" aria-label="Restart" onClick={restart}>
-            <RotateCcw size={15} />
-          </InkButton>
-          <InkButton variant="ghost" aria-label="Previous step" disabled={frameIndex === 0} onClick={() => step(-1)}>
-            <ChevronLeft size={16} />
-          </InkButton>
-          <InkButton variant="go" className="min-w-24" onClick={togglePlay}>
-            {playing ? <Pause size={15} /> : <Play size={15} />}
-            {playing ? "Pause" : atEnd ? "Replay" : "Play"}
-          </InkButton>
-          <InkButton variant="ghost" aria-label="Next step" disabled={atEnd} onClick={() => step(1)}>
-            <ChevronRight size={16} />
-          </InkButton>
-        </div>
-        <div className="flex items-center gap-1.5" role="group" aria-label="Playback speed">
-          {SPEEDS.map((item) => (
-            <InkButton
-              key={item.id}
-              variant={item.id === speed ? "on" : "off"}
-              aria-pressed={item.id === speed}
-              className="h-7 px-2 text-xs"
-              onClick={() => setSpeed(item.id)}
-            >
-              {item.label}
-            </InkButton>
-          ))}
-        </div>
-      </div>
+      <PlaybackControls playback={playback} />
     </div>
   )
 }
