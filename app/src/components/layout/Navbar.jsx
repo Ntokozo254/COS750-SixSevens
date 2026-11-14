@@ -1,15 +1,13 @@
 
-import { Menu, ChevronRight, LogOut } from "lucide-react";
-import { Menu, ChevronRight, Home } from "lucide-react";
+import { Menu, ChevronRight, Home , LogOut } from "lucide-react";
 
 export default function Navbar({
   page,
   activeModule,
   onMenuOpen,
   user,
-  onLogout
-  onNavigate,
-  onMenuOpen
+  onLogout,
+  onNavigate
 }) {
   const title =
     page === "Module" && activeModule
