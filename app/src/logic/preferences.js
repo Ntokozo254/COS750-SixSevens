@@ -10,6 +10,7 @@ export const DEFAULT_PREFERENCES = Object.freeze({
   speechRate: 1,
   speechVoice: '',
   preferredMode: 'explore',
+  learningCheckInComplete: false,
   studyGoal: 15,
 })
 
@@ -57,6 +58,7 @@ export function sanitizePreferences(saved) {
         : 1,
     speechVoice: text(supplied.speechVoice, 200),
     preferredMode: learningModes.has(supplied.preferredMode) ? supplied.preferredMode : 'explore',
+    learningCheckInComplete: supplied.learningCheckInComplete === true,
     studyGoal:
       Number.isInteger(supplied.studyGoal) &&
       supplied.studyGoal >= 5 &&
