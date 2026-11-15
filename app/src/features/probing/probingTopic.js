@@ -90,5 +90,4 @@ export const PROBING_TOPIC = {
     'If slot 4 is empty, store 32 there. This takes three inspections, including the empty stopping slot.',
     'After the final index, wrap to 0. Report a duplicate when the same key is found, and report full when all m inspected slots hold other keys.',
   ],
-  reflectionPrompt: 'Explain why a new key can have different home and final slots while existing entries stay in place. What changes when the probe reaches the last slot, or the table has no free slot?',
 }
