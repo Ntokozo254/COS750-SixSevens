@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { Button } from "./Button"
+import AnimationControls from "../AnimationControls";
 
 const KEY = "john_doe"
 const HASH_CODE = 4829103
 const SIZE = 10
 const SLOT = HASH_CODE % SIZE // 3
+const TOTAL_STEPS =4;
+
 
 // How long each stage lasts (ms). After the last one, it loops back to the start.
 const DURATIONS = [1700, 1700, 1700, 2800]
@@ -75,18 +77,20 @@ function Chip({ className, children }) {
 
 export default function HashingExampleVisual() {
  const [stage, setStage] = useState(0)
-const [playing, setPlaying] = useState(true) // set to false if you want it to start paused
+const [playing, setPlaying] = useState(false) // set to false if you want it to start paused
 
-useEffect(() => {
-  if (!playing) return
-  const t = setTimeout(() => setStage((s) => (s + 1) % DURATIONS.length), DURATIONS[stage])
-  return () => clearTimeout(t)
-}, [stage, playing])
 
-const goNext = () => {
-  setPlaying(false)
-  setStage((s) => (s + 1) % DURATIONS.length)
-}
+
+ const goNext = () => {
+    setStage((current) =>
+      Math.min(current + 1, TOTAL_STEPS - 1)
+    );
+  };
+  const goPrevious = () => {
+    setStage((current) =>
+      Math.max(current - 1, 0)
+    );
+  };
 const goPrev = () => {
   setPlaying(false)
   setStage((s) => (s - 1 + DURATIONS.length) % DURATIONS.length)
@@ -171,25 +175,13 @@ const goPrev = () => {
         </AnimatePresence>
       </div>
       {/* data-no-swipe stops the carousel from swiping when you press these */}
-<div data-no-swipe className="mt-3 flex items-center justify-center gap-2">
-  <Button size="sm" onClick={goPrev}>
-    Previous
-  </Button>
-  <Button
-    size="sm"
-    onClick={() => setPlaying((p) => !p)}
-    variant="primary"
-    className="min-w-20"
-  >
-    {playing ? "Pause" : "Play"}
-  </Button>
-  <Button size="sm" onClick={goNext}>
-    Step
-  </Button>
-  <span className="lesson-visual-index ml-1 text-xs">
-    {stage + 1} / {DURATIONS.length}
-  </span>
-</div>
+{/* Animation navigation */}
+<AnimationControls
+  step={stage}
+  totalSteps={TOTAL_STEPS}
+  onPrevious={goPrevious}
+  onNext={goNext}
+/>
     </div>
   )
 }
