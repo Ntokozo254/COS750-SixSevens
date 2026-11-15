@@ -75,7 +75,7 @@ export function errorFromResponse(status, data, kind) {
   if (status === 401) {
     // One message for unknown email and wrong password, so the form never
     // reveals which emails have accounts.
-    return new AuthError("Email and password does not match an account. Check them and try again.", {
+    return new AuthError("Email and password don't match an account. Check them and try again.", {
       field: "password",
     });
   }
