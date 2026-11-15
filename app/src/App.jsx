@@ -161,7 +161,7 @@ function App() {
           }
         />
         <Route path="/visualiser" element={<Visualiser />} />
-        <Route path="/practice" element={<PracticeLab />} />
+        <Route path="/practice" element={<PracticeLab key={user.id ?? 'local'} learnerId={user.id ?? 'local'} preferences={preferences} />} />
         <Route path="/assessment" element={<Assessment onOpenModule={openModule} />} />
         <Route
           path="/progress"

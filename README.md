@@ -23,5 +23,6 @@ For first-time dependency installation, database configuration, and troubleshoot
 
 ## Documentation
 
+- [Practice Lab coding path](docs/practice-lab-instructional-design.md): staged JavaScript problems, guided insertion, feedback, sandbox, and learning-design rationale.
 - [Run locally with the backend](docs/running-locally.md): installation, environment variables, database setup, startup, and troubleshooting.
 - [Software styling guide](docs/software-styling.md): design tokens, component styles, interaction states, and responsive layouts.

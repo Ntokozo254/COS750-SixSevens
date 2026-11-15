@@ -26,7 +26,7 @@ Open [http://localhost:5173/](http://localhost:5173/) to match the configured ba
 - Dashboard with progress overview
 - Six learning-objective module cards
 - Six module detail screens, including interactive lessons for hash functions, collisions, linear probing, searching, and clustering/load factor
-- Standalone visualiser, practice lab, and assessment pages reserved for the group's remaining integration work; lesson practice and assessments are available inside the modules
+- Standalone visualiser and course assessment, plus the staged Practice Lab coding path and independent sandbox
 - Browser-local progress saved with `localStorage`, with session progress available when storage is blocked
 - Search/filter for learning modules
 
@@ -54,6 +54,14 @@ See the [instructional-design record](../docs/foundational-modules-instructional
 
 Module 4 uses the same light-card lesson frame and four activities as the other interactive modules. The insertion trace includes collisions, wrap-around, a full table, and a duplicate request, with highlighted pseudocode, probe counts, manual stepping, replay, and optional playback. Reduced motion uses manual advancement. Guided practice provides progressive hints and worked placements. A checked five-question assessment, targeted remediation, retained review state, and reflection complete the learning flow. See the [Linear Probing alignment record](../docs/linear-probing-knowledge-base-alignment.md) for the knowledge-base mapping and completion migration.
 
+## Practice Lab
+
+Open **Practice lab** or `/practice` after signing in. Four stages contain eight original JavaScript coding problems: home slots, load factor, single insertion, table construction, search, probe counting, resizing/rehashing, and cyclic clusters. Problems include constraints, input/output examples, fading starter scaffolds, worked snippets, progressive hints, and inspectable checks.
+
+Write `solve(input)` in the editor, use **Run code** for custom JSON experiments, and **Submit solution** for all official cases. All cases must pass before a challenge is accepted; completing both problems unlocks the next stage. Code runs in isolated workers with time limits and Stop controls. Input preservation is checked. Accepted code and current drafts save separately per learner in this browser, and failed retries retain an earlier accepted result. The independent sandbox is always available for building tables, inserting/searching keys, and inspecting paths and project code snippets.
+
+Practice Lab completion is separate from lesson completion. See the [Practice Lab instructional-design and usage guide](../docs/practice-lab-instructional-design.md) for the learning map, execution model, storage behaviour, and validation limits.
+
 Run the regression checks from `app/`.
 
 ```bash
@@ -64,7 +72,7 @@ npm run build
 ## Suggested next implementation steps
 
 1. Connect browser-local progress to the group's backend when shared progress is needed.
-2. Connect the standalone visualiser, practice lab, and assessment pages to the lesson activities.
+2. Extend backend synchronisation when shared practice progress is needed across devices.
 3. Evaluate the learning flows with novice COS212 students and revise the examples using their feedback.
 
 ## Project structure
