@@ -7,6 +7,10 @@ import {
   sanitizeProgress,
 } from '../logic/progress'
 import { validateSearchCompletionEvidence } from '../features/search/searchMastery'
+import {
+  getAssessmentTopic,
+  validateTopicCompletionEvidence,
+} from '../features/learning/topicRegistry'
 
 const moduleIds = new Set(modules.map((module) => module.id))
 
@@ -32,6 +36,9 @@ export default function useProgress() {
     if (!moduleIds.has(id)) return
     const searchAssessment = id === 5 ? validateSearchCompletionEvidence(evidence) : null
     if (id === 5 && !searchAssessment) return
+    const assessedTopic = getAssessmentTopic(id)
+    const topicAssessment = assessedTopic ? validateTopicCompletionEvidence(id, evidence) : null
+    if (assessedTopic && !topicAssessment) return
 
     setSavedProgress((saved) => {
       const current = sanitizeProgress(saved, moduleIds)
@@ -40,6 +47,9 @@ export default function useProgress() {
         ...current,
         completed: [...current.completed, id],
         searchAssessment: id === 5 ? searchAssessment : current.searchAssessment,
+        ...(topicAssessment
+          ? { moduleAssessments: { ...current.moduleAssessments, [id]: topicAssessment } }
+          : {}),
       }
     })
   }

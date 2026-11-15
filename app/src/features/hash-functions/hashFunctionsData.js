@@ -1,0 +1,205 @@
+export const HASH_PRACTICE_CASES = [
+  { key: 23, tableSize: 10 },
+  { key: 42, tableSize: 7 },
+  { key: 37, tableSize: 8 },
+  { key: 58, tableSize: 6 },
+  { key: 25, tableSize: 4 },
+  { key: 64, tableSize: 9 },
+  { key: 0, tableSize: 10 },
+  { key: 99, tableSize: 20 },
+]
+
+const concepts = {
+  remainder: {
+    title: 'Calculate the remainder',
+    hints: [
+      'Remove complete groups of the table size from the key.',
+      'The leftover amount is the remainder and becomes the home-slot index.',
+    ],
+    review: 'practice',
+  },
+  range: {
+    title: 'Keep the index inside the table',
+    hints: [
+      'A table with m slots has indices 0 through m − 1.',
+      'A zero remainder chooses slot 0. The remainder is always smaller than the positive table size.',
+    ],
+    review: 'explore',
+  },
+  repeatability: {
+    title: 'Repeat the same calculation',
+    hints: [
+      'Insertion and lookup use the same hash function and table size.',
+      'The same key with those same inputs produces the same home slot. Changing the table size can change that slot.',
+    ],
+    review: 'learn',
+  },
+  'home-slot': {
+    title: 'Separate the home slot from the final position',
+    hints: [
+      'The hash function supplies the starting index.',
+      'Different keys can share a home slot. Collision handling can place an entry at another position.',
+    ],
+    review: 'explore',
+  },
+  distribution: {
+    title: 'Spread keys across the available slots',
+    hints: [
+      'A useful hash function is repeatable and spreads the expected keys across the table.',
+      'Mapping every key to one slot creates many collisions. Collisions can still occur with a well-distributed function.',
+    ],
+    review: 'learn',
+  },
+}
+
+export const HASH_FUNCTIONS_TOPIC = {
+  id: 2,
+  title: 'Hash Functions',
+  introduction: 'A hash function turns a key into a starting slot in a hash table. Calculate that slot, connect the calculation to a table, and practise with your own keys.',
+  scenario: 'A library stores a book record under catalogue key 23. Its index has 10 slots. Where should a lookup for that record begin?',
+  outcomes: [
+    'Calculate a home slot using the remainder after division.',
+    'Check that a home-slot index is between 0 and table size − 1.',
+    'Explain why a useful hash function gives repeatable results and spreads keys.',
+    'Explain how keys can share a home slot and distinguish that slot from a final storage position.',
+  ],
+  sections: [
+    {
+      title: 'A key, a slot, and a home',
+      content: 'A key identifies an entry, such as a catalogue number identifying a book record. A slot is one position in the table. Its index is its position number, beginning at 0. The hash function calculates the home slot where insertion or lookup starts.',
+    },
+    {
+      title: 'Modulo means the remainder',
+      content: 'Our example hash function is h(key) = key mod m, where m is the number of slots. Modulo is often written %. Divide the key into complete groups of m. The number of groups is the quotient. The amount left over is the remainder.',
+      example: '23 = 2 × 10 + 3, so 23 mod 10 = 3. The home slot is index 3.',
+    },
+    {
+      title: 'Every result is a valid index',
+      content: 'For a nonnegative integer key and positive table size m, the remainder is between 0 and m − 1. A zero remainder is a valid result. In a table with 10 slots, valid indices run from 0 through 9.',
+      example: '42 = 6 × 7 + 0, so a 7-slot table gives key 42 the home slot 0.',
+    },
+    {
+      title: 'Lookup repeats the same calculation',
+      content: 'A hash function is deterministic. The same key, hash function, and table size give the same home slot each time. This lets lookup repeat insertion’s starting calculation. A change in table size can change the result.',
+      example: '23 mod 10 = 3, while 23 mod 7 = 2. Each result stays the same when its calculation is repeated.',
+    },
+    {
+      title: 'Different keys can share a home',
+      content: 'A collision occurs when different keys map to the same home slot. Collision handling decides where to store a key when that slot is occupied. A useful function spreads the expected keys across the table, which helps limit collisions.',
+      example: '12 mod 10 = 2 and 22 mod 10 = 2. Both keys start at slot 2. With linear probing, the second key can be stored in the next available slot.',
+    },
+  ],
+  warmup: {
+    question: 'A table has 10 slots and its first index is 0. What is its last index?',
+    options: ['9', '10', '11'],
+    correctAnswer: 0,
+    explanation: 'Ten indices beginning at 0 are 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9.',
+    hints: ['Begin counting positions at 0.', 'The final index is one less than the number of slots.'],
+  },
+  concepts,
+  questionSets: [
+    [
+      {
+        id: 'lo2-remainder-a',
+        concept: 'remainder',
+        objective: 'LO2',
+        question: 'A table has 10 slots and uses h(key) = key mod 10. What is the home slot for key 23?',
+        options: ['2', '3', '10', '23'],
+        correctAnswer: 1,
+        explanation: '23 = 2 × 10 + 3. The remainder is 3, so the home slot is index 3.',
+        calculation: { key: 23, tableSize: 10 },
+      },
+      {
+        id: 'lo2-range-a',
+        concept: 'range',
+        objective: 'LO2',
+        question: 'A hash table has 8 slots indexed from 0. Which range contains every valid home-slot index?',
+        options: ['0 through 7', '1 through 8', '0 through 8', 'Any whole number'],
+        correctAnswer: 0,
+        explanation: 'Eight slots beginning at index 0 have indices 0 through 7. The remainder after division by 8 lies in that range.',
+      },
+      {
+        id: 'lo2-repeatability-a',
+        concept: 'repeatability',
+        objective: 'LO2',
+        question: 'Insertion and lookup use the same hash function and table size. What should happen when they hash the same key?',
+        options: ['They choose a random slot each time.', 'They always choose the last slot.', 'They calculate the same home slot.', 'They produce different indices for insertion and lookup.'],
+        correctAnswer: 2,
+        explanation: 'A deterministic hash function gives the same result for the same key and table size. Lookup can reproduce insertion’s home-slot calculation.',
+      },
+      {
+        id: 'lo2-home-slot-a',
+        concept: 'home-slot',
+        objective: 'LO2',
+        question: 'Keys 12 and 22 both hash to slot 2 in a 10-slot table. Slot 2 already holds 12. What does the result for 22 tell us?',
+        options: ['22 must replace 12.', '22 must be rejected by every hash table.', '22 is already stored at slot 2.', 'Slot 2 is the starting point, and collision handling determines where 22 can be stored.'],
+        correctAnswer: 3,
+        explanation: 'The hash result chooses a home slot. Different keys can share it, so the collision-handling method determines the final position of the new entry.',
+      },
+      {
+        id: 'lo2-distribution-a',
+        concept: 'distribution',
+        objective: 'LO2',
+        question: 'A function maps every key to slot 0. What problem can this cause?',
+        options: ['Many different keys collide at the same home slot.', 'The same key always gets a different result.', 'The table gains an unlimited number of slots.', 'Collisions become impossible.'],
+        correctAnswer: 0,
+        explanation: 'Every new distinct key begins at the same place, creating collisions. Spreading the expected keys across slots can reduce that concentration.',
+      },
+    ],
+    [
+      {
+        id: 'lo2-remainder-b',
+        concept: 'remainder',
+        objective: 'LO2',
+        question: 'Using h(key) = key mod 7, what is the home slot for key 42?',
+        options: ['6', '7', '0', '42'],
+        correctAnswer: 2,
+        explanation: '42 = 6 × 7 + 0. The remainder is 0, which is a valid slot index.',
+        calculation: { key: 42, tableSize: 7 },
+      },
+      {
+        id: 'lo2-range-b',
+        concept: 'range',
+        objective: 'LO2',
+        question: 'A table has exactly one slot and uses h(key) = key mod 1. Which home-slot index is possible?',
+        options: ['1', '0', 'The key itself', 'No index is possible'],
+        correctAnswer: 1,
+        explanation: 'A one-slot table has index 0. Dividing any supported whole-number key by 1 leaves remainder 0.',
+      },
+      {
+        id: 'lo2-repeatability-b',
+        concept: 'repeatability',
+        objective: 'LO2',
+        question: 'Key 23 has home slot 3 with key mod 10 and home slot 2 with key mod 7. Why can these results differ?',
+        options: ['A correct hash function always chooses randomly.', 'Determinism applies only to insertion.', 'The key was changed.', 'The table size used in the calculation changed.'],
+        correctAnswer: 3,
+        explanation: 'The table size is part of this hash calculation. Each key/size pair gives a repeatable result, while different sizes can give different home slots.',
+      },
+      {
+        id: 'lo2-home-slot-b',
+        concept: 'home-slot',
+        objective: 'LO2',
+        question: 'In an 8-slot table, key 37 has home slot 5 and is stored at slot 7 after collisions. Which slot should lookup use as its starting point?',
+        options: ['Slot 5', 'Slot 7 in every table', 'Slot 0', 'Slot 37'],
+        correctAnswer: 0,
+        explanation: 'Lookup repeats the hash calculation. 37 = 4 × 8 + 5, so it starts at slot 5 and follows the table’s collision-handling method.',
+      },
+      {
+        id: 'lo2-distribution-b',
+        concept: 'distribution',
+        objective: 'LO2',
+        question: 'Which description fits a useful hash function for the expected keys?',
+        options: ['It guarantees a unique slot for every possible key.', 'It gives repeatable results and spreads keys across available slots.', 'It always returns the largest index.', 'It changes its answer whenever lookup is repeated.'],
+        correctAnswer: 1,
+        explanation: 'Repeatability allows insertion and lookup to agree on the starting point. Good distribution helps reduce collisions, while different keys can still share a slot.',
+      },
+    ],
+  ],
+  refresher: [
+    'Use h(key) = key mod m, where m is the number of slots. Slot indices begin at 0.',
+    'For key 23 and 10 slots, write 23 = 2 × 10 + 3. The remainder 3 is the home slot.',
+    'A zero remainder chooses slot 0. Every result is smaller than the positive table size.',
+    'The same key, function, and table size give the same starting slot. Different keys can collide at that slot.',
+  ],
+  reflectionPrompt: 'Explain how 23 mod 10 chooses a home slot. Why can key 33 share it, and how could the final storage position differ from that starting point?',
+}

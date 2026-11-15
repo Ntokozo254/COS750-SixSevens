@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react'
+import { useReducedMotion } from 'motion/react'
 import ProbeTable from './ProbeTable'
 import { InkButton, KeyQueue, Pseudocode, Stage } from './ProbingUi'
 import { buildInsertTrace, TRACE_EXAMPLES } from './probingLogic'
@@ -20,17 +21,23 @@ function marksFor(frame) {
     })
     return marks
   }
-  const now = { check: 'check', collision: 'collision', insert: 'placed' }[frame.phase]
+  const now = { check: 'check', collision: 'collision', insert: 'placed', duplicate: 'check' }[frame.phase]
   if (now) marks[frame.slot] = now
   return marks
 }
 
-export default function ProbingTrace({ onTraced }) {
+export default function ProbingTrace({ onTraced, active = true, preferences = {} }) {
   const titleId = useId()
+  const frameId = `${titleId}-frame`
+  const motionNoteId = `${titleId}-motion-note`
   const [exampleId, setExampleId] = useState(TRACE_EXAMPLES[0].id)
   const [frameIndex, setFrameIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState('normal')
+  const systemReduceMotion = useReducedMotion()
+  const reduceMotion = Boolean(preferences.reduceMotion || systemReduceMotion)
+  const canAutoPlay = active && !reduceMotion
+  const isPlaying = playing && canAutoPlay
 
   const example = TRACE_EXAMPLES.find((item) => item.id === exampleId)
   const frames = useMemo(() => buildInsertTrace(example.keys, example.size), [example])
@@ -38,19 +45,22 @@ export default function ProbingTrace({ onTraced }) {
   const atEnd = frameIndex === frames.length - 1
   const delay = SPEEDS.find((item) => item.id === speed).ms
 
-  // Auto-advance while playing. The state update happens in the timer, not in the effect body.
   useEffect(() => {
     if (!playing) return undefined
     const timer = setTimeout(() => {
+      if (!canAutoPlay) {
+        setPlaying(false)
+        return
+      }
       const next = Math.min(frameIndex + 1, frames.length - 1)
       setFrameIndex(next)
       if (next === frames.length - 1) {
         setPlaying(false)
         onTraced?.()
       }
-    }, delay)
+    }, canAutoPlay ? delay : 0)
     return () => clearTimeout(timer)
-  }, [playing, frameIndex, delay, frames.length, onTraced])
+  }, [playing, canAutoPlay, frameIndex, delay, frames.length, onTraced])
 
   function chooseExample(id) {
     setExampleId(id)
@@ -66,22 +76,29 @@ export default function ProbingTrace({ onTraced }) {
   }
 
   function togglePlay() {
+    if (!canAutoPlay) return
     if (atEnd) setFrameIndex(0)
     setPlaying((value) => !value)
   }
 
   function onKeyDown(event) {
-    if (event.target.closest('button, select')) return
-    if (event.key === 'ArrowRight') step(1)
-    if (event.key === 'ArrowLeft') step(-1)
+    if (event.target.closest('button, select, input, textarea')) return
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault()
+      step(event.key === 'ArrowRight' ? 1 : -1)
+    }
   }
 
   const incoming =
     frame.key !== null && frame.phase !== 'insert' ? { key: frame.key, slot: frame.slot } : null
 
   return (
-    <Stage eyebrow="Step 2 of 4 · Watch it insert" title="Follow every check, collision and move." titleId={titleId}>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Choose an example">
+    <Stage
+      eyebrow="WORKED INSERTION EXAMPLE"
+      title="Follow each check, collision, and placement."
+      titleId={titleId}
+    >
+      <div className="hash-probing-example-options" role="group" aria-label="Choose an insertion example">
         {TRACE_EXAMPLES.map((item) => (
           <InkButton
             key={item.id}
@@ -93,80 +110,126 @@ export default function ProbingTrace({ onTraced }) {
           </InkButton>
         ))}
       </div>
-      <p className="text-sm leading-relaxed text-blue-100">{example.purpose}</p>
+      <p className="hash-probing-description">{example.purpose}</p>
+      <p className="hash-probing-description">
+        Use Next and Previous to choose your pace. The highlighted pseudocode line explains the
+        current action. You can also focus the trace and use the left and right arrow keys.
+      </p>
 
       <div
-        className="grid grid-cols-[minmax(0,1fr)] gap-4 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-yellow @3xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] @3xl:items-start"
+        className="hash-probing-trace-layout"
         tabIndex={0}
         onKeyDown={onKeyDown}
-        aria-label="Trace. Use the left and right arrow keys to step."
+        role="group"
+        aria-label="Insertion trace. Use left and right arrow keys to step."
       >
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
-          <KeyQueue keys={example.keys} currentIndex={frame.keyIndex} label="Keys" note={`m = ${example.size}`} />
-          <ProbeTable table={frame.table} marks={marksFor(frame)} incoming={incoming} layoutGroup="trace" />
-          <p aria-live="polite" className="min-h-12 rounded-lg bg-white/5 px-3 py-2 text-sm leading-relaxed text-white">
+        <div className="hash-probing-trace-visual">
+          <KeyQueue
+            keys={example.keys}
+            currentIndex={frame.keyIndex}
+            label="Insertion order"
+            note={`Table capacity m = ${example.size}`}
+          />
+          <ProbeTable
+            table={frame.table}
+            marks={marksFor(frame)}
+            incoming={incoming}
+            layoutGroup="trace"
+            reduceMotion={reduceMotion}
+          />
+          <p
+            id={frameId}
+            className="hash-probing-trace-explanation"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {frame.message}
           </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-blue-100">
-            <span>
-              Step {frameIndex + 1} of {frames.length}
-            </span>
+          <div className="hash-probing-trace-meta">
+            <span>Step {frameIndex + 1} of {frames.length}</span>
             {frame.key !== null && (
               <span>
-                Slots checked for {frame.key}: <strong className="text-white">{frame.checks}</strong>
+                For key {frame.key}, <strong>{frame.checks}</strong>{' '}
+                {frame.checks === 1 ? 'slot' : 'slots'} checked
               </span>
             )}
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
-            <span
-              className="block h-full rounded-full bg-emerald-400 transition-all duration-300"
-              style={{ width: `${((frameIndex + 1) / frames.length) * 100}%` }}
-            />
-          </div>
+          <progress
+            className="hash-probing-trace-progress"
+            aria-label="Insertion walkthrough progress"
+            aria-valuetext={`Step ${frameIndex + 1} of ${frames.length}`}
+            value={frameIndex + 1}
+            max={frames.length}
+          >
+            Step {frameIndex + 1} of {frames.length}
+          </progress>
         </div>
 
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
+        <div className="hash-probing-trace-code">
           <Pseudocode activeLine={frame.line} />
-          <ul className="m-0 grid list-none gap-1 p-0 text-[11px] text-blue-100">
-            <li className="flex items-center gap-2">
-              <span className="size-3 rounded-sm bg-yellow" /> key being inserted / slot being checked
+          <ul className="hash-probing-legend" aria-label="Insertion trace legend">
+            <li>
+              <span className="hash-probing-legend-key hash-probing-legend-key--check" aria-hidden="true">?</span>
+              Checking the current slot.
             </li>
-            <li className="flex items-center gap-2">
-              <span className="size-3 rounded-sm bg-red-400" /> collision: slot already taken (!)
+            <li>
+              <span className="hash-probing-legend-key hash-probing-legend-key--collision" aria-hidden="true">!</span>
+              Collision marks an occupied slot.
             </li>
-            <li className="flex items-center gap-2">
-              <span className="size-3 rounded-sm bg-emerald-400" /> key stored (✓)
+            <li>
+              <span className="hash-probing-legend-key hash-probing-legend-key--placed" aria-hidden="true">✓</span>
+              Stored marks a completed insertion.
             </li>
-            <li className="flex items-center gap-2">
-              <span className="size-3 rounded-sm outline-1 outline-dashed outline-red-300" /> already checked for this key
+            <li>
+              <span className="hash-probing-legend-key hash-probing-legend-key--path" aria-hidden="true" />
+              Dashed outline marks a slot already checked for this key.
             </li>
           </ul>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="hash-probing-controls">
+        <div className="hash-probing-transport" role="group" aria-label="Insertion playback controls">
           <InkButton variant="ghost" aria-label="Restart" onClick={() => chooseExample(exampleId)}>
-            <RotateCcw size={15} />
+            <RotateCcw size={15} aria-hidden="true" /> Restart
           </InkButton>
-          <InkButton variant="ghost" aria-label="Previous step" disabled={frameIndex === 0} onClick={() => step(-1)}>
-            <ChevronLeft size={16} />
+          <InkButton
+            variant="ghost"
+            aria-label="Previous step"
+            disabled={frameIndex === 0}
+            aria-controls={frameId}
+            onClick={() => step(-1)}
+          >
+            <ChevronLeft size={16} aria-hidden="true" /> Previous
           </InkButton>
-          <InkButton variant="go" className="min-w-24" onClick={togglePlay}>
-            {playing ? <Pause size={15} /> : <Play size={15} />}
-            {playing ? 'Pause' : atEnd ? 'Replay' : 'Play'}
+          <InkButton
+            variant="go"
+            disabled={!canAutoPlay}
+            aria-describedby={reduceMotion ? motionNoteId : undefined}
+            aria-controls={frameId}
+            onClick={togglePlay}
+          >
+            {isPlaying ? <Pause size={15} aria-hidden="true" /> : <Play size={15} aria-hidden="true" />}
+            {isPlaying ? 'Pause' : atEnd ? 'Replay' : 'Play'}
           </InkButton>
-          <InkButton variant="ghost" aria-label="Next step" disabled={atEnd} onClick={() => step(1)}>
-            <ChevronRight size={16} />
+          <InkButton
+            variant="ghost"
+            aria-label="Next step"
+            disabled={atEnd}
+            aria-controls={frameId}
+            onClick={() => step(1)}
+          >
+            Next <ChevronRight size={16} aria-hidden="true" />
           </InkButton>
         </div>
-        <div className="flex items-center gap-1.5" role="group" aria-label="Playback speed">
+        <div className="hash-probing-speed" role="group" aria-label="Playback speed">
           {SPEEDS.map((item) => (
             <InkButton
               key={item.id}
               variant={item.id === speed ? 'on' : 'off'}
               aria-pressed={item.id === speed}
-              className="h-7 px-2 text-xs"
+              disabled={reduceMotion}
               onClick={() => setSpeed(item.id)}
             >
               {item.label}
@@ -174,6 +237,14 @@ export default function ProbingTrace({ onTraced }) {
           ))}
         </div>
       </div>
+      <p className="hash-probing-playback-status" role="status" aria-live="polite">
+        {isPlaying ? 'Automatic playback is running.' : 'Automatic playback is paused.'}
+      </p>
+      {reduceMotion && (
+        <p className="hash-probing-motion-note" id={motionNoteId}>
+          Reduced motion is on. Use Next, Previous, or the arrow keys to advance the example manually.
+        </p>
+      )}
     </Stage>
   )
 }

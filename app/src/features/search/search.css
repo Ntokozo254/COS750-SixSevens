@@ -432,19 +432,108 @@
   color: #526985;
   font-size: 11px;
 }
-.hash-search-slot-choices {
+/* Practice: the table is clickable. Same look as .hash-search-table slots. */
+.hash-search-pick-table {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--search-columns), minmax(0, 1fr));
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
-.hash-search-slot-choices button {
-  padding-inline: 4px;
-  font-size: 10px !important;
+.hash-search-pick {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 72px;
+  padding: 9px 4px;
+  border: 1px solid #dce5f3;
+  border-radius: 8px;
+  background: #f8faff;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
-.hash-search-choice-selected {
-  border-color: #3272dd !important;
-  background: #edf4ff !important;
+.hash-search-pick:hover:not(:disabled) {
+  border-color: #6d97de;
+  background: #edf4ff;
+  transform: translateY(-1px);
+}
+.hash-search-pick:disabled {
+  opacity: 1 !important;
+}
+.hash-search-pick-index {
+  color: #526985;
+  font-size: 10px;
+}
+.hash-search-pick-value {
+  color: #355984;
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.hash-search-pick-order {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  background: #316fe6;
+  font-size: 9px;
+  font-weight: 800;
+}
+.hash-search-pick--visited {
+  border: 2px solid #316fe6;
+  background: #edf3ff;
+}
+.hash-search-pick--found {
+  border: 3px double #278a66;
+  background: #eaf8f1;
+}
+.hash-search-pick--found .hash-search-pick-order {
+  background: #278a66;
+}
+.hash-search-pick--wrong {
+  border: 2px solid #d46c61;
+  background: #fff1ef;
+}
+.hash-search-practice-log {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+}
+.hash-search-practice-log li {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e0e8f4;
+  border-radius: 8px;
+  background: #fff;
+}
+.hash-search-practice-log li > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 5px;
+  color: #2867d0;
+  background: #edf3ff;
+  font-size: 10px;
+  font-weight: 800;
+}
+.hash-search-practice-log p {
+  margin: 0;
+  color: #526985;
+  font-size: 12px;
+  line-height: 1.7;
 }
 .hash-search-module .feedback-panel {
   padding: 16px;
@@ -571,7 +660,7 @@
     margin-top: 6px;
     justify-content: end;
   }
-  .hash-search-slot-choices {
+  .hash-search-pick-table {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

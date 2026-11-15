@@ -9,6 +9,7 @@ export const CODE_LINES = [
   { id: 'loop', text: 'repeat at most m times:' },
   { id: 'empty', text: '  if slot[index] is empty:' },
   { id: 'store', text: '    store key in slot[index]; stop' },
+  { id: 'duplicate', text: '  if slot[index] holds key: stop (duplicate)' },
   { id: 'next', text: '  index = (index + 1) mod m' },
   { id: 'full', text: 'table is full: resize it (Module 6)' },
 ]
@@ -36,6 +37,13 @@ export const TRACE_EXAMPLES = [
     size: 3,
     keys: [5, 10, 15, 20],
     purpose: 'Three slots, four keys. Watch what happens when every slot is taken.',
+  },
+  {
+    id: 'duplicate',
+    label: 'A repeated key',
+    size: 10,
+    keys: [12, 22, 12],
+    purpose: 'Different keys can collide. Asking to store the same key again reports a duplicate and keeps the existing entry.',
   },
 ]
 
@@ -140,7 +148,20 @@ export function buildInsertTrace(keys, size) {
       }
     }
 
-    if (!result.success) {
+    const lastCheck = result.steps.at(-1)
+    const duplicate = !result.success && lastCheck?.type === 'check' && table[lastCheck.index] === key
+    if (duplicate) {
+      frames.push({
+        ...base,
+        phase: 'duplicate',
+        slot: lastCheck.index,
+        path: [...path],
+        table: [...table],
+        line: 'duplicate',
+        checks: path.length,
+        message: `Slot ${lastCheck.index} already holds key ${key}. Report a duplicate and keep the existing entry. No new entry is added.`,
+      })
+    } else if (!result.success) {
       frames.push({
         ...base,
         phase: 'full',
@@ -164,7 +185,7 @@ export function buildInsertTrace(keys, size) {
     table: [...table],
     line: null,
     checks: 0,
-    message: `Done. ${stored} of ${keys.length} keys are stored. Every key sits at its home slot or further along the probe path.`,
+    message: `Done. ${stored} entries are stored after ${keys.length} insertion requests. Every stored key sits at its home slot or further along the probe path.`,
   })
 
   return frames
