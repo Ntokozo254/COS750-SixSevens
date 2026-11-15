@@ -162,7 +162,7 @@ function App() {
         />
         <Route path="/visualiser" element={<Visualiser />} />
         <Route path="/practice" element={<PracticeLab />} />
-        <Route path="/assessment" element={<Assessment />} />
+        <Route path="/assessment" element={<Assessment onOpenModule={openModule} />} />
         <Route
           path="/progress"
           element={<Progress completed={completed} progress={progress} onOpenModule={openModule} />}
