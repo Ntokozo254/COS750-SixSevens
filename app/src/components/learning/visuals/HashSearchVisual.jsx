@@ -33,7 +33,7 @@ function Arrow({ level }) {
     <motion.span
       initial={false}
       animate={{ opacity: level }}
-      className="flex h-9 items-center text-lg text-white/80"
+      className="lesson-visual-pointer flex h-9 items-center text-lg"
     >
       →
     </motion.span>
@@ -49,7 +49,7 @@ function Step({ level, label, children }) {
       className="flex flex-col items-center gap-1"
     >
       {children}
-      <span className="text-[10px] uppercase tracking-wide text-blue-100">{label}</span>
+      <span className="lesson-visual-index text-[10px] uppercase tracking-wide">{label}</span>
     </motion.div>
   )
 }
@@ -59,10 +59,10 @@ function FnBox({ active, skipped, children }) {
     <motion.div
       animate={{ scale: active ? 1.1 : 1 }}
       transition={spring}
-      className={`flex h-9 items-center rounded-lg border-2 px-3 font-mono text-xs font-bold transition-colors duration-300 ${
+      className={`lesson-visual-slot flex h-9 items-center rounded-lg px-3 font-mono text-xs font-bold transition-colors duration-300 ${
         active
-          ? "border-white bg-white text-blue-700 shadow-lg shadow-blue-950/40"
-          : "border-white/50 bg-blue-700/50 text-white"
+          ? "lesson-visual-slot--occupied"
+          : ""
       } ${skipped ? "line-through" : ""}`}
     >
       {children}
@@ -73,7 +73,7 @@ function FnBox({ active, skipped, children }) {
 function Chip({ className, children }) {
   return (
     <div
-      className={`flex h-9 items-center rounded-full px-3 font-mono text-xs font-bold shadow-lg shadow-blue-950/40 ${className}`}
+      className={`lesson-visual-tag flex h-9 items-center rounded-full px-3 font-mono text-xs font-bold ${className}`}
     >
       {children}
     </div>
@@ -118,15 +118,15 @@ export default function HashSearchVisual() {
   const indexMode = mode === "index"
   const found = stage === 4
   const locked = (keyMode && stage === 3) || (indexMode && stage === 1)
-  const lvl = (on) => (on ? 1 : 0.2)
-  const skippedLvl = indexMode ? 0.4 : 0.2
+  const lvl = (on) => (on ? 1 : 0.8)
+  const skippedLvl = indexMode ? 0.85 : 0.8
 
   return (
-    <div className="select-none">
+    <div className="lesson-visual select-none">
       {/* The lookup pipeline: key -> hash() -> hash code -> % 10 -> index */}
       <div className="flex flex-wrap items-start justify-center gap-x-1.5 gap-y-3">
         <Step level={lvl(keyMode && stage >= 1)} label="key">
-          <Chip className="bg-white text-blue-700">{KEY}</Chip>
+          <Chip className="lesson-visual-slot--occupied">{KEY}</Chip>
         </Step>
         <Arrow level={lvl(keyMode && stage >= 2)} />
         <Step level={keyMode && stage >= 2 ? 1 : skippedLvl} label="step 1">
@@ -134,7 +134,7 @@ export default function HashSearchVisual() {
         </Step>
         <Arrow level={lvl(keyMode && stage >= 2)} />
         <Step level={lvl(keyMode && stage >= 2)} label="hash code">
-          <Chip className="bg-yellowtext-blue-900">{HASH_CODE}</Chip>
+          <Chip className="lesson-visual-slot--current">{HASH_CODE}</Chip>
         </Step>
         <Arrow level={lvl(keyMode && stage >= 3)} />
         <Step level={keyMode && stage >= 3 ? 1 : skippedLvl} label="step 2">
@@ -142,7 +142,7 @@ export default function HashSearchVisual() {
         </Step>
         <Arrow level={lvl((keyMode && stage >= 3) || (indexMode && stage >= 1))} />
         <Step level={lvl((keyMode && stage >= 3) || (indexMode && stage >= 1))} label="index">
-          <Chip className="bg-emerald-400 text-white">{SLOT}</Chip>
+          <Chip className="lesson-visual-slot--found">{SLOT}</Chip>
         </Step>
       </div>
 
@@ -154,15 +154,15 @@ export default function HashSearchVisual() {
           return (
             <motion.div
               key={i}
-              animate={{ scale: hit ? 1.1 : 1, opacity: found && !hit ? 0.4 : 1 }}
+              animate={{ scale: hit ? 1.1 : 1, opacity: found && !hit ? 0.7 : 1 }}
               transition={spring}
-              className={`relative flex h-14 flex-col items-center justify-center rounded-lg px-1 transition-colors duration-300 ${
+              className={`lesson-visual-slot relative flex h-14 flex-col items-center justify-center rounded-lg px-1 transition-colors duration-300 ${
                 hit
-                  ? "bg-emerald-400 text-white shadow-lg ring-4 ring-emerald-200/60"
+                  ? "lesson-visual-slot--found"
                   : entry
-                    ? "bg-white text-blue-700 shadow-md shadow-blue-950/30"
-                    : "bg-blue-700/40 text-blue-200"
-              } ${locked && i === SLOT ? "ring-2 ring-amber-300" : ""}`}
+                    ? "lesson-visual-slot--occupied"
+                    : ""
+              } ${locked && i === SLOT ? "lesson-visual-slot--current" : ""}`}
             >
               <span className="absolute left-1.5 top-1 text-[10px] opacity-70">[{i}]</span>
               <span
@@ -179,7 +179,7 @@ export default function HashSearchVisual() {
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
                     transition={spring}
-                    className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-emerald-600 shadow"
+                    className="lesson-visual-slot lesson-visual-slot--found absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold"
                   >
                     ✓
                   </motion.span>
@@ -190,7 +190,7 @@ export default function HashSearchVisual() {
         })}
       </div>
 
-      <div aria-live="polite" className="mt-4 min-h-10 text-center text-sm text-blue-100">
+      <div aria-live="polite" className="lesson-visual-caption mt-4 min-h-10 text-center text-sm">
         <AnimatePresence mode="wait">
           <motion.p
             key={message}
@@ -206,15 +206,13 @@ export default function HashSearchVisual() {
 
       {/* data-no-swipe stops the carousel from swiping when you press these */}
       <div data-no-swipe className="mt-3 flex flex-wrap items-center justify-center gap-2">
-        <Button size="sm" disabled={busy} onClick={() => search("key")}
-          className="bg-white text-blue-700 hover:bg-blue-50 disabled:opacity-50">
+        <Button size="sm" disabled={busy} onClick={() => search("key")}>
           Search by key: {KEY}
         </Button>
-        <Button size="sm" disabled={busy} onClick={() => search("index")}
-          className="bg-white text-blue-700 hover:bg-blue-50 disabled:opacity-50">
+        <Button size="sm" disabled={busy} onClick={() => search("index")}>
           Search by index: {SLOT}
         </Button>
-        <Button size="sm" onClick={reset} className="bg-blue-700 text-white hover:bg-blue-800">
+        <Button size="sm" onClick={reset} variant="primary">
           Reset
         </Button>
       </div>

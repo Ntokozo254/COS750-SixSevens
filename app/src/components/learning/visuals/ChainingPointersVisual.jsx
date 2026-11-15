@@ -89,20 +89,20 @@ export default function ChainingPointersVisual() {
     : false
 
   const rowStyle = (i) => {
-    if (i !== currentBucket) return "ring-transparent"
+    if (i !== currentBucket) return ""
     if (phase === "hash") {
-      return wasOccupied ? "bg-red-400/20 ring-red-400" : "bg-amber-300/15 ring-amber-300"
+      return wasOccupied ? "lesson-visual-slot--collision" : "lesson-visual-slot--current"
     }
-    return "bg-emerald-400/15 ring-emerald-400"
+    return "lesson-visual-slot--found"
   }
 
   return (
-    <div className="select-none">
+    <div className="lesson-visual select-none">
       {/* What is being inserted right now */}
-      <div className="flex min-h-9 flex-wrap items-center justify-center gap-2 text-xs text-blue-100">
+      <div className="lesson-visual-caption flex min-h-9 flex-wrap items-center justify-center gap-2">
         {current ? (
           <>
-            <span className="rounded-full bg-yellow px-2.5 py-1 font-mono font-bold text-blue-900">
+            <span className="lesson-visual-slot lesson-visual-slot--current rounded-full px-2.5 py-1 font-mono font-bold">
               {current.key}
             </span>
             <span className="font-mono">
@@ -119,12 +119,12 @@ export default function ChainingPointersVisual() {
         {chains.map((chain, i) => (
           <div
             key={i}
-            className={`flex items-center gap-1.5 rounded-lg px-1.5 py-1 ring-2 transition-all duration-300 ${rowStyle(i)}`}
+            className={`lesson-visual-slot flex items-center gap-1.5 rounded-lg px-1.5 py-1 transition-all duration-300 ${rowStyle(i)}`}
           >
-            <span className="w-7 flex-none text-center text-xs text-blue-100">[{i}]</span>
+            <span className="lesson-visual-index w-7 flex-none text-center">[{i}]</span>
 
             {/* The bucket's pointer: NULL when empty, a dot when it points to a chain */}
-            <div className="flex h-9 w-12 flex-none items-center justify-center rounded-md bg-blue-700/50">
+            <div className="lesson-visual-slot lesson-visual-slot--occupied flex h-9 w-12 flex-none items-center justify-center rounded-md">
               <motion.span
                 key={chain.length ? "ptr" : "null"}
                 initial={{ scale: 0.5, opacity: 0 }}
@@ -132,8 +132,8 @@ export default function ChainingPointersVisual() {
                 transition={spring}
                 className={
                   chain.length
-                    ? "text-base leading-none text-white"
-                    : "font-mono text-[10px] text-blue-200/70"
+                    ? "lesson-visual-pointer text-base leading-none"
+                    : "lesson-visual-index font-mono"
                 }
               >
                 {chain.length ? "●" : "NULL"}
@@ -150,10 +150,10 @@ export default function ChainingPointersVisual() {
                   transition={spring}
                   className="flex flex-none items-center gap-1.5"
                 >
-                  <span className="text-white/80">→</span>
+                  <span className="lesson-visual-pointer">→</span>
                   <span
-                    className={`rounded-lg px-2.5 py-1.5 font-mono text-[11px] font-bold shadow-md shadow-blue-950/30 transition-colors duration-300 ${
-                      isNew ? "bg-yellow text-blue-900" : "bg-white text-blue-700"
+                    className={`lesson-visual-slot rounded-lg px-2.5 py-1.5 font-mono text-[11px] font-bold transition-colors duration-300 ${
+                      isNew ? "lesson-visual-slot--current" : "lesson-visual-slot--occupied"
                     }`}
                   >
                     {node.key}
@@ -166,7 +166,7 @@ export default function ChainingPointersVisual() {
               <motion.span
                 layout
                 transition={spring}
-                className="flex-none font-mono text-[10px] text-blue-200/70"
+                className="lesson-visual-index flex-none font-mono"
               >
                 → NULL
               </motion.span>
@@ -175,11 +175,11 @@ export default function ChainingPointersVisual() {
         ))}
       </div>
 
-      <p className="mt-2 text-center text-xs text-blue-100">
+      <p className="lesson-visual-caption mt-2 text-center">
         ● points to the head of a chain. NULL means no chain (or the end of one).
       </p>
 
-      <p aria-live="polite" className="mt-3 min-h-10 text-center text-sm text-blue-100">
+      <p aria-live="polite" className="lesson-visual-caption mt-3 min-h-10 text-center">
         {message}
       </p>
 
@@ -189,7 +189,8 @@ export default function ChainingPointersVisual() {
           size="sm"
           disabled={busy}
           onClick={play}
-          className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
+          variant="primary"
+          className="min-w-28"
         >
           {phase === "idle" ? "Play" : busy ? "Playing..." : "Replay"}
         </Button>

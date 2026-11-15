@@ -15,9 +15,14 @@ import { lessonCards } from "../data/LessonCards";
 
 
 import SearchLesson from "../features/search/SearchLesson";
+import ProbingLesson from "../features/probing/ProbingLesson";
+import HashFunctionsLesson from "../features/hash-functions/HashFunctionsLesson";
+import CollisionsLesson from "../features/collisions/CollisionsLesson";
+import LoadFactorLesson from "../features/load-factor/LoadFactorLesson";
 
 export default function ModuleDetail({
   module,
+  preferences,
   completed,
   onBack,
   onComplete
@@ -30,7 +35,7 @@ export default function ModuleDetail({
   const [cardIndex , setCardIndex] = useState(0);
 
   return (
-    <div className="content-wrap">
+    <div className={`content-wrap ${module.id === 1 ? "intro-module" : ""}`}>
       <button className="back-button" onClick={onBack}>
         <ArrowLeft size={16} />
         Back to learning modules
@@ -62,7 +67,31 @@ export default function ModuleDetail({
         </div>
       </section>
 
-      {module.id === 5 ? (
+      {module.id === 2 ? (
+        <HashFunctionsLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 3 ? (
+        <CollisionsLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 6 ? (
+        <LoadFactorLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 4 ? (
+        <ProbingLesson
+          preferences={preferences}
+          completed={isCompleted}
+          onComplete={(evidence) => onComplete(module.id, evidence)}
+        />
+      ) : module.id === 5 ? (
         <SearchLesson
           completed={isCompleted}
           onComplete={(evidence) => onComplete(module.id, evidence)}
@@ -86,7 +115,7 @@ export default function ModuleDetail({
           </p>
 
           {cards ? (
-            <LessonCarousel cards={cards} index={cardIndex} onIndexChange={setCardIndex} />
+            <LessonCarousel cards={cards} index={cardIndex} onIndexChange={setCardIndex} reduceMotion={preferences?.reduceMotion} />
           ) : (
             <div className="learning-placeholder">
               <div className="placeholder-symbol">

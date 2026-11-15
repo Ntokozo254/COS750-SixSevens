@@ -1,4 +1,8 @@
 import { validateSearchCompletionEvidence } from '../features/search/searchMastery.js'
+import {
+  ASSESSMENT_TOPICS,
+  validateTopicCompletionEvidence,
+} from '../features/learning/topicRegistry.js'
 
 export const PROGRESS_STORAGE_KEY = 'hashlab-progress-v2'
 export const LEGACY_PROGRESS_STORAGE_KEY = 'hashlab-completed-modules'
@@ -21,11 +25,23 @@ export function sanitizeProgress(saved, allowedIds) {
     : []
   const evidence = legacy ? null : validateSearchCompletionEvidence(saved.searchAssessment)
   const verifiedSearch = completed.includes(5) && evidence !== null
+  const moduleAssessments = {}
+  for (const topic of ASSESSMENT_TOPICS) {
+    if (!completed.includes(topic.id)) continue
+    const receipt = legacy
+      ? null
+      : validateTopicCompletionEvidence(topic.id, saved.moduleAssessments?.[topic.id])
+    if (receipt) moduleAssessments[topic.id] = receipt
+  }
+  const assessedIds = new Set(ASSESSMENT_TOPICS.map((topic) => topic.id))
 
   return {
     version: 2,
-    completed: completed.filter((id) => id !== 5 || verifiedSearch),
+    completed: completed.filter((id) =>
+      id === 5 ? verifiedSearch : !assessedIds.has(id) || Boolean(moduleAssessments[id]),
+    ),
     searchAssessment: verifiedSearch ? evidence : null,
+    ...(Object.keys(moduleAssessments).length ? { moduleAssessments } : {}),
   }
 }
 

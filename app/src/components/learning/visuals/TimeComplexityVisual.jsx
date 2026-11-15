@@ -31,10 +31,10 @@ const IDLE = {
 }
 
 const nodeStyles = {
-  idle: "bg-white text-blue-700",
-  visited: "bg-white/35 text-blue-100",
-  checking: "bg-yelllow text-blue-900",
-  found: "bg-emerald-400 text-white",
+  idle: "lesson-visual-slot--occupied",
+  visited: "lesson-visual-slot--visited",
+  checking: "lesson-visual-slot--current",
+  found: "lesson-visual-slot--found",
 }
 
 const spring = { type: "spring", stiffness: 260, damping: 24 }
@@ -131,12 +131,12 @@ export default function TimeComplexityVisual() {
   }
 
   return (
-    <div className="select-none">
+    <div className="lesson-visual select-none">
       {/* What we are looking up, and the running count of comparisons */}
-      <div className="flex items-center justify-between text-xs text-blue-100">
+      <div className="lesson-visual-caption flex flex-wrap items-center justify-between gap-2">
         <span className="flex items-center gap-2">
           Lookup
-          <span className="rounded-full bg-yelllow px-2.5 py-1 font-mono font-bold text-blue-900">
+          <span className="lesson-visual-slot lesson-visual-slot--current rounded-full px-2.5 py-1 font-mono font-bold">
             {TARGET}
           </span>
         </span>
@@ -147,7 +147,7 @@ export default function TimeComplexityVisual() {
             initial={{ scale: 1.5 }}
             animate={{ scale: 1 }}
             transition={spring}
-            className="inline-block font-mono text-sm font-bold text-white"
+            className="lesson-visual-formula inline-block font-mono text-sm font-bold"
           >
             {comparisons}
           </motion.span>
@@ -159,21 +159,21 @@ export default function TimeComplexityVisual() {
         {buckets.map((chain, i) => {
           const isTarget = i === targetBucket
           const ring = !isTarget || phase === "idle"
-            ? "ring-transparent"
+            ? ""
             : phase === "done"
-              ? "bg-emerald-400/15 ring-emerald-400"
-              : "bg-amber-300/15 ring-amber-300"
+              ? "lesson-visual-slot--found"
+              : "lesson-visual-slot--current"
           return (
             <div
               key={i}
-              className={`flex items-center gap-1.5 rounded-md px-1 py-0.5 ring-2 transition-all duration-300 ${ring}`}
+              className={`lesson-visual-slot flex items-center gap-1.5 rounded-md px-1 py-0.5 transition-all duration-300 ${ring}`}
             >
-              <span className="w-6 flex-none text-center text-[10px] text-blue-100">[{i}]</span>
-              <div className="flex h-6 w-10 flex-none items-center justify-center rounded bg-blue-700/50 text-[10px]">
+              <span className="lesson-visual-index w-6 flex-none text-center">[{i}]</span>
+              <div className="lesson-visual-slot lesson-visual-slot--occupied flex h-6 w-10 flex-none items-center justify-center rounded text-[10px]">
                 {chain.length ? (
-                  <span className="text-white">●</span>
+                  <span className="lesson-visual-pointer">●</span>
                 ) : (
-                  <span className="font-mono text-blue-200/70">NULL</span>
+                  <span className="lesson-visual-index font-mono">NULL</span>
                 )}
               </div>
               {chain.map((key, idx) => (
@@ -184,39 +184,39 @@ export default function TimeComplexityVisual() {
                   transition={{ ...spring, delay: i * 0.04 + idx * 0.05 }}
                   className="flex flex-none items-center gap-1"
                 >
-                  <span className="text-xs text-white/80">→</span>
+                  <span className="lesson-visual-pointer text-xs">→</span>
                   <span
-                    className={`rounded px-2 py-0.5 font-mono text-[11px] font-bold transition-colors duration-300 ${nodeStyles[nodeStatus(isTarget, idx)]}`}
+                    className={`lesson-visual-slot rounded px-2 py-0.5 font-mono text-[11px] font-bold transition-colors duration-300 ${nodeStyles[nodeStatus(isTarget, idx)]}`}
                   >
                     {key}
                   </span>
                 </motion.div>
               ))}
               {chain.length > 0 && (
-                <span className="flex-none font-mono text-[10px] text-blue-200/70">→ NULL</span>
+                <span className="lesson-visual-index flex-none font-mono">→ NULL</span>
               )}
             </div>
           )
         })}
       </div>
 
-      <p aria-live="polite" className="mt-2 min-h-10 text-center text-sm text-blue-100">
+      <p aria-live="polite" className="lesson-visual-caption mt-2 min-h-10 text-center">
         {message}
       </p>
 
       {/* The complexity table. The active column is highlighted and Lookup lights up at the end. */}
-      <div className="mt-2 overflow-hidden rounded-xl bg-blue-700/40 text-xs">
-        <div className="grid grid-cols-3 px-3 py-1.5 text-[10px] uppercase tracking-wide text-blue-100">
+      <div className="lesson-visual-surface mt-2 overflow-hidden rounded-xl text-xs">
+        <div className="lesson-visual-index grid grid-cols-3 px-3 py-1.5 uppercase tracking-wide">
           <span>Operation</span>
-          <span className={mode === "average" ? "font-bold text-white" : ""}>Average</span>
-          <span className={mode === "worst" ? "font-bold text-white" : ""}>Worst case</span>
+          <span className={mode === "average" ? "font-bold text-[#245bb6]" : ""}>Average</span>
+          <span className={mode === "worst" ? "font-bold text-[#245bb6]" : ""}>Worst case</span>
         </div>
         {ROWS.map((row) => (
           <div
             key={row.op}
-            className="grid grid-cols-3 items-center border-t border-white/10 px-3 py-1.5"
+            className="grid grid-cols-3 items-center border-t border-[#dce5f3] px-3 py-1.5"
           >
-            <span className="font-semibold text-white">{row.op}</span>
+            <span className="font-semibold text-[#233a5c]">{row.op}</span>
             {["average", "worst"].map((col) => {
               const active = col === mode
               const hit = row.op === "Lookup" && phase === "done" && active
@@ -225,10 +225,10 @@ export default function TimeComplexityVisual() {
                   key={col}
                   className={`w-fit rounded px-1.5 py-0.5 font-mono transition-colors duration-300 ${
                     hit
-                      ? "bg-emerald-400 font-bold text-white"
+                      ? "lesson-visual-slot lesson-visual-slot--found font-bold"
                       : active
-                        ? "bg-white/15 text-white"
-                        : "text-blue-100"
+                        ? "lesson-visual-slot lesson-visual-slot--occupied"
+                        : "text-[#526985]"
                   }`}
                 >
                   {row[col]}
@@ -251,11 +251,7 @@ export default function TimeComplexityVisual() {
               size="sm"
               disabled={busy}
               onClick={() => chooseMode(m.id)}
-              className={
-                mode === m.id
-                  ? "bg-white text-blue-700 hover:bg-white disabled:opacity-100"
-                  : "bg-blue-700 text-white hover:bg-blue-800 disabled:opacity-50"
-              }
+              aria-pressed={mode === m.id}
             >
               {m.label}
             </Button>
@@ -265,7 +261,8 @@ export default function TimeComplexityVisual() {
           size="sm"
           disabled={busy}
           onClick={play}
-          className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
+          variant="primary"
+          className="min-w-28"
         >
           {phase === "idle" ? "Play" : busy ? "Playing..." : "Replay"}
         </Button>

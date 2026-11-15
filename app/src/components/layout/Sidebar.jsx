@@ -32,7 +32,7 @@ export default function Sidebar({
   onClose
 }) {
   return (
-    <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
+    <aside id="main-navigation" className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
       <div className="sidebar-brand">
         <div className="brand-icon">
           <Hash size={23} />
@@ -59,11 +59,13 @@ export default function Sidebar({
         </button>
 
         <button
+          type="button"
           className="mobile-close"
           onClick={onClose}
           aria-label="Close navigation"
+          title="Close navigation"
         >
-          <X size={20} />
+          <X size={20} aria-hidden="true" />
         </button>
       </div>
 
