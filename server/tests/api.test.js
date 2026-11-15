@@ -124,6 +124,50 @@ describe('progress record API', () => {
   );
 });
 
+describe('student number API', () => {
+  // Two accounts; student numbers are unique, as in the database.
+  const profileDb = () => {
+    const rows = [
+      { id: 'student-1', email: 'a@example.com', name: 'A', surname: 'One', studentNumber: null, passwordHash: 'x' },
+      { id: 'student-2', email: 'b@example.com', name: 'B', surname: 'Two', studentNumber: 'u22222222', passwordHash: 'x' },
+    ];
+    return {
+      student: {
+        update: vi.fn(async ({ where, data }) => {
+          const row = rows.find((r) => r.id === where.id);
+          if (!row) throw Object.assign(new Error('missing'), { code: 'P2025' });
+          if (data.studentNumber && rows.some((r) => r !== row && r.studentNumber === data.studentNumber)) {
+            throw Object.assign(new Error('taken'), { code: 'P2002' });
+          }
+          return Object.assign(row, data);
+        }),
+      },
+    };
+  };
+
+  it('saves a student number on the account, without the password hash', async () => {
+    const res = await request(createApp({ db: profileDb() }))
+      .patch('/api/students/student-1').send({ studentNumber: ' U12345678 ' });
+    expect(res.status).toBe(200);
+    expect(res.body.studentNumber).toBe('u12345678');
+    expect(res.body).not.toHaveProperty('passwordHash');
+  });
+
+  it('clears the student number when it is left empty', async () => {
+    const res = await request(createApp({ db: profileDb() }))
+      .patch('/api/students/student-2').send({ studentNumber: '' });
+    expect(res.body.studentNumber).toBeNull();
+  });
+
+  it('rejects a badly formed number and one used by another account', async () => {
+    const app = createApp({ db: profileDb() });
+    const bad = await request(app).patch('/api/students/student-1').send({ studentNumber: 'abc' });
+    expect(bad.status).toBe(400);
+    const taken = await request(app).patch('/api/students/student-1').send({ studentNumber: 'u22222222' });
+    expect(taken.status).toBe(409);
+  });
+});
+
 describe('auth API', () => {
   const person = { name: 'Test', surname: 'User' };
   // A tiny in-memory student table.

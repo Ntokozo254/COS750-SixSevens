@@ -59,6 +59,30 @@ export default function studentsRouter(db) {
     }
   });
 
+  // PATCH /api/students/:id  { studentNumber }
+  // Saves the student number on the account. An empty value clears it.
+  router.patch('/:id', async (req, res, next) => {
+    try {
+      const supplied = req.body?.studentNumber;
+      if (supplied !== null && typeof supplied !== 'string') {
+        return res.status(400).json({ error: 'Student number must look like u12345678' });
+      }
+      const studentNumber = supplied?.trim().toLowerCase() || null;
+      if (studentNumber && !STUDENT_NUMBER.test(studentNumber)) {
+        return res.status(400).json({ error: 'Student number must look like u12345678' });
+      }
+      const student = await db.student.update({ where: { id: req.params.id }, data: { studentNumber } });
+      const { id, email, name, surname } = student;
+      res.json({ id, email, name, surname, studentNumber: student.studentNumber });
+    } catch (e) {
+      if (e?.code === 'P2002') {
+        return res.status(409).json({ error: 'That student number is already linked to another account' });
+      }
+      if (e?.code === 'P2025') return res.status(404).json({ error: 'student not found' });
+      next(e);
+    }
+  });
+
   // GET /api/students/:id/progress-record
   // The app's whole progress record for this student (null if they have none yet).
   router.get('/:id/progress-record', async (req, res, next) => {
