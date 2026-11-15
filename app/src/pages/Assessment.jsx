@@ -8,7 +8,6 @@ import {
   ListChecks,
   RefreshCcw,
   Target,
-  Trophy,
   XCircle
 } from "lucide-react";
 import { modules } from "../data/modules";
@@ -100,11 +99,6 @@ export default function Assessment({ onOpenModule }) {
               <li><Target size={16} /> A breakdown by objective, with what to review.</li>
               <li><RefreshCcw size={16} /> Retry as often as you like. Nothing is graded.</li>
             </ul>
-            {best !== null && (
-              <p className="assess-best">
-                <Trophy size={15} /> Your best so far: <strong>{best}%</strong>
-              </p>
-            )}
             <button type="button" className="primary-button assess-start-button" onClick={start}>
               Start assessment <ArrowRight size={15} />
             </button>
