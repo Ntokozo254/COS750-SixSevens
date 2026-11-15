@@ -131,7 +131,6 @@ test('the module supplies novice outcomes, scaffolding and two aligned five-ques
   assert.equal(topic.outcomes.length, 4)
   assert.ok(topic.sections.length >= 4)
   assert.ok(topic.refresher.length >= 3)
-  assert.ok(topic.reflectionPrompt.length > 0)
   assert.ok(topic.warmup.hints.length >= 2)
   assert.ok(topic.questionSets.length >= 2)
   const ids = []

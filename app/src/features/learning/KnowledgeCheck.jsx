@@ -21,8 +21,6 @@ export default function KnowledgeCheck({
   const [answers, setAnswers] = useState([])
   const [attempts, setAttempts] = useState(0)
   const [bestScore, setBestScore] = useState(0)
-  const [confidence, setConfidence] = useState('')
-  const [reflection, setReflection] = useState('')
   const questions = topic.questionSets[round]
   const question = questions[questionIndex]
   const submitted = answers.length > questionIndex
@@ -201,37 +199,6 @@ export default function KnowledgeCheck({
           </div>
         </section>
       )}
-      <section
-        className="hash-search-reflection"
-        aria-labelledby={`${instanceId}-reflection-title`}
-      >
-        <h3 id={`${instanceId}-reflection-title`}>Take the idea to your lecture.</h3>
-        <p>{topic.reflectionPrompt}</p>
-        <label htmlFor={`${instanceId}-reflection`}>Your explanation or question</label>
-        <textarea
-          id={`${instanceId}-reflection`}
-          rows={3}
-          value={reflection}
-          onChange={(event) => setReflection(event.target.value)}
-        />
-        <label htmlFor={`${instanceId}-confidence`}>
-          How confident do you feel about applying this lesson?
-        </label>
-        <select
-          id={`${instanceId}-confidence`}
-          value={confidence}
-          onChange={(event) => setConfidence(event.target.value)}
-        >
-          <option value="">Choose when you are ready</option>
-          <option value="support">I would like another worked example</option>
-          <option value="guided">I can apply the idea with hints</option>
-          <option value="independent">I can explain and apply it independently</option>
-        </select>
-        <p className="hash-search-note">
-          This reflection is optional and ungraded. Your notes and confidence choice stay available
-          during this module visit.
-        </p>
-      </section>
     </section>
   )
 }

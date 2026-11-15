@@ -17,8 +17,6 @@ const searchTopic = {
   refresher,
   masteryMessage:
     'Explain why a deleted marker keeps the search going and a truly empty slot lets it stop.',
-  reflectionPrompt:
-    'Explain why a deleted marker keeps a search going while a never-used empty slot lets it stop. Identify one step you would like to discuss.',
 }
 
 export default function SearchAssessment(props) {

@@ -786,8 +786,7 @@
 
 .hash-search-context,
 .hash-search-outcomes,
-.hash-search-warmup,
-.hash-search-reflection {
+.hash-search-warmup {
   margin: 23px 0;
   padding: 19px;
   border: 1px solid #dce6f5;
@@ -795,14 +794,12 @@
   background: #f7faff;
 }
 .hash-search-context h3,
-.hash-search-outcomes h3,
-.hash-search-reflection h3 {
+.hash-search-outcomes h3 {
   margin: 0 0 9px;
 }
 .hash-search-context p,
 .hash-search-outcomes li,
-.hash-search-warmup p,
-.hash-search-reflection p {
+.hash-search-warmup p {
   color: #526985;
   font-size: 12px;
   line-height: 1.85;
@@ -835,28 +832,6 @@
   border-color: #326bd4;
   background: #eaf2ff;
   color: #224e91;
-}
-.hash-search-reflection {
-  background: #fff;
-}
-.hash-search-reflection label {
-  margin-top: 16px;
-}
-.hash-search-reflection textarea {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 11px;
-  border: 1px solid #cad7eb;
-  border-radius: 7px;
-  color: #304e73;
-  background: #fff;
-  font: inherit;
-  resize: vertical;
-}
-.hash-search-reflection textarea:focus-visible {
-  outline: 3px solid #df9b2c;
-  outline-offset: 3px;
 }
 .hash-search-aside .side-card p,
 .hash-search-aside .checkpoint-row,
