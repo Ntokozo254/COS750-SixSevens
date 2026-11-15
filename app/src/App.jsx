@@ -87,6 +87,7 @@ function App() {
         return activeModule ? (
           <ModuleDetail
             module={activeModule}
+            preferences={preferences}
             completed={completed}
             onBack={() => navigate("Learning modules")}
             onComplete={completeModule}

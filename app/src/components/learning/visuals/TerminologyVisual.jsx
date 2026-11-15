@@ -23,27 +23,44 @@ function Pop({ delay = 0, children }) {
 function Chip({ className, children }) {
   return (
     <div
-      className={`flex h-9 items-center px-3 font-mono text-xs font-bold shadow-lg shadow-blue-950/40 ${className}`}
+      className={`lesson-visual-slot flex h-9 items-center px-3 font-mono text-xs font-bold ${className}`}
     >
       {children}
     </div>
   )
 }
 
-const Arrow = () => <span className="text-lg text-white/80">→</span>
+const Arrow = () => <span className="lesson-visual-pointer text-lg">→</span>
+
+function DiagramStrip({ label, children }) {
+  return (
+    <div
+      data-no-swipe
+      className="w-full max-w-full overflow-x-auto p-1"
+      role="region"
+      aria-label={label}
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") event.stopPropagation()
+      }}
+    >
+      <div className="mx-auto w-max">{children}</div>
+    </div>
+  )
+}
 
 /* ---------- One tiny diagram per term ---------- */
 
 function HashDiagram() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-1.5">
-      <Pop delay={0}><Chip className="rounded-full bg-white text-blue-700">john_doe</Chip></Pop>
+      <Pop delay={0}><Chip className="lesson-visual-slot--occupied rounded-full">john_doe</Chip></Pop>
       <Pop delay={0.4}><Arrow /></Pop>
       <Pop delay={0.6}>
-        <Chip className="rounded-lg border-2 border-white/60 bg-blue-700/60 text-white">hash()</Chip>
+        <Chip className="lesson-visual-slot--current rounded-lg">hash()</Chip>
       </Pop>
       <Pop delay={1}><Arrow /></Pop>
-      <Pop delay={1.2}><Chip className="rounded-full bg-emerald-400 text-white">3</Chip></Pop>
+      <Pop delay={1.2}><Chip className="lesson-visual-slot--found rounded-full">3</Chip></Pop>
     </div>
   )
 }
@@ -52,20 +69,20 @@ function CollisionDiagram() {
   return (
     <div className="flex items-center justify-center gap-2">
       <div className="flex flex-col gap-2">
-        <Pop delay={0}><Chip className="rounded-full bg-white text-blue-700">john_doe</Chip></Pop>
-        <Pop delay={0.6}><Chip className="rounded-full bg-yellow text-blue-900">jane_roe</Chip></Pop>
+        <Pop delay={0}><Chip className="lesson-visual-slot--occupied rounded-full">john_doe</Chip></Pop>
+        <Pop delay={0.6}><Chip className="lesson-visual-slot--current rounded-full">jane_roe</Chip></Pop>
       </div>
       <Pop delay={0.9}><Arrow /></Pop>
       <motion.div
-        initial={{ backgroundColor: "#1d4ed866" }}
-        animate={{ backgroundColor: "#f87171cc" }}
+        initial={{ backgroundColor: "#edf3ff" }}
+        animate={{ backgroundColor: "#fff1ef" }}
         transition={{ delay: 1.2, duration: 0.3 }}
-        className="flex h-14 w-14 flex-col items-center justify-center rounded-lg ring-2 ring-white/30"
+        className="lesson-visual-slot lesson-visual-slot--collision flex h-14 w-14 flex-col items-center justify-center rounded-lg"
       >
-        <span className="text-[10px] text-blue-100">bucket</span>
-        <span className="text-lg font-bold leading-none text-white">3</span>
+        <span className="text-[10px]">bucket</span>
+        <span className="text-lg font-bold leading-none">3</span>
       </motion.div>
-      <Pop delay={1.4}><span className="text-xs font-bold text-red-200">Collision!</span></Pop>
+      <Pop delay={1.4}><span className="text-xs font-bold text-[#aa4836]">Collision!</span></Pop>
     </div>
   )
 }
@@ -73,29 +90,30 @@ function CollisionDiagram() {
 function ChainingDiagram() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-1.5">
-      <Pop delay={0}><span className="text-xs text-blue-100">[3]</span></Pop>
+      <Pop delay={0}><span className="lesson-visual-index">[3]</span></Pop>
       <Pop delay={0.1}>
-        <div className="flex h-9 w-10 items-center justify-center rounded-md bg-blue-700/60 text-white">●</div>
+        <div className="lesson-visual-slot lesson-visual-slot--occupied flex h-9 w-10 items-center justify-center rounded-md">●</div>
       </Pop>
       <Pop delay={0.4}><Arrow /></Pop>
-      <Pop delay={0.5}><Chip className="rounded-lg bg-white text-blue-700">john_doe</Chip></Pop>
+      <Pop delay={0.5}><Chip className="lesson-visual-slot--occupied rounded-lg">john_doe</Chip></Pop>
       <Pop delay={0.9}><Arrow /></Pop>
-      <Pop delay={1}><Chip className="rounded-lg bg-yellow text-blue-900">jane_roe</Chip></Pop>
-      <Pop delay={1.4}><span className="font-mono text-[10px] text-blue-200/70">→ NULL</span></Pop>
+      <Pop delay={1}><Chip className="lesson-visual-slot--current rounded-lg">jane_roe</Chip></Pop>
+      <Pop delay={1.4}><span className="lesson-visual-index font-mono">→ NULL</span></Pop>
     </div>
   )
 }
 
 function ProbingDiagram() {
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex w-full min-w-0 flex-col items-center gap-2">
+      <DiagramStrip label="Linear probing slots; scroll horizontally to inspect every slot">
       <div className="grid grid-cols-5 gap-2">
         {Array.from({ length: 5 }, (_, i) => (
           <div key={i} className="flex flex-col items-center gap-1">
-            <div className="relative h-12 w-12 rounded-md bg-blue-700/40">
+            <div className="lesson-visual-slot relative h-12 w-12 rounded-md">
               {i === 3 && (
                 <>
-                  <div className="absolute inset-0.5 flex items-center justify-center rounded bg-white text-center text-[9px] font-bold leading-[1.1] text-blue-700">
+                  <div className="lesson-visual-slot lesson-visual-slot--occupied absolute inset-0.5 flex items-center justify-center rounded text-center text-[9px] font-bold leading-[1.1]">
                     john_<br />doe
                   </div>
                   {/* red ring: "taken" */}
@@ -103,7 +121,7 @@ function ProbingDiagram() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
-                    className="absolute inset-0 rounded-md ring-2 ring-red-400"
+                    className="absolute inset-0 rounded-md ring-2 ring-[#d46c61]"
                   />
                 </>
               )}
@@ -114,7 +132,7 @@ function ProbingDiagram() {
                     initial={{ opacity: 0, x: -56, y: -36 }}
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     transition={{ ...spring, delay: 1 }}
-                    className="absolute inset-0.5 z-10 flex items-center justify-center rounded bg-yellow text-center text-[9px] font-bold leading-[1.1] text-blue-900"
+                    className="lesson-visual-slot lesson-visual-slot--current absolute inset-0.5 z-10 flex items-center justify-center rounded text-center text-[9px] font-bold leading-[1.1]"
                   >
                     jane_<br />roe
                   </motion.div>
@@ -123,17 +141,18 @@ function ProbingDiagram() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.6 }}
-                    className="absolute inset-0 rounded-md ring-2 ring-emerald-400"
+                    className="absolute inset-0 rounded-md ring-2 ring-[#278a66]"
                   />
                 </>
               )}
             </div>
-            <span className="text-[10px] text-blue-100">[{i}]</span>
+            <span className="lesson-visual-index">[{i}]</span>
           </div>
         ))}
       </div>
+      </DiagramStrip>
       <Pop delay={1.2}>
-        <span className="text-xs text-blue-100">slot 3 is taken, so try (3 + 1) % 10 = 4</span>
+        <span className="lesson-visual-caption">slot 3 is taken, so try (3 + 1) % 10 = 4</span>
       </Pop>
     </div>
   )
@@ -141,23 +160,25 @@ function ProbingDiagram() {
 
 function LoadDiagram() {
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex w-full min-w-0 flex-col items-center gap-2">
+      <DiagramStrip label="Load factor buckets; scroll horizontally to inspect every bucket">
       <div className="flex gap-1">
         {Array.from({ length: 10 }, (_, i) => (
           <motion.div
             key={i}
-            initial={{ backgroundColor: "#1d4ed866" }}
-            animate={i < 8 ? { backgroundColor: "#ffffff" } : {}}
+            initial={{ backgroundColor: "#f8faff" }}
+            animate={i < 8 ? { backgroundColor: "#eaf1ff" } : {}}
             transition={{ delay: 0.2 + i * 0.15, duration: 0.25 }}
-            className="h-6 w-6 rounded-md"
+            className="lesson-visual-slot h-6 w-6 rounded-md"
           />
         ))}
       </div>
+      </DiagramStrip>
       <Pop delay={1.7}>
-        <span className="font-mono text-xs text-white">8 entries / 10 buckets = 0.8</span>
+        <span className="lesson-visual-formula font-mono text-xs">8 entries / 10 buckets = 0.8</span>
       </Pop>
       <Pop delay={2.1}>
-        <span className="rounded-full bg-yellow px-3 py-1 text-xs font-bold text-blue-900">
+        <span className="lesson-visual-slot lesson-visual-slot--current rounded-full px-3 py-1 text-xs font-bold">
           Too full: time to resize
         </span>
       </Pop>
@@ -194,7 +215,7 @@ export default function TerminologyVisual() {
   const { id, term, meaning, Diagram } = TERMS[index]
 
   return (
-    <div className="select-none">
+    <div className="lesson-visual select-none">
       {/* data-no-swipe stops the carousel from swiping when you press these */}
       <div data-no-swipe className="flex flex-wrap justify-center gap-2">
         {TERMS.map((t, i) => (
@@ -202,11 +223,7 @@ export default function TerminologyVisual() {
             key={t.id}
             size="sm"
             onClick={() => pick(i)}
-            className={
-              i === index
-                ? "bg-white text-blue-700 hover:bg-white"
-                : "bg-blue-700 text-white hover:bg-blue-800"
-            }
+            aria-pressed={i === index}
           >
             {t.term}
           </Button>
@@ -214,7 +231,7 @@ export default function TerminologyVisual() {
       </div>
 
       {/* Fixed minimum height so the card does not jump between terms */}
-      <div className="mt-4 min-h-56 rounded-xl bg-blue-700/40 p-4">
+      <div className="lesson-visual-surface mt-4 min-h-56 rounded-xl p-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${id}-${nonce}`}
@@ -223,8 +240,8 @@ export default function TerminologyVisual() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
           >
-            <h4 className="text-center text-base font-bold text-white">{term}</h4>
-            <p className="mt-1 text-center text-sm text-blue-100">{meaning}</p>
+            <h4 className="text-center text-base font-bold text-[#233a5c]">{term}</h4>
+            <p className="lesson-visual-caption mt-1 text-center">{meaning}</p>
             <div className="mt-4 flex min-h-28 items-center justify-center">
               <Diagram />
             </div>
@@ -236,11 +253,12 @@ export default function TerminologyVisual() {
         <Button
           size="sm"
           onClick={() => setPlaying((p) => !p)}
-          className="min-w-24 bg-emerald-500 text-white hover:bg-emerald-600"
+          variant="primary"
+          className="min-w-24"
         >
           {playing ? "Pause" : "Play"}
         </Button>
-        <span className="text-xs text-blue-100">
+        <span className="lesson-visual-index">
           {index + 1} / {TERMS.length}
         </span>
       </div>

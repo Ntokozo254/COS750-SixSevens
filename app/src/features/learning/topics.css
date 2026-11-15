@@ -1,0 +1,209 @@
+.hash-topic-module [hidden] {
+  display: none !important;
+}
+.hash-topic-module .hash-topic-introduction {
+  color: #526985;
+  font-size: 13px;
+  line-height: 1.85;
+}
+.hash-topic-module .hash-topic-worked-example {
+  margin-top: 14px;
+  padding: 16px;
+  border-left: 3px solid #638fd3;
+  border-radius: 0 7px 7px 0;
+  color: #315b91;
+  background: #f0f5ff;
+}
+.hash-topic-module .hash-topic-worked-example p {
+  margin: 6px 0 0;
+}
+.hash-topic-module .hash-search-warmup h3 {
+  margin: 10px 0;
+}
+.hash-topic-module .hash-topic-controls,
+.hash-topic-module .hash-topic-inputs,
+.hash-topic-module .hash-topic-form {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.hash-topic-module .hash-topic-controls label,
+.hash-topic-module .hash-topic-inputs label,
+.hash-topic-module .hash-topic-form label {
+  flex: 1 1 130px;
+  min-width: 0;
+}
+.hash-topic-module .hash-topic-demo,
+.hash-topic-module .hash-topic-panel {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #dce6f5;
+  border-radius: 10px;
+  color: #35547b;
+  background: #f8faff;
+}
+.hash-topic-module .hash-topic-step {
+  padding: 17px;
+  border-radius: 8px;
+  color: #35547b;
+  background: #edf4ff;
+}
+.hash-topic-module .hash-topic-equation,
+.hash-topic-module .hash-topic-formula {
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid #d6e2f4;
+  border-radius: 8px;
+  background: #f0f5ff;
+  color: #285488;
+  font-family: ui-monospace, monospace;
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.hash-topic-module .hash-topic-actions,
+.hash-topic-module .hash-topic-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 16px 0;
+}
+.hash-topic-module .hash-topic-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+.hash-topic-module .hash-topic-stat {
+  padding: 14px;
+  border: 1px solid #dbe5f4;
+  border-radius: 8px;
+  background: #fff;
+}
+.hash-topic-module .hash-topic-stat strong {
+  display: block;
+  margin-top: 6px;
+  color: #2d578e;
+  font-size: 20px;
+}
+.hash-topic-module .hash-topic-stat span {
+  color: #526985;
+  font-size: 11px;
+}
+.hash-topic-module .hash-topic-note {
+  color: #526985;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.hash-topic-module .hash-topic-error {
+  color: #a23b2e;
+  font-size: 12px;
+}
+.hash-topic-module button[aria-pressed='true'] {
+  border-color: #527ebd;
+  background: #e7f0ff;
+  color: #25528f;
+}
+.hash-topic-module input[type='range'] {
+  width: 100%;
+  padding: 0;
+  accent-color: #2563eb;
+}
+.hash-topic-module .hash-topic-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.hash-topic-module .hash-topic-comparison > * {
+  min-width: 0;
+}
+@media (max-width: 700px) {
+  .hash-topic-module .hash-topic-comparison {
+    grid-template-columns: 1fr;
+  }
+  .hash-topic-module .hash-topic-demo,
+  .hash-topic-module .hash-topic-panel {
+    padding: 15px;
+  }
+}
+.hash-topic-module p,
+.hash-topic-module li {
+  color: #526985;
+  font-size: 13px;
+  line-height: 1.85;
+}
+.hash-topic-module .hash-topic-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.hash-topic-module .hash-topic-columns > * {
+  min-width: 0;
+}
+.hash-topic-module .hash-topic-card,
+.hash-topic-module .hash-topic-rehash {
+  padding: 18px;
+  border: 1px solid #dce6f5;
+  border-radius: 10px;
+  background: #f8faff;
+}
+.hash-topic-module .hash-topic-input-row {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  margin: 7px 0;
+}
+.hash-topic-module .hash-topic-input-row input {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+}
+.hash-topic-module .hash-topic-input-row button {
+  flex-shrink: 0;
+}
+.hash-topic-module .hash-topic-controls > form {
+  flex: 1 1 230px;
+  min-width: 0;
+}
+.hash-topic-module .hash-topic-metric {
+  padding: 12px;
+  border: 1px solid #dce6f5;
+  border-radius: 7px;
+  background: #fff;
+}
+.hash-topic-module .hash-topic-metric dt {
+  color: #526985;
+  font-size: 11px;
+}
+.hash-topic-module .hash-topic-metric dd {
+  margin: 7px 0 0;
+  color: #2d578e;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.75;
+}
+.hash-topic-module .hash-topic-form-error {
+  color: #a23b2e;
+  font-size: 12px;
+}
+.hash-topic-module .hash-topic-rehash {
+  margin-top: 22px;
+}
+.hash-topic-module .hash-topic-stat[data-active='true'] {
+  border: 2px solid #316fe6;
+  background: #edf3ff;
+}
+.hash-topic-module .hash-topic-stat strong {
+  overflow-wrap: anywhere;
+}
+.hash-topic-module .hash-search-code li {
+  font-size: 10px;
+}
+@media (max-width: 700px) {
+  .hash-topic-module .hash-topic-columns {
+    grid-template-columns: 1fr;
+  }
+}

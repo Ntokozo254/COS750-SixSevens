@@ -56,7 +56,7 @@ function NewKey() {
       transition={spring}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex h-full w-full items-center justify-center rounded bg-yellow text-center text-[9px] font-bold leading-[1.1] text-blue-900 shadow-lg shadow-blue-950/40"
+      className="lesson-visual-slot lesson-visual-slot--current flex h-full w-full items-center justify-center rounded text-center text-[9px] font-bold leading-[1.1]"
     >
       <TwoLine text={NEW_KEY} />
     </motion.div>
@@ -112,15 +112,15 @@ export default function CollisionVisual() {
   const inProbeSlot = probing && stage >= 3
 
   const slotStyle = (i) => {
-    if (i === SLOT && stage === 1) return "bg-red-400/40 ring-2 ring-red-400"
-    if (i === SLOT && inChain) return "bg-emerald-400/20 ring-2 ring-emerald-400"
-    if (i === NEXT && probing && stage === 2) return "bg-yellow/20 ring-2 ring-yellow"
-    if (i === NEXT && inProbeSlot) return "bg-emerald-400/30 ring-2 ring-emerald-400"
-    return "bg-blue-700/40"
+    if (i === SLOT && stage === 1) return "lesson-visual-slot--collision"
+    if (i === SLOT && inChain) return "lesson-visual-slot--found"
+    if (i === NEXT && probing && stage === 2) return "lesson-visual-slot--current"
+    if (i === NEXT && inProbeSlot) return "lesson-visual-slot--found"
+    return ""
   }
 
   return (
-    <div className="select-none">
+    <div className="lesson-visual select-none">
       <div className="grid grid-cols-10 gap-1">
         {Array.from({ length: SIZE }, (_, i) => (
           <div key={i} className="flex flex-col items-center gap-1">
@@ -129,13 +129,13 @@ export default function CollisionVisual() {
 
             {/* The slot */}
             <div
-              className={`relative aspect-square w-full rounded-md transition-all duration-300 ${slotStyle(i)}`}
+              className={`lesson-visual-slot relative aspect-square w-full rounded-md transition-all duration-300 ${slotStyle(i)}`}
             >
               {i === SLOT && (
                 <motion.div
                   animate={stage === 1 ? { x: [0, -4, 4, -4, 4, 0] } : { x: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="absolute inset-0.5 z-10 flex items-center justify-center rounded bg-white text-center text-[9px] font-bold leading-[1.1] text-blue-700 shadow-lg shadow-blue-950/40"
+                  className="lesson-visual-slot lesson-visual-slot--occupied absolute inset-0.5 z-10 flex items-center justify-center rounded text-center text-[9px] font-bold leading-[1.1]"
                 >
                   <TwoLine text={STORED_KEY} />
                 </motion.div>
@@ -147,13 +147,13 @@ export default function CollisionVisual() {
               )}
             </div>
 
-            <span className="text-[10px] text-blue-100">[{i}]</span>
+            <span className="lesson-visual-index">[{i}]</span>
 
             {/* Chain area: in separate chaining, colliding keys hang below the bucket */}
             <div className="flex min-h-14 w-full flex-col items-center">
               {i === SLOT && inChain && (
                 <>
-                  <div className="h-2 w-px bg-white/70" />
+                  <div className="h-2 w-px bg-[#9bb8e9]" />
                   <div className="aspect-square w-full">
                     <NewKey />
                   </div>
@@ -164,7 +164,7 @@ export default function CollisionVisual() {
         ))}
       </div>
 
-      <p aria-live="polite" className="mt-2 min-h-10 text-center text-sm text-blue-100">
+      <p aria-live="polite" className="lesson-visual-caption mt-2 min-h-10 text-center">
         {message}
       </p>
 
@@ -177,11 +177,7 @@ export default function CollisionVisual() {
               size="sm"
               disabled={busy}
               onClick={() => chooseMode(m.id)}
-              className={
-                mode === m.id
-                  ? "bg-white text-blue-700 hover:bg-white disabled:opacity-100"
-                  : "bg-blue-700 text-white hover:bg-blue-800 disabled:opacity-50"
-              }
+              aria-pressed={mode === m.id}
             >
               {m.label}
             </Button>
@@ -191,7 +187,8 @@ export default function CollisionVisual() {
           size="sm"
           disabled={busy}
           onClick={play}
-          className="min-w-28 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50"
+          variant="primary"
+          className="min-w-28"
         >
           {stage === -1 ? "Play" : busy ? "Playing..." : "Replay"}
         </Button>

@@ -1,0 +1,100 @@
+/* My progress page. Builds on the shared .progress-overview, .progress-ring,
+   .stat-card, .module-row and .pill styles in styles.css. */
+
+.progress-page .progress-overview {
+  gap: 24px;
+}
+.progress-overview-copy {
+  flex: 1;
+  min-width: 0;
+  max-width: 520px;
+}
+.progress-overview-copy .progress-line {
+  margin: 14px 0 16px;
+}
+.progress-overview-copy .primary-button {
+  font-size: 11px;
+}
+.progress-page .progress-ring {
+  position: relative;
+  flex-shrink: 0;
+  width: 112px;
+  height: 112px;
+}
+.progress-page .progress-ring::before {
+  width: 86px;
+  height: 86px;
+  background: #fff;
+}
+.progress-page .progress-ring div {
+  font: 800 18px Manrope, sans-serif;
+  color: #1a3153;
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.progress-stats .stat-card {
+  min-height: 0;
+}
+
+.progress-page .section-heading h2 {
+  margin-top: 5px;
+}
+.progress-module-list {
+  margin: 0;
+  list-style: none;
+}
+.progress-module-list li:last-child .module-row {
+  border-bottom: 0;
+}
+.progress-module-list .module-row {
+  border-radius: 9px;
+  padding-inline: 8px;
+  transition: background 0.2s;
+}
+.progress-module-list .module-row:hover {
+  background: #f8faff;
+}
+.progress-row-next {
+  background: #f5f8ff;
+}
+.progress-module-list .module-row-copy strong {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11px;
+}
+.progress-row-number {
+  color: #a3afbf;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+.progress-module-list .pill {
+  flex-shrink: 0;
+}
+.progress-pill-muted {
+  background: #f0f4fb;
+  color: #7a8aa1;
+}
+.progress-done {
+  margin-top: 17px;
+}
+
+@media (max-width: 700px) {
+  .progress-page .progress-overview {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+  .progress-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+  .progress-module-list .module-row-copy span {
+    display: none;
+  }
+}

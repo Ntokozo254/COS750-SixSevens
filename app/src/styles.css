@@ -573,6 +573,34 @@
 }
 
 @media (max-width: 560px) {
+  /* Keep both labels readable when the account and menu controls share a phone header. */
+  .topbar {
+    height: auto;
+    min-height: 90px;
+    padding: 8px 14px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "breadcrumb actions"
+      "course course";
+    column-gap: 10px;
+    row-gap: 2px;
+  }
+
+  .topbar .breadcrumb {
+    grid-area: breadcrumb;
+    max-width: none;
+    gap: 6px;
+  }
+
+  .topbar .breadcrumb > span {
+    display: inline;
+    flex-shrink: 0;
+  }
+
+  .topbar .breadcrumb > svg {
+    flex-shrink: 0;
+  }
+
   .mobile-menu {
     width: 44px;
     height: 44px;
@@ -580,10 +608,12 @@
 
   .course-home {
     display: flex;
-    padding: 4px 6px;
-    font-size: 8px;
-    line-height: 1.4;
-    letter-spacing: 0.4px;
+    grid-area: course;
+    min-height: 28px;
+    padding: 4px 8px;
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.6px;
   }
 
   .course-home span {
@@ -591,11 +621,12 @@
   }
 
   .course-home svg {
-    display: none;
+    display: block;
   }
 
   .topbar-right {
-    gap: 10px;
+    grid-area: actions;
+    gap: 8px;
   }
 
   .module-card {
@@ -791,7 +822,7 @@
     padding: 0 9px 30px;
   }
 
-  .app-shell.sidebar-collapsed .collapse-button {
+  .collapse-button {
     display: none;
   }
 

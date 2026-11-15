@@ -1,5 +1,5 @@
 
-import { Menu, ChevronRight, Home , LogOut } from "lucide-react";
+import { Menu, ChevronRight, Home, LogOut } from "lucide-react";
 
 export default function Navbar({
   page,
@@ -41,10 +41,18 @@ export default function Navbar({
       </button>
 
       <div className="topbar-right">
-        <div className="avatar" title={profileName || user?.email}>{initials}</div>
+        <button
+          type="button"
+          className="avatar"
+          onClick={() => onNavigate("Settings")}
+          aria-label={profileName ? `Open profile settings for ${profileName}` : "Open profile settings"}
+          title="Profile settings"
+        >
+          {initials}
+        </button>
 
         {onLogout && (
-          <button type="button" className="logout-button" onClick={onLogout} title="Log out">
+          <button type="button" className="logout-button" onClick={onLogout} aria-label="Log out">
             <LogOut size={15} aria-hidden="true" />
             <span>Log out</span>
           </button>
