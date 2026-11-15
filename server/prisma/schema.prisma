@@ -15,6 +15,9 @@ model Student {
   name          String?
   surname       String?
   createdAt     DateTime      @default(now())
+  // The app's whole progress record (completed modules and the checked
+  // answers that prove them), saved as one JSON value per student.
+  progressData  Json?
   progress      Progress[]
   attempts      QuizAttempt[]
 }

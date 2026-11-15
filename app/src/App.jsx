@@ -49,7 +49,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(loadUser);
 
-  const { completed, progress, completeModule } = useProgress();
+  const { completed, progress, completeModule } = useProgress(user?.id);
   const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
 
   function finishCheckIn(preferredMode) {

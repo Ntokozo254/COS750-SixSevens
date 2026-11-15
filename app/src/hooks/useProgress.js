@@ -1,11 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { modules } from '../data/modules'
-import {
-  LEGACY_PROGRESS_STORAGE_KEY,
-  PROGRESS_STORAGE_KEY,
-  readProgress,
-  sanitizeProgress,
-} from '../logic/progress'
+import { createEmptyProgress, PROGRESS_STORAGE_KEY, sanitizeProgress } from '../logic/progress'
+import { fetchProgress, saveProgress } from '../api/progress'
 import { validateSearchCompletionEvidence } from '../features/search/searchMastery'
 import {
   getAssessmentTopic,
@@ -14,21 +10,69 @@ import {
 
 const moduleIds = new Set(modules.map((module) => module.id))
 
-export default function useProgress() {
-  const [savedProgress, setSavedProgress] = useState(() => readProgress(moduleIds))
-  const progressRecord = useMemo(() => sanitizeProgress(savedProgress, moduleIds), [savedProgress])
+// A per-account copy in this browser, used only when the server can't be reached.
+const cacheKey = (userId) => `${PROGRESS_STORAGE_KEY}:${userId}`
+
+function readCache(userId) {
+  try {
+    return JSON.parse(localStorage.getItem(cacheKey(userId)))
+  } catch {
+    return null
+  }
+}
+
+function writeCache(userId, json) {
+  try {
+    localStorage.setItem(cacheKey(userId), json)
+  } catch {
+    // Progress still saves to the server when browser storage is unavailable.
+  }
+}
+
+// Progress for the signed-in account. The server holds the record; it is
+// loaded when the account changes and saved again whenever it changes.
+export default function useProgress(userId) {
+  const [state, setState] = useState({ owner: null, loaded: false, saved: null })
+  const current = state.owner === userId ? state : { owner: userId, loaded: false, saved: null }
+  const progressRecord = useMemo(
+    () => sanitizeProgress(current.saved ?? createEmptyProgress(), moduleIds),
+    [current.saved]
+  )
   const { completed } = progressRecord
+  // The JSON the server is known to hold, so unchanged records aren't re-sent.
+  const serverCopy = useRef(null)
 
   useEffect(() => {
-    try {
-      // Completion and checked answers share one authoritative storage write.
-      localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progressRecord))
-      // Keep the numeric list readable by the group's earlier application branches.
-      localStorage.setItem(LEGACY_PROGRESS_STORAGE_KEY, JSON.stringify(completed))
-    } catch {
-      // Verified session progress remains usable when storage is unavailable.
+    if (!userId) return
+    let cancelled = false
+    fetchProgress(userId)
+      .then((record) => ({ record, fromServer: true }))
+      .catch(() => ({ record: readCache(userId), fromServer: false }))
+      .then(({ record, fromServer }) => {
+        if (cancelled) return
+        const saved = sanitizeProgress(record ?? createEmptyProgress(), moduleIds)
+        serverCopy.current = fromServer ? JSON.stringify(saved) : null
+        setState({ owner: userId, loaded: true, saved })
+      })
+    return () => {
+      cancelled = true
     }
-  }, [progressRecord, completed])
+  }, [userId])
+
+  const loaded = current.loaded
+  useEffect(() => {
+    if (!userId || !loaded) return
+    const json = JSON.stringify(progressRecord)
+    writeCache(userId, json)
+    if (json === serverCopy.current) return
+    saveProgress(userId, progressRecord)
+      .then(() => {
+        serverCopy.current = json
+      })
+      .catch(() => {
+        // The cached copy keeps this session's progress; the next change retries.
+      })
+  }, [userId, loaded, progressRecord])
 
   const progress = Math.round((completed.length / modules.length) * 100)
 
@@ -40,19 +84,24 @@ export default function useProgress() {
     const topicAssessment = assessedTopic ? validateTopicCompletionEvidence(id, evidence) : null
     if (assessedTopic && !topicAssessment) return
 
-    setSavedProgress((saved) => {
-      const current = sanitizeProgress(saved, moduleIds)
-      if (current.completed.includes(id)) return saved
+    setState((previous) => {
+      // Ignore completions that arrive before this account's record has loaded.
+      if (previous.owner !== userId || !previous.loaded) return previous
+      const record = sanitizeProgress(previous.saved, moduleIds)
+      if (record.completed.includes(id)) return previous
       return {
-        ...current,
-        completed: [...current.completed, id],
-        searchAssessment: id === 5 ? searchAssessment : current.searchAssessment,
-        ...(topicAssessment
-          ? { moduleAssessments: { ...current.moduleAssessments, [id]: topicAssessment } }
-          : {}),
+        ...previous,
+        saved: {
+          ...record,
+          completed: [...record.completed, id],
+          searchAssessment: id === 5 ? searchAssessment : record.searchAssessment,
+          ...(topicAssessment
+            ? { moduleAssessments: { ...record.moduleAssessments, [id]: topicAssessment } }
+            : {}),
+        },
       }
     })
   }
 
-  return { completed, progress, completeModule }
+  return { completed, progress, loaded, completeModule }
 }

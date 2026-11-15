@@ -59,5 +59,37 @@ export default function studentsRouter(db) {
     }
   });
 
+  // GET /api/students/:id/progress-record
+  // The app's whole progress record for this student (null if they have none yet).
+  router.get('/:id/progress-record', async (req, res, next) => {
+    try {
+      const student = await db.student.findUnique({
+        where: { id: req.params.id },
+        select: { progressData: true },
+      });
+      if (!student) return res.status(404).json({ error: 'student not found' });
+      res.json({ progress: student.progressData ?? null });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // PUT /api/students/:id/progress-record  { progress }
+  // Replaces the student's progress record. The app re-checks the saved quiz
+  // answers whenever it loads the record, so only the shape is checked here.
+  router.put('/:id/progress-record', async (req, res, next) => {
+    try {
+      const progress = req.body?.progress;
+      const valid = progress && typeof progress === 'object' && !Array.isArray(progress)
+        && progress.version === 2 && Array.isArray(progress.completed);
+      if (!valid) return res.status(400).json({ error: 'progress must be a version 2 progress record' });
+      await db.student.update({ where: { id: req.params.id }, data: { progressData: progress } });
+      res.json({ progress });
+    } catch (e) {
+      if (e?.code === 'P2025') return res.status(404).json({ error: 'student not found' });
+      next(e);
+    }
+  });
+
   return router;
 }
