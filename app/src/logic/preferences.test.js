@@ -22,6 +22,7 @@ test('restores every supported preference without copying unexpected fields', ()
     speechRate: 1.25,
     speechVoice: 'English voice',
     preferredMode: 'multimodal',
+    learningCheckInComplete: true,
     studyGoal: 30,
   }
   assert.deepEqual(sanitizePreferences({ ...saved, completed: [1, 5], admin: true }), saved)

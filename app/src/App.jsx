@@ -4,6 +4,7 @@ import Layout from "./components/layout/Layout";
 import { modules } from "./data/modules";
 import useProgress from "./hooks/useProgress";
 import usePreferences from "./hooks/usePreferences";
+import LearningCheckIn from "./components/onboarding/LearningCheckIn";
 
 import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
@@ -25,6 +26,15 @@ function App() {
 
   const { completed, progress, completeModule } = useProgress();
   const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
+
+  function finishCheckIn(preferredMode) {
+    if (preferredMode) updatePreference("preferredMode", preferredMode);
+    updatePreference("learningCheckInComplete", true);
+  }
+
+  function restartCheckIn() {
+    updatePreference("learningCheckInComplete", false);
+  }
 
   const filteredModules = useMemo(
     () =>
@@ -117,6 +127,7 @@ function App() {
             preferences={preferences}
             onPreferenceChange={updatePreference}
             onResetPreferences={resetPreferences}
+            onRetakeCheckIn={restartCheckIn}
             storageAvailable={storageAvailable}
           />
         );
@@ -127,6 +138,10 @@ function App() {
   }
 
   if (!user) return <Login onLogin={handleLogin} />;
+
+  if (!preferences.learningCheckInComplete) {
+    return <LearningCheckIn onComplete={finishCheckIn} onSkip={() => finishCheckIn()} />;
+  }
 
   return (
     <Layout

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Accessibility, CheckCircle2, ExternalLink, GraduationCap, RotateCcw, Square, UserRound, Volume2 } from "lucide-react";
+import { Accessibility, CheckCircle2, GraduationCap, RotateCcw, Square, UserRound, Volume2 } from "lucide-react";
 
 const studyTips = {
   explore: {
@@ -36,7 +36,7 @@ function availableVoices() {
   return canUseSpeech() ? window.speechSynthesis.getVoices() : [];
 }
 
-export default function Settings({ preferences, onPreferenceChange, onResetPreferences, storageAvailable }) {
+export default function Settings({ preferences, onPreferenceChange, onResetPreferences, onRetakeCheckIn, storageAvailable }) {
   const [voices, setVoices] = useState(availableVoices);
   const [previewStatus, setPreviewStatus] = useState("");
   const [previewPlaying, setPreviewPlaying] = useState(false);
@@ -226,9 +226,9 @@ export default function Settings({ preferences, onPreferenceChange, onResetPrefe
             </label>
             <div className="settings-study-tips" aria-live="polite"><h3>{guidance.title}</h3><p>Aim for {preferences.studyGoal} minutes in your next study session.</p><ul>{guidance.tips.map((tip) => <li key={tip}>{tip}</li>)}</ul></div>
             <div className="settings-vark-card">
-              <h3>Explore your learning preferences with VARK</h3>
-              <p>VARK explores visual, aural, read/write and kinesthetic preferences. Use it to reflect on study strategies and try a mix of approaches as you learn.</p>
-              <a className="settings-vark-link" href="https://vark-learn.com/the-vark-questionnaire/" target="_blank" rel="noopener noreferrer">Take the official VARK questionnaire<ExternalLink size={14} aria-hidden="true" /><span className="settings-help">(opens in a new tab)</span></a>
+              <h3>Reflect on your learning preferences</h3>
+              <p>This short check-in suggests a starting point for exploring HashLab. It is not a test of ability, and you can change your approach whenever you like.</p>
+              <button className="secondary-button" type="button" onClick={onRetakeCheckIn}>Retake quick check-in</button>
             </div>
           </div>
         </section>

@@ -1,0 +1,191 @@
+.learning-checkin {
+  min-height: 100vh;
+  background: #f5f7fb;
+  color: #172b4d;
+}
+
+.checkin-header {
+  height: 72px;
+  padding: 0 clamp(20px, 5vw, 72px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid #e8edf5;
+}
+
+.checkin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #102a56;
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.checkin-brand-icon,
+.checkin-result-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #e8efff;
+  color: #2455b5;
+}
+
+.checkin-skip,
+.checkin-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: #52627a;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.checkin-skip:hover,
+.checkin-back:not(:disabled):hover { color: #1d4ed8; }
+.checkin-back:disabled { opacity: .4; cursor: not-allowed; }
+
+.checkin-content {
+  width: calc(100% - 32px);
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(42px, 8vh, 82px) 0 56px;
+}
+
+.checkin-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.checkin-eyebrow,
+.checkin-step,
+.checkin-overline {
+  margin: 0;
+  color: #52627a;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.checkin-eyebrow { letter-spacing: .06em; }
+.checkin-step { color: #102a56; font-size: 14px; }
+.checkin-step span { color: #718096; font-weight: 500; }
+
+.checkin-progress-track {
+  height: 5px;
+  margin: 14px 0 34px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #dce4ef;
+}
+
+.checkin-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: width 180ms ease;
+}
+
+.checkin-overline { margin-bottom: 10px; color: #2455b5; }
+.checkin-content h1 { max-width: 640px; margin: 0; color: #102a56; font-size: 32px; line-height: 1.2; }
+
+.checkin-options {
+  display: grid;
+  gap: 10px;
+  margin: 28px 0 24px;
+  padding: 0;
+  border: 0;
+}
+
+.checkin-option {
+  display: grid;
+  grid-template-columns: 42px 1fr 24px;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 10px 14px;
+  border: 1px solid #dfe6ef;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.checkin-option:hover { border-color: #9ab5eb; }
+.checkin-option.is-selected { border-color: #2563eb; background: #edf3ff; }
+.checkin-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.checkin-option:focus-within { outline: 3px solid #a9c5ff; outline-offset: 2px; }
+
+.checkin-option-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #f0f3f8;
+  color: #42526e;
+}
+
+.checkin-option.is-selected .checkin-option-icon { background: #dbe8ff; color: #1d4ed8; }
+.checkin-option-label { color: #253858; font-size: 14px; font-weight: 600; line-height: 1.4; }
+.checkin-option-check { width: 22px; height: 22px; display: grid; place-items: center; border: 1px solid #cbd5e1; border-radius: 50%; color: transparent; }
+.checkin-option.is-selected .checkin-option-check { border-color: #2563eb; background: #2563eb; color: #fff; }
+
+.checkin-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.checkin-primary {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 7px;
+  background: #1d4ed8;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkin-primary:hover:not(:disabled) { background: #173fae; }
+.checkin-primary:disabled { background: #9baac0; cursor: not-allowed; }
+.checkin-footnote { margin: 20px 0 0; color: #718096; font-size: 12px; line-height: 1.5; }
+
+.checkin-result { max-width: 600px; padding-top: 20px; }
+.checkin-result-icon { width: 48px; height: 48px; margin-bottom: 24px; background: #e4f5ee; color: #16835d; }
+.checkin-result .checkin-eyebrow { margin-bottom: 10px; }
+.checkin-description { margin: 18px 0; color: #42526e; font-size: 16px; line-height: 1.65; }
+.checkin-note { margin: 0 0 28px; padding: 14px 16px; border-left: 3px solid #e6a23c; background: #fff8e9; color: #625338; font-size: 13px; line-height: 1.55; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+@media (max-width: 520px) {
+  .checkin-header { height: 62px; }
+  .checkin-content { padding-top: 36px; }
+  .checkin-content h1 { font-size: 25px; }
+  .checkin-option { grid-template-columns: 36px 1fr 22px; gap: 9px; padding: 9px; }
+  .checkin-option-icon { width: 34px; height: 34px; }
+  .checkin-option-label { font-size: 13px; }
+  .checkin-result { padding-top: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkin-progress-track span,
+  .checkin-option { transition: none; }
+}
