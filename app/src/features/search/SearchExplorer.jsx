@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import HashTable from '../../components/visualiser/HashTable'
 import { createSearchTrace } from '../../logic/searching'
@@ -170,51 +171,54 @@ export default function SearchExplorer({ onTraced }) {
             matchIndex={current?.matchIndex}
             collision={current?.type === 'collision'}
           />
-          <div className="hash-search-transport" aria-label="Search playback controls">
-            <button
-              type="button"
-              className="secondary-button"
-              aria-label="Replay search"
-              disabled={!trace}
-              onClick={() => {
-                setPlaying(false)
-                setStep(0)
-              }}
-            >
-              ↺ Replay
-            </button>
-            <button
-              type="button"
-              className="secondary-button"
-              aria-label="Previous search step"
-              disabled={!trace || step === 0}
-              onClick={() => {
-                setPlaying(false)
-                moveToStep(step - 1)
-              }}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              className="primary-button"
-              disabled={!trace || Boolean(finished)}
-              onClick={() => setPlaying(!playing)}
-            >
-              {playing ? 'Pause' : 'Play'}
-            </button>
-            <button
-              type="button"
-              className="secondary-button"
-              aria-label="Next search step"
-              disabled={!trace || Boolean(finished)}
-              onClick={() => {
-                setPlaying(false)
-                moveToStep(step + 1)
-              }}
-            >
-              →
-            </button>
+          <div className="hash-search-transport">
+            <div className="hash-topic-controls" aria-label="Search walkthrough controls">
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={!trace || step === 0}
+                onClick={() => {
+                  setPlaying(false)
+                  setStep(0)
+                }}
+              >
+                Replay
+              </button>
+
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={!trace || step === 0}
+                onClick={() => {
+                  setPlaying(false)
+                  moveToStep(step - 1)
+                }}
+              >
+                ← Previous
+              </button>
+
+              <button
+                type="button"
+                className="primary-button"
+                disabled={!trace || Boolean(finished)}
+                onClick={() => setPlaying(!playing)}
+              >
+                {playing ? 'Pause' : 'Play'}
+              </button>
+
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={!trace || Boolean(finished)}
+                onClick={() => {
+                  setPlaying(false)
+                  moveToStep(step + 1)
+                }}
+              >
+                Next →
+              </button>
+            </div>
+
             <label className="hash-search-pace">
               Pace
               <select value={delay} onChange={(event) => setDelay(Number(event.target.value))}>
