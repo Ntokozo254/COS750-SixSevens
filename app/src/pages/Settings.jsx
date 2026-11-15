@@ -36,8 +36,11 @@ function availableVoices() {
   return canUseSpeech() ? window.speechSynthesis.getVoices() : [];
 }
 
-export default function Settings({ preferences, onPreferenceChange, onResetPreferences, onRetakeCheckIn, storageAvailable }) {
+export default function Settings({ preferences, onPreferenceChange, onResetPreferences, onRetakeCheckIn, storageAvailable, studentNumber, onSaveStudentNumber }) {
   const [voices, setVoices] = useState(availableVoices);
+  // The student number lives on the account, so it is saved when the field is left.
+  const [numberDraft, setNumberDraft] = useState(studentNumber ?? "");
+  const [numberStatus, setNumberStatus] = useState({ tone: "", message: "" });
   const [previewStatus, setPreviewStatus] = useState("");
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const previewRef = useRef(null);
@@ -115,6 +118,19 @@ export default function Settings({ preferences, onPreferenceChange, onResetPrefe
     onPreferenceChange(key, value);
   }
 
+  async function saveNumber() {
+    const value = numberDraft.trim();
+    if (value === (studentNumber ?? "")) return;
+    setNumberStatus({ tone: "", message: "Saving…" });
+    try {
+      const saved = await onSaveStudentNumber(value);
+      setNumberDraft(saved ?? "");
+      setNumberStatus({ tone: "ok", message: saved ? "Saved to your account." : "Student number removed from your account." });
+    } catch (error) {
+      setNumberStatus({ tone: "error", message: error.message });
+    }
+  }
+
   function resetSettings() {
     stopPreview();
     onResetPreferences();
@@ -142,16 +158,17 @@ export default function Settings({ preferences, onPreferenceChange, onResetPrefe
           </div>
           <div className="settings-profile-preview">
             <div className="settings-profile-avatar" aria-hidden="true">{initials}</div>
-            <div className="settings-profile-details"><strong>{preferences.displayName.trim() || "Your student profile"}</strong><span>{preferences.studentNumber.trim() || "COS212 learner"}</span></div>
+            <div className="settings-profile-details"><strong>{preferences.displayName.trim() || "Your student profile"}</strong><span>{studentNumber || "COS212 learner"}</span></div>
           </div>
           <div className="settings-fields">
             <label className="settings-field" htmlFor="settings-display-name"><span>Display name</span>
               <input id="settings-display-name" type="text" autoComplete="nickname" maxLength={60} placeholder="How should we address you?" value={preferences.displayName} onChange={(event) => onPreferenceChange("displayName", event.target.value)} />
             </label>
             <label className="settings-field" htmlFor="settings-student-number"><span>Student number <small>(optional)</small></span>
-              <input id="settings-student-number" type="text" maxLength={20} autoComplete="off" placeholder="Your student number" value={preferences.studentNumber} onChange={(event) => onPreferenceChange("studentNumber", event.target.value)} />
+              <input id="settings-student-number" type="text" maxLength={20} autoComplete="off" placeholder="e.g. u12345678" value={numberDraft} aria-invalid={numberStatus.tone === "error"} aria-describedby="settings-student-number-status" onChange={(event) => setNumberDraft(event.target.value)} onBlur={saveNumber} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }} />
             </label>
-            <p className="settings-help">Your profile is saved in this browser. It does not create an account.</p>
+            <p id="settings-student-number-status" className={numberStatus.tone === "error" ? "settings-help settings-field-error" : "settings-help"} role="status">{numberStatus.message}</p>
+            <p className="settings-help">Your student number is saved to your account. Your other settings are saved in this browser for your account.</p>
           </div>
         </section>
 
