@@ -1,5 +1,10 @@
 export const PREFERENCES_STORAGE_KEY = 'hashlab.preferences.v1'
 
+// Each account keeps its own preferences in this browser.
+export function preferencesKey(userId) {
+  return userId ? `${PREFERENCES_STORAGE_KEY}:${userId}` : PREFERENCES_STORAGE_KEY
+}
+
 export const DEFAULT_PREFERENCES = Object.freeze({
   displayName: '',
   studentNumber: '',
@@ -69,12 +74,12 @@ export function sanitizePreferences(saved) {
   }
 }
 
-export function readPreferencesState(getStorage = browserStorage) {
+export function readPreferencesState(getStorage = browserStorage, key = PREFERENCES_STORAGE_KEY) {
   try {
     const storage = getStorage()
     if (!storage) return { preferences: { ...DEFAULT_PREFERENCES }, storageAvailable: false }
 
-    const value = storage.getItem(PREFERENCES_STORAGE_KEY)
+    const value = storage.getItem(key)
     let saved
     try {
       saved = value == null ? null : JSON.parse(value)
@@ -92,11 +97,15 @@ export function readPreferences(getStorage = browserStorage) {
   return readPreferencesState(getStorage).preferences
 }
 
-export function writePreferences(preferences, getStorage = browserStorage) {
+export function writePreferences(
+  preferences,
+  getStorage = browserStorage,
+  key = PREFERENCES_STORAGE_KEY,
+) {
   try {
     const storage = getStorage()
     if (!storage) return false
-    storage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(sanitizePreferences(preferences)))
+    storage.setItem(key, JSON.stringify(sanitizePreferences(preferences)))
     return true
   } catch {
     return false

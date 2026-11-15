@@ -157,7 +157,6 @@ export const COLLISIONS_TOPIC = {
     'Chaining keeps [12, 22] together in bucket 2. Linear probing puts 12 at slot 2 and 22 at the next free slot, index 3.',
     'A duplicate request repeats one key. Changing capacity can separate this pair, while further collisions remain possible.',
   ],
-  reflectionPrompt: 'Explain how two different student records can share a home slot while both remain accessible. Which collision-resolution method would you like to trace again?',
 }
 
 export const COLLISION_PRACTICE_CASES = [

@@ -1,226 +1,224 @@
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { Button } from "./Button"
 
-const TARGET = 95
-const STEP = 1000 // ms spent "checking" each element. Raise it to go slower.
-const SLOT = 56 // 48px block + 8px gap
-const spring = { type: "spring", stiffness: 380, damping: 30 }
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Button } from "./Button";
+import AnimationControls from "../AnimationControls";
 
-const INITIAL = [42, 17, 8, 91, 75, 33, 95].map((value, i) => ({ id: `n${i}`, value }))
-const CAPACITY = INITIAL.length
+const TARGET = 95;
+const SLOT = 56;
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const spring = {
+  type: "spring",
+  stiffness: 380,
+  damping: 30,
+};
 
-const styles = {
-  idle: "lesson-visual-slot--occupied",
-  checking: "lesson-visual-slot--current",
-  visited: "lesson-visual-slot--visited",
-  found: "lesson-visual-slot--found",
-  deleting: "lesson-visual-slot--collision",
-}
-const scales = { checking: 1.12, found: 1.12, deleting: 0.92 }
+const INITIAL = [42, 17, 8, 91, 75, 33, 95].map(
+  (value, i) => ({
+    id: `n${i}`,
+    value,
+  })
+);
+
+const CAPACITY = INITIAL.length;
+
+const SEARCH_STEPS = [
+  { index: null, message: "Ready to search for 95. Click Next to begin." },
+  { index: 0, message: "Index 0: Is 42 equal to 95? No. Move forward." },
+  { index: 1, message: "Index 1: Is 17 equal to 95? No. Move forward." },
+  { index: 2, message: "Index 2: Is 8 equal to 95? No. Move forward." },
+  { index: 3, message: "Index 3: Is 91 equal to 95? No. Move forward." },
+  { index: 4, message: "Index 4: Is 75 equal to 95? No. Move forward." },
+  { index: 5, message: "Index 5: Is 33 equal to 95? No. Move forward." },
+  { index: 6, message: "Index 6: Is 95 equal to 95? Yes! Target found." },
+];
+
+const DELETE_STEPS = [
+  { index: null, message: "Ready to delete 95. Click Next to begin." },
+  ...SEARCH_STEPS.slice(1, 7),
+  { index: 6, message: "Found 95 at index 6. Ready to delete." },
+  { index: null, message: "95 has been deleted from the array." },
+];
 
 export default function ArraySearchDeleteVisual() {
-  const [items, setItems] = useState(INITIAL)
-  const [current, setCurrent] = useState(null) // index the pointer is on
-  const [visited, setVisited] = useState([]) // ids already ruled out
-  const [foundId, setFoundId] = useState(null)
-  const [deletingId, setDeletingId] = useState(null)
-  const [asking, setAsking] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState(
-    `Press Search to look for ${TARGET}, or Delete to remove it.`
-  )
+  const [mode, setMode] = useState(null);
+  const [step, setStep] = useState(0);
 
-  // Each run gets an id. If the id changes (Reset or unmount), the old run stops.
-  const runRef = useRef(0)
-  useEffect(() => () => { runRef.current = -1 }, [])
+  const steps = mode === "delete" ? DELETE_STEPS : SEARCH_STEPS;
 
-  const clearMarks = () => {
-    setCurrent(null)
-    setVisited([])
-    setFoundId(null)
-    setDeletingId(null)
-    setAsking(false)
-  }
+  const totalSteps = steps.length;
+  const currentStep = steps[step];
+
+  const items = useMemo(() => {
+    if (mode === "delete" && step === DELETE_STEPS.length - 1) {
+      return INITIAL.filter((item) => item.value !== TARGET);
+    }
+
+    return INITIAL;
+  }, [mode, step]);
+
+  const current = currentStep.index;
+
+  const found = current === 6;
+  const deleted = mode === "delete" &&
+    step === DELETE_STEPS.length - 1;
+
+  const startDemo = (selectedMode) => {
+    setMode(selectedMode);
+    setStep(0);
+  };
+
+  const nextStep = () => {
+    setStep((current) =>
+      Math.min(current + 1, totalSteps - 1)
+    );
+  };
+
+  const previousStep = () => {
+    setStep((current) =>
+      Math.max(current - 1, 0)
+    );
+  };
 
   const reset = () => {
-    runRef.current += 1
-    clearMarks()
-    setItems(INITIAL)
-    setBusy(false)
-    setMessage(`Press Search to look for ${TARGET}, or Delete to remove it.`)
-  }
+    setMode(null);
+    setStep(0);
+  };
 
-  const run = async (mode) => {
-    if (busy) return
-    const id = ++runRef.current
-    const stale = () => runRef.current !== id
-    const arr = items
+  const statusOf = (item, index) => {
+    if (found && item.value === TARGET) return "found";
+    if (current === index) return "checking";
+    if (current !== null && index < current) return "visited";
+    return "idle";
+  };
 
-    setBusy(true)
-    clearMarks()
-    setMessage(`Looking for ${TARGET}: start at index 0 and check each element in turn.`)
-    await sleep(700)
-    if (stale()) return
-
-    // Linear search: visit each element until we find the target or run out
-    let foundIdx = -1
-    for (let i = 0; i < arr.length; i++) {
-      setCurrent(i)
-      setMessage(`Index ${i}: is ${arr[i].value} equal to ${TARGET}?`)
-      await sleep(STEP)
-      if (stale()) return
-
-      if (arr[i].value === TARGET) {
-        foundIdx = i
-        break
-      }
-      setVisited((v) => [...v, arr[i].id])
-      setMessage(`${arr[i].value} is not ${TARGET}. Move to the next element.`)
-      await sleep(550)
-      if (stale()) return
-    }
-
-    // Reached the end without a match
-    if (foundIdx === -1) {
-      setCurrent(null)
-      setMessage(
-        `Reached the end after ${arr.length} comparisons: ${TARGET} is not in the array.` +
-          (mode === "delete" ? " Nothing to delete." : "")
-      )
-      setBusy(false)
-      return
-    }
-
-    const hit = arr[foundIdx]
-    setFoundId(hit.id)
-    setMessage(
-      `Found ${TARGET} at index ${foundIdx} after ${foundIdx + 1} comparison${foundIdx ? "s" : ""}.`
-    )
-
-    if (mode === "search") {
-      setBusy(false)
-      return
-    }
-
-    // Delete: ask, then remove it anyway
-    await sleep(1000)
-    if (stale()) return
-    setAsking(true)
-    setMessage(`Delete ${TARGET}?`)
-    await sleep(1800)
-    if (stale()) return
-
-    setAsking(false)
-    setDeletingId(hit.id)
-    setMessage("Deleting...")
-    await sleep(700)
-    if (stale()) return
-
-    const shifted = arr.length - 1 - foundIdx
-    setItems(arr.filter((x) => x.id !== hit.id))
-    clearMarks()
-    setMessage(
-      `Deleted ${TARGET}. ` +
-        (shifted
-          ? `The ${shifted} element${shifted > 1 ? "s" : ""} after it shifted left to close the gap.`
-          : "It was the last element, so nothing had to shift.")
-    )
-    setBusy(false)
-  }
-
-  const statusOf = (item, i) => {
-    if (deletingId === item.id) return "deleting"
-    if (foundId === item.id) return "found"
-    if (current === i && foundId === null) return "checking"
-    if (visited.includes(item.id)) return "visited"
-    return "idle"
-  }
+  const styles = {
+    idle: "lesson-visual-slot--occupied",
+    checking: "lesson-visual-slot--current",
+    visited: "lesson-visual-slot--visited",
+    found: "lesson-visual-slot--found",
+  };
 
   return (
-    // data-no-swipe stops the carousel from swiping when you use these controls
     <div data-no-swipe className="lesson-visual select-none">
+
+      {/* Array visualisation */}
       <div className="relative h-[116px] overflow-x-auto overflow-y-hidden">
-        {/* Empty slots (the array's fixed capacity) */}
+
+        {/* Empty slots */}
         <div className="absolute left-1 top-10 flex gap-2">
           {Array.from({ length: CAPACITY }, (_, i) => (
-            <div key={i} className="lesson-visual-surface h-12 w-12 flex-none rounded-lg" />
+            <div
+              key={i}
+              className="lesson-visual-surface h-12 w-12 flex-none rounded-lg"
+            />
           ))}
         </div>
 
-        {/* The pointer. It slides along the array, and turns into the "Delete?" bubble */}
+        {/* Search pointer */}
         <motion.div
           initial={false}
-          animate={{ x: (current ?? 0) * SLOT, opacity: current === null ? 0 : 1 }}
+          animate={{
+            x: (current ?? 0) * SLOT,
+            opacity: current === null || deleted ? 0 : 1,
+          }}
           transition={spring}
           className="absolute left-1 top-0 flex h-10 w-12 flex-col items-center justify-end"
         >
-          {asking ? (
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.6, y: 6 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="flex flex-col items-center"
-              >
-                <span className="lesson-visual-slot lesson-visual-slot--current whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-bold">
-                  Delete {TARGET}?
-                </span>
-                <span className="lesson-visual-pointer leading-none">▼</span>
-              </motion.div>
-            </div>
-          ) : (
-            <>
-              <span className="lesson-visual-index font-semibold">i = {current ?? 0}</span>
-              <span className="lesson-visual-pointer leading-none">▼</span>
-            </>
-          )}
+          <span className="lesson-visual-index font-semibold">
+            i = {current ?? 0}
+          </span>
+          <span className="lesson-visual-pointer leading-none">
+            ▼
+          </span>
         </motion.div>
 
-        {/* The array */}
+        {/* Array elements */}
         <div className="absolute left-1 top-10 flex gap-2">
           <AnimatePresence initial={false} mode="popLayout">
-            {items.map((item, i) => {
-              const status = statusOf(item, i)
+            {items.map((item, index) => {
+              const status = statusOf(item, index);
+
               return (
                 <motion.div
                   key={item.id}
                   layout
                   transition={spring}
-                  exit={{ opacity: 0, scale: 0.4, y: -16 }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.4,
+                    y: -16,
+                  }}
                   className="flex w-12 flex-none flex-col items-center gap-1.5"
                 >
                   <motion.div
-                    animate={{ scale: scales[status] ?? 1 }}
+                    animate={{
+                      scale: status === "checking" || status === "found"
+                        ? 1.12
+                        : 1,
+                    }}
                     transition={spring}
                     className={`lesson-visual-slot flex h-12 w-12 items-center justify-center rounded-lg text-base font-bold transition-colors duration-300 ${styles[status]}`}
                   >
                     {item.value}
                   </motion.div>
-                  <span className="lesson-visual-index">[{i}]</span>
+
+                  <span className="lesson-visual-index">
+                    [{index}]
+                  </span>
                 </motion.div>
-              )
+              );
             })}
           </AnimatePresence>
         </div>
       </div>
 
-      <p aria-live="polite" className="lesson-visual-caption mt-3 min-h-10">
-        {message}
+      {/* Explanation */}
+      <p
+        aria-live="polite"
+        className="lesson-visual-caption mt-3 min-h-10"
+      >
+        {mode === null
+          ? `Press Search to find ${TARGET}, or Delete to remove it.`
+          : currentStep.message}
       </p>
 
+      {/* Demonstration selection */}
       <div className="mt-2 flex flex-wrap gap-2">
-        <Button size="sm" disabled={busy} onClick={() => run("search")}>
+        <Button
+          size="sm"
+          onClick={() => startDemo("search")}
+        >
           Search for {TARGET}
         </Button>
-        <Button size="sm" variant="danger" disabled={busy} onClick={() => run("delete")}>
+
+        <Button
+          size="sm"
+          variant="danger"
+          onClick={() => startDemo("delete")}
+        >
           Delete {TARGET}
         </Button>
-        <Button size="sm" variant="primary" onClick={reset}>
+
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={reset}
+        >
           Reset
         </Button>
       </div>
+
+      {/* Manual animation controls */}
+      {mode !== null && (
+        <AnimationControls
+          step={step}
+          totalSteps={totalSteps}
+          onPrevious={previousStep}
+          onNext={nextStep}
+        />
+      )}
+
     </div>
-  )
+  );
 }

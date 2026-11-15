@@ -201,5 +201,4 @@ export const HASH_FUNCTIONS_TOPIC = {
     'A zero remainder chooses slot 0. Every result is smaller than the positive table size.',
     'The same key, function, and table size give the same starting slot. Different keys can collide at that slot.',
   ],
-  reflectionPrompt: 'Explain how 23 mod 10 chooses a home slot. Why can key 33 share it, and how could the final storage position differ from that starting point?',
 }

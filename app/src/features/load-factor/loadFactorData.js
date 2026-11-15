@@ -142,7 +142,6 @@ export const LOAD_FACTOR_TOPIC = {
     'Start at key mod m and count every inspected slot, including the empty stopping position. A full table still has a bounded m-slot scan.',
     'To grow a table, allocate more slots and reinsert each key using the new capacity. Compare actual paths for a chosen key before and after.',
   ],
-  reflectionPrompt: 'Explain how two tables with α = 0.5 can take different numbers of probes for the same missing key. Then explain what must happen to existing keys when the table grows.',
 }
 
 export const LOAD_FACTOR_PRACTICE = [

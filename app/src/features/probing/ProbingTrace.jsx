@@ -1,3 +1,4 @@
+
 import { useEffect, useId, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react'
 import { useReducedMotion } from 'motion/react'
@@ -189,54 +190,55 @@ export default function ProbingTrace({ onTraced, active = true, preferences = {}
         </div>
       </div>
 
-      <div className="hash-probing-controls">
-        <div className="hash-probing-transport" role="group" aria-label="Insertion playback controls">
-          <InkButton variant="ghost" aria-label="Restart" onClick={() => chooseExample(exampleId)}>
-            <RotateCcw size={15} aria-hidden="true" /> Restart
-          </InkButton>
-          <InkButton
-            variant="ghost"
-            aria-label="Previous step"
-            disabled={frameIndex === 0}
-            aria-controls={frameId}
-            onClick={() => step(-1)}
-          >
-            <ChevronLeft size={16} aria-hidden="true" /> Previous
-          </InkButton>
-          <InkButton
-            variant="go"
-            disabled={!canAutoPlay}
-            aria-describedby={reduceMotion ? motionNoteId : undefined}
-            aria-controls={frameId}
-            onClick={togglePlay}
-          >
-            {isPlaying ? <Pause size={15} aria-hidden="true" /> : <Play size={15} aria-hidden="true" />}
-            {isPlaying ? 'Pause' : atEnd ? 'Replay' : 'Play'}
-          </InkButton>
-          <InkButton
-            variant="ghost"
-            aria-label="Next step"
-            disabled={atEnd}
-            aria-controls={frameId}
-            onClick={() => step(1)}
-          >
-            Next <ChevronRight size={16} aria-hidden="true" />
-          </InkButton>
-        </div>
-        <div className="hash-probing-speed" role="group" aria-label="Playback speed">
-          {SPEEDS.map((item) => (
-            <InkButton
-              key={item.id}
-              variant={item.id === speed ? 'on' : 'off'}
-              aria-pressed={item.id === speed}
-              disabled={reduceMotion}
-              onClick={() => setSpeed(item.id)}
-            >
-              {item.label}
-            </InkButton>
-          ))}
-        </div>
-      </div>
+      
+<div className="hash-probing-controls">
+  <div className="hash-topic-controls" aria-label="Insertion walkthrough controls">
+    <button
+      type="button"
+      className="secondary-button"
+      disabled={frameIndex === 0}
+      onClick={() => chooseExample(exampleId)}
+    >Replay</button>
+
+    <button
+      type="button"
+      className="secondary-button"
+      disabled={frameIndex === 0}
+      onClick={() => step(-1)}
+    >← Previous</button>
+
+    <button
+      type="button"
+      className="primary-button"
+      disabled={!canAutoPlay}
+      onClick={togglePlay}
+    >{isPlaying ? 'Pause' : 'Play'}</button>
+
+    <button
+      type="button"
+      className="secondary-button"
+      disabled={atEnd}
+      onClick={() => step(1)}
+    >Next →</button>
+
+    <span>Step {frameIndex + 1} of {frames.length}</span>
+  </div>
+
+  <div className="hash-probing-speed" role="group" aria-label="Playback speed">
+    {SPEEDS.map((item) => (
+      <InkButton
+        key={item.id}
+        variant={item.id === speed ? 'on' : 'off'}
+        aria-pressed={item.id === speed}
+        disabled={reduceMotion}
+        onClick={() => setSpeed(item.id)}
+      >
+        {item.label}
+      </InkButton>
+    ))}
+  </div>
+</div>
+
       <p className="hash-probing-playback-status" role="status" aria-live="polite">
         {isPlaying ? 'Automatic playback is running.' : 'Automatic playback is paused.'}
       </p>
