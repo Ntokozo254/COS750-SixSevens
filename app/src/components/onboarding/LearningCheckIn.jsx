@@ -113,7 +113,7 @@ export default function LearningCheckIn({ onComplete, onSkip }) {
               <button className="checkin-back" type="button" onClick={() => setQuestionIndex((current) => current - 1)} disabled={questionIndex === 0}><ArrowLeft size={16} aria-hidden="true" />Back</button>
               <button className="checkin-primary" type="button" onClick={continueCheckIn} disabled={!answers[questionIndex]}>{questionIndex === questions.length - 1 ? 'See my suggestions' : 'Continue'}<ArrowRight size={17} aria-hidden="true" /></button>
             </div>
-            <p className="checkin-footnote">No right or wrong answers. You can change your preference later in Settings.</p>
+            <p className="checkin-footnote">No right or wrong answers. Skipping is fine: you can take this check-in any time from Settings, under Learning preferences.</p>
           </>
         )}
       </section>

@@ -226,9 +226,9 @@ export default function Settings({ preferences, onPreferenceChange, onResetPrefe
             </label>
             <div className="settings-study-tips" aria-live="polite"><h3>{guidance.title}</h3><p>Aim for {preferences.studyGoal} minutes in your next study session.</p><ul>{guidance.tips.map((tip) => <li key={tip}>{tip}</li>)}</ul></div>
             <div className="settings-vark-card">
-              <h3>Reflect on your learning preferences</h3>
-              <p>This short check-in suggests a starting point for exploring HashLab. It is not a test of ability, and you can change your approach whenever you like.</p>
-              <button className="secondary-button" type="button" onClick={onRetakeCheckIn}>Retake quick check-in</button>
+              <h3>{preferences.preferredMode === "explore" ? "Not sure how you like to learn?" : "Reflect on your learning preferences"}</h3>
+              <p>{preferences.preferredMode === "explore" ? "Take a short four-question check-in to get a suggested starting point for exploring HashLab. It is not a test of ability, and you can change your approach whenever you like." : "This short check-in suggests a starting point for exploring HashLab. It is not a test of ability, and you can change your approach whenever you like."}</p>
+              <button className="secondary-button" type="button" onClick={onRetakeCheckIn}>{preferences.preferredMode === "explore" ? "Take quick check-in" : "Retake quick check-in"}</button>
             </div>
           </div>
         </section>
