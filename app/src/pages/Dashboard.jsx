@@ -186,9 +186,9 @@ export default function Dashboard({
 
             <button
               className="secondary-button"
-              onClick={() => onNavigate("Practice lab")}
+              onClick={() => onOpenModule(modules.find((module) => module.id === 4))}
             >
-              Try a practice challenge
+              Find out in Linear Probing
               <ArrowRight size={15} />
             </button>
           </div>

@@ -5,12 +5,12 @@ import Layout from "./components/layout/Layout";
 import { modules } from "./data/modules";
 import useProgress from "./hooks/useProgress";
 import usePreferences from "./hooks/usePreferences";
+import LearningCheckIn from "./components/onboarding/LearningCheckIn";
 
 import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
 import ModuleDetail from "./pages/ModuleDetail";
 import Visualiser from "./pages/Visualiser";
-import PracticeLab from "./pages/PracticeLab";
 import Assessment from "./pages/Assessment";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
@@ -23,7 +23,6 @@ const PAGES = [
   { label: "Dashboard", path: "/" },
   { label: "Learning modules", path: "/modules" },
   { label: "Visualiser", path: "/visualiser" },
-  { label: "Practice lab", path: "/practice" },
   { label: "Assessment", path: "/assessment" },
   { label: "My progress", path: "/progress" },
   { label: "Settings", path: "/settings" }
@@ -52,6 +51,15 @@ function App() {
 
   const { completed, progress, completeModule } = useProgress();
   const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
+
+  function finishCheckIn(preferredMode) {
+    if (preferredMode) updatePreference("preferredMode", preferredMode);
+    updatePreference("learningCheckInComplete", true);
+  }
+
+  function restartCheckIn() {
+    updatePreference("learningCheckInComplete", false);
+  }
 
   const mobileOpen = menuOpenOn === location.pathname;
 
@@ -112,6 +120,10 @@ function App() {
     );
   }
 
+  if (!preferences.learningCheckInComplete) {
+    return <LearningCheckIn onComplete={finishCheckIn} onSkip={() => finishCheckIn()} />;
+  }
+
   return (
     <Layout
       preferences={preferences}
@@ -161,7 +173,6 @@ function App() {
           }
         />
         <Route path="/visualiser" element={<Visualiser />} />
-        <Route path="/practice" element={<PracticeLab />} />
         <Route path="/assessment" element={<Assessment onOpenModule={openModule} />} />
         <Route
           path="/progress"
@@ -174,6 +185,7 @@ function App() {
               preferences={preferences}
               onPreferenceChange={updatePreference}
               onResetPreferences={resetPreferences}
+              onRetakeCheckIn={restartCheckIn}
               storageAvailable={storageAvailable}
             />
           }
