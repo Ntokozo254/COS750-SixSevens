@@ -11,7 +11,6 @@ import Dashboard from "./pages/Dashboard";
 import Modules from "./pages/Modules";
 import ModuleDetail from "./pages/ModuleDetail";
 import Visualiser from "./pages/Visualiser";
-import PracticeLab from "./pages/PracticeLab";
 import Assessment from "./pages/Assessment";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
@@ -24,7 +23,6 @@ const PAGES = [
   { label: "Dashboard", path: "/" },
   { label: "Learning modules", path: "/modules" },
   { label: "Visualiser", path: "/visualiser" },
-  { label: "Practice lab", path: "/practice" },
   { label: "Assessment", path: "/assessment" },
   { label: "My progress", path: "/progress" },
   { label: "Settings", path: "/settings" }
@@ -175,7 +173,6 @@ function App() {
           }
         />
         <Route path="/visualiser" element={<Visualiser />} />
-        <Route path="/practice" element={<PracticeLab />} />
         <Route path="/assessment" element={<Assessment onOpenModule={openModule} />} />
         <Route
           path="/progress"
