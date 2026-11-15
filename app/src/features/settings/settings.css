@@ -80,6 +80,7 @@
 .settings-field input[type="range"] { padding: 0; accent-color: var(--blue); }
 .settings-field output { color: #2563eb; }
 .settings-help { color: #647792; font-size: 11px; font-weight: 400; line-height: 1.7; margin: 0; }
+.settings-field-error { color: #b42318; font-weight: 600; }
 
 .settings-toggle { display: flex; align-items: flex-start; gap: 12px; padding: 15px 0; border-top: 1px solid #edf1f7; cursor: pointer; }
 .settings-toggle input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--blue); flex-shrink: 0; }

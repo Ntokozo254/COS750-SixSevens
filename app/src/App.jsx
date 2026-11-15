@@ -16,6 +16,7 @@ import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import { loadUser, saveUser } from "./api/auth";
+import { saveStudentNumber } from "./api/profile";
 
 // Each page has its own route. The labels are what the sidebar, the breadcrumb and
 // the existing onNavigate("Settings")-style calls use, so pages did not need to change.
@@ -49,8 +50,8 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(loadUser);
 
-  const { completed, progress, completeModule } = useProgress();
-  const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences();
+  const { completed, progress, completeModule } = useProgress(user?.id);
+  const { preferences, updatePreference, resetPreferences, storageAvailable } = usePreferences(user?.id);
 
   function finishCheckIn(preferredMode) {
     if (preferredMode) updatePreference("preferredMode", preferredMode);
@@ -100,6 +101,15 @@ function App() {
     setUser(loggedIn);
     // Back to the page they first asked for, or the dashboard.
     routerNavigate(location.state?.from ?? "/", { replace: true });
+  }
+
+  // Saves the student number on the account and keeps the signed-in copy in step.
+  async function handleSaveStudentNumber(value) {
+    const saved = await saveStudentNumber(user.id, value);
+    const updated = { ...user, studentNumber: saved };
+    saveUser(updated);
+    setUser(updated);
+    return saved;
   }
 
   function handleLogout() {
@@ -182,6 +192,9 @@ function App() {
           path="/settings"
           element={
             <Settings
+              key={user.id}
+              studentNumber={user.studentNumber ?? ""}
+              onSaveStudentNumber={handleSaveStudentNumber}
               preferences={preferences}
               onPreferenceChange={updatePreference}
               onResetPreferences={resetPreferences}
